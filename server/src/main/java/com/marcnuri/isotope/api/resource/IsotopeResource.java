@@ -25,8 +25,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.Links;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.util.List;
 
@@ -34,20 +34,20 @@ import java.util.List;
  * Created by Marc Nuri <marc@marcnuri.com> on 2018-08-11.
  */
 @JsonIgnoreProperties(value = {"links"}, ignoreUnknown = true)
-public class IsotopeResource extends ResourceSupport {
+public class IsotopeResource extends RepresentationModel {
 
     @SuppressWarnings("EmptyMethod")
     @JsonProperty("_links")
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @JsonSerialize(using = LinkSerializer.class)
     @Override
-    public List<Link> getLinks() {
+    public Links getLinks() {
         return super.getLinks();
     }
 
     @JsonProperty("_links")
     @JsonDeserialize(using = LinkDeserializer.class)
-    public void setLinks(List<Link> links) {
+    public void setLinks(Links links) {
         add(links);
     }
 }

@@ -41,14 +41,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collections;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * Created by Marc Nuri <marc@marcnuri.com> on 2018-08-15.
  */
 @RestController
-@RequestMapping(path = "/v1/application")
+@RequestMapping(path = "/api/v1/application")
 public class ApplicationResource {
 
     private static final Logger log = LoggerFactory.getLogger(ApplicationResource.class);

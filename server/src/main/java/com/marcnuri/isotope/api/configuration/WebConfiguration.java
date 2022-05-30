@@ -30,12 +30,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.reactive.config.EnableWebFlux;
+import org.springframework.web.reactive.config.WebFluxConfigurationSupport;
 import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.stream.Stream;
@@ -46,7 +49,9 @@ import static org.springframework.beans.factory.config.BeanDefinition.SCOPE_PROT
  * Created by Marc Nuri <marc@marcnuri.com> on 2018-08-09.
  */
 @Configuration
-@EnableWebFlux
+//@EnableWebFlux
+@EnableWebMvc
+@EnableAsync
 public class WebConfiguration implements WebMvcConfigurer, AsyncConfigurer {
 
     public static final String IMAP_SERVICE_PROTOTYPE = "prototypeImapService";

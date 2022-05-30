@@ -38,7 +38,7 @@ import javax.servlet.http.HttpServletRequest;
  * Created by Marc Nuri <marc@marcnuri.com> on 2018-10-07.
  */
 @RestController
-@RequestMapping(path = "/v1/smtp")
+@RequestMapping(path = "/api/v1/smtp")
 public class SmtpResource {
 
     private static final Logger log = LoggerFactory.getLogger(SmtpResource.class);

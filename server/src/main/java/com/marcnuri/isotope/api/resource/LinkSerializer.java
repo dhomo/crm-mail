@@ -24,16 +24,16 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.Links;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
  * Created by Marc Nuri <marc@marcnuri.com> on 2018-08-11.
  */
-public class LinkSerializer extends StdSerializer<List<Link>> {
+public class LinkSerializer extends StdSerializer<Links> {
 
     protected static final String HREF = "href";
 
@@ -41,15 +41,15 @@ public class LinkSerializer extends StdSerializer<List<Link>> {
         this(null);
     }
 
-    public LinkSerializer(Class<List<Link>> t) {
+    public LinkSerializer(Class<Links> t) {
         super(t);
     }
 
     @Override
-    public void serialize(List<Link> links, JsonGenerator gen, SerializerProvider provider) throws IOException {
+    public void serialize(Links links, JsonGenerator gen, SerializerProvider provider) throws IOException {
         gen.writeStartObject();
         for (Link link : links) {
-            gen.writeObjectField(link.getRel(), toEntry(link));
+            gen.writeObjectField(link.getRel().value(), toEntry(link));
         }
         gen.writeEndObject();
     }

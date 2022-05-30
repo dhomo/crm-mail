@@ -239,7 +239,7 @@ public class SmtpService {
         if (attachment.getContent() != null) {
             dataSource = new ByteArrayDataSource(attachment.getContent(), mimeType);
         } else {
-            dataSource = new IsotopeURLDataSource(attachment.getLink(REL_DOWNLOAD).getTemplate().expand().toURL(),
+            dataSource = new IsotopeURLDataSource(attachment.getRequiredLink(REL_DOWNLOAD).getTemplate().expand().toURL(),
                     mimeType, request);
         }
         mimeAttachment.setDataHandler(new DataHandler(dataSource));
