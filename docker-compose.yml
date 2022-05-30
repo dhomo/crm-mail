@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  reverse-proxy:
+    image: traefik:2.7
+    # Enables the web UI and tells Traefik to listen to docker
+    command: --api.insecure=true --providers.docker
+    ports:
+      # The HTTP port
+      - "80:80"
+      # The Web UI (enabled by --api.insecure=true)
+      - "8080:8080"
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  crm-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    # ports:
+      #  порт для доступа к бэкенду снаружи
+      # - "9010:9010"
+    labels:
+      - "traefik.http.routers.crm-server.rule=PathPrefix(`/api`)"
+      # Tell Traefik to use the port 9010 to connect to `crm-server`, если порт один то строчка не нужна 
+      - "traefik.http.services.crm-server.loadbalancer.server.port=9010"
+
+  crm-client:
+    image: marcnuri/isotope:client-latest
+    # если нужен порт для доступа к фронтенду снаружи то разкоментить 
+    # ports:
+    #   - "8081:80"
+    labels:
+      - "traefik.http.routers.crm-client.rule=PathPrefix(`/`)"

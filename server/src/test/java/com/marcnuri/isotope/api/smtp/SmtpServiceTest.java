@@ -202,7 +202,7 @@ public class SmtpServiceTest {
         final Attachment attachment2 = new Attachment(null, "strange.file", null, 1337);
         attachment2.setContent(new byte[0]);
         final Attachment attachmentUrl = new Attachment(null, "forwarded.attachment", null, 1337);
-        attachmentUrl.add(new Link("http://localhost/attachment.ext", "download"));
+        attachmentUrl.add(Link.of("http://localhost/attachment.ext", "download"));
         message.setAttachments(Arrays.asList(attachment1, attachment2, attachmentUrl));
 
         final ArgumentCaptor<MimeMessage> mimeMessage = ArgumentCaptor.forClass(MimeMessage.class);

@@ -8,6 +8,7 @@
  [![BrowserStack Status](https://www.browserstack.com/automate/badge.svg?badge_key=elhXKzgwaTdHQVBVSktYWkpXUFZ0bittOWxnallCZmQyUlRJSERsSWhPVT0tLUorUGlwOVdrYnJQOUlEeFZnOFcxQ0E9PQ==--ea07b9af5d47a508232c96d1805fad609073b527)](https://www.browserstack.com/automate/public-build/elhXKzgwaTdHQVBVSktYWkpXUFZ0bittOWxnallCZmQyUlRJSERsSWhPVT0tLUorUGlwOVdrYnJQOUlEeFZnOFcxQ0E9PQ==--ea07b9af5d47a508232c96d1805fad609073b527)
 
 Microservice based webmail client built with ReactJS and Spring.
+Based Isotope Mail Client main contributors are:- Marc Nuri
 
 ## Introduction
 
@@ -65,21 +66,7 @@ In order to guarantee top code quality the project is using
 [Sonar Cloud](https://sonarcloud.io/dashboard?id=manusa_isotope-mail) and
 [LGTM - Looks Good To Me](https://lgtm.com/projects/g/manusa/isotope-mail/) to perform static code analysis.
 
-## How to deploy
-
-Following is a list of resources that can help you deploy Isotope Mail Client in different environments
-- [How to deploy to a Kubernetes cluster](https://blog.marcnuri.com/isotope-mail-how-to-deploy-isotopetraefik-into-kubernetes/)
-
 ## License
 
 Isotope is [Apache 2.0 Licensed](./LICENSE).
 
-## Acknowledgements
-
-Isotope Mail team wants to recognize the following third parties for providing software,
-support or services free of charge.
-
-<img width=200 src="https://p14.zdusercontent.com/attachment/1015988/jnfTAsRFuKVzfvJMDJ8Ui45p8?token=eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0..H0_YyxaE762GtXQvUnHoYw.R3tCI87tR-lehrK_zjT7GmEI--69EORCPWqTPY_iVa2Pt7468NrQBRAvoO5k1-H0W5YJGw45Fnz6ArGGOX796PWiCdTujuUv0_OTnRKnXU1Zjw3ytoLLFdZH1NTOxAvJUqt8RA3-Dj3mKJ-IGy7l-oqxN5zDXppNQA5xumK9uYu6VNp2JzjMg1ZnPzcOxub5jy7dqMmsxSN9mzpRgjjsNBUKI8a9I4jVzDm13tPLBjKl2bRdxVS14IapUYBpW8NRDrhw8f4mfYYtKR8CSFlCNiFkKtZd-CpZYGLgH7Y23CU.RqsF1R4_vpfkA7VhBRgsZQ" />
-
-Thanks to [BrowserStack](https://www.browserstack.com) for providing a free open source account
-to use their products for testing in real devices and browsers.

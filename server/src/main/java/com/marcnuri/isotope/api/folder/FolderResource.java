@@ -55,15 +55,15 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static com.marcnuri.isotope.api.configuration.WebConfiguration.IMAP_SERVICE_PROTOTYPE;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.http.MediaType.TEXT_EVENT_STREAM_VALUE;
 
 /**
  * Created by Marc Nuri <marc@marcnuri.com> on 2018-08-08.
  */
 @RestController
-@RequestMapping(path = "/v1/folders")
+@RequestMapping(path = "/api/v1/folders")
 @SuppressWarnings("squid:S4529")
 public class FolderResource implements ApplicationContextAware {
 
