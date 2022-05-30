@@ -1,7 +1,7 @@
 {
   "login": {
     "Login": "Login",
-    "Host": "Host",
+    "Host": "IMAP",
     "Port": "Port",
     "User": "User",
     "Password": "Password",
@@ -9,6 +9,7 @@
     "ImapSSL": "IMAP SSL",
     "SMTP": "SMTP",
     "SmtpSSL": "SMTP SSL",
+    "adminPanel": "Admin panel",
     "actions": {
       "Login": "Login"
     },

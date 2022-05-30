@@ -2,11 +2,14 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {Redirect, withRouter} from 'react-router-dom';
 import {translate} from 'react-i18next';
+import {Link} from 'react-router-dom';
 import {
   DEFAULT_IMAP_PORT,
   DEFAULT_IMAP_SSL,
+  DEFAULT_IMAP_HOST,
   DEFAULT_SMTP_PORT,
   DEFAULT_SMTP_SSL,
+  DEFAULT_SMTP_HOST,
   login
 } from '../../services/application';
 import Button from '../buttons/button';
@@ -25,12 +28,12 @@ import styles from './login.scss';
  */
 const stateFromParams = params => ({
   values: {
-    serverHost: params.has('serverHost') ? params.get('serverHost') : '',
+    serverHost: params.has('serverHost') ? params.get('serverHost') : DEFAULT_IMAP_HOST,
     serverPort: params.has('serverPort') ? params.get('serverPort').replace(/[^0-9]*/g, '') : DEFAULT_IMAP_PORT,
     user: params.has('user') ? params.get('user') : '',
     password: '',
     imapSsl: params.has('imapSsl') ? params.get('imapSsl') === 'true' : DEFAULT_IMAP_SSL,
-    smtpHost: params.has('smtpHost') ? params.get('smtpHost') : '',
+    smtpHost: params.has('smtpHost') ? params.get('smtpHost') : DEFAULT_SMTP_HOST,
     smtpPort: params.has('smtpPort') ? params.get('smtpPort').replace(/[^0-9]*/g, '') : DEFAULT_SMTP_PORT,
     smtpSsl: params.has('smtpSsl') ? params.get('smtpSsl') === 'true' : DEFAULT_SMTP_SSL
   },
@@ -111,6 +114,7 @@ export class Login extends Component {
               <Button type={'submit'}
                 className={`${styles.loginButton} ${mainCss['mdc-button--unelevated']} ${styles.fullWidth}`}
                 label={t('login.actions.Login')} />
+              <Link to="/adminpanel">{t('login.adminPanel')}</Link>
             </form>
           </div>
           <LoginSnackbar />
