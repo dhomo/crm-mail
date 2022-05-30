@@ -1,0 +1,134 @@
+{
+  "login": {
+    "Login": "Login",
+    "Host": "IMAP",
+    "Port": "Port",
+    "User": "User",
+    "Password": "Password",
+    "Advanced": "Advanced",
+    "ImapSSL": "IMAP SSL",
+    "SMTP": "SMTP",
+    "SmtpSSL": "SMTP SSL",
+    "actions": {
+      "Login": "Login"
+    },
+    "errors": {
+      "BLACKLISTED": "Host is not whitelisted",
+      "IMAP": "Invalid IMAP credentials",
+      "SMTP": "Invalid SMTP credentials"
+    }
+  },
+  "configurationNotFound": {
+    "Sorry": "Sorry",
+    "message": "We were unable to retrieve the application configuration from the server. Please try again.",
+    "Retry": "Retry"
+  },
+  "sideBar": {
+    "hide": "Hide sidebar",
+    "newFolder": "New folder",
+    "folderList": {
+      "folderActions": "Folder actions",
+      "delete": "Delete",
+      "newSubFolder": "New subfolder",
+      "rename": "Rename"
+    },
+    "errors": {
+      "noSSL": "Connection to server is not secure",
+      "diskQuotaExceeded": "Disk quota exceeded (IndexedDB)"
+    }
+  },
+  "topBar": {
+    "showSideBar": "Show sidebar",
+    "backToList": "Back to list",
+    "quickFilter": "Quick filter",
+    "replyAll": "Reply all",
+    "forward": "Forward",
+    "delete": "Delete",
+    "markUnread": "Mark unread",
+    "markRead": "Mark read",
+    "more": "More",
+    "messageViewerMenu": {
+      "download": "Download (.eml)",
+      "listUnsubscribe": "Unsubscribe from this list",
+      "reply": "Reply"
+    },
+    "deleteFromTrashDialog": {
+      "title": "Confirm deletion",
+      "message": "This will permanently delete messages from Trash. Are you sure you want to continue?",
+      "delete": "Delete",
+      "cancel": "Cancel"
+    }
+  },
+  "composeButton": {
+    "compose": "Compose"
+  },
+  "messageList": {
+    "emptyFolder": "Empty folder",
+    "clearFolderDialog": {
+      "title": "Empty folder",
+      "message": "Are you sure you want to permanently delete all the items in the trash folder?",
+      "deleteAll": "Delete all",
+      "cancel": "Cancel"
+    },
+    "moveEmails": "Moving {{emailCount}} e-mails",
+    "filters": {
+      "All": "All",
+      "Read": "Read",
+      "Unread": "Unread",
+      "Flagged": "Flagged"
+    }
+  },
+  "messageViewer": {
+    "to": "to",
+    "cc": "cc",
+    "bcc": "bcc"
+  },
+  "messageEditor": {
+    "to": "to",
+    "cc": "cc",
+    "bcc": "bcc",
+    "subject": "Subject",
+    "send": "Send",
+    "dropZoneMessage": "Drop files here",
+    "insertLinkDialog": {
+      "title": "Insert Link",
+      "cancel": "Cancel",
+      "ok": "Ok"
+    }
+  },
+  "forwardAction": {
+    "From": "From",
+    "To": "To",
+    "Cc": "Cc",
+    "Date": "Date",
+    "Subject": "Subject"
+  },
+  "replyAction": {
+    "From": "From",
+    "Date": "Date",
+    "Subject": "Subject"
+  },
+  "messageSnackbar": {
+    "sendingMessage" : "Sending message ({{progress}}%)",
+    "messageSent" : "Message sent",
+    "messageError" : "Error sending message",
+    "retry" : "Retry"
+  },
+  "createFolderDialog": {
+    "title": "Create folder",
+    "message": "Please insert the name for the new folder",
+    "folderNameLabel": "New folder name",
+    "cancel": "Cancel",
+    "create": "Create"
+  },
+  "renameFolderDialog": {
+    "title": "Rename folder",
+    "message": "Please insert the new name for folder {{folderName}}",
+    "folderNameLabel": "New folder name",
+    "cancel": "Cancel",
+    "rename": "Rename"
+  },
+  "notifications": {
+    "newMail": "New messages received"
+  }
+}

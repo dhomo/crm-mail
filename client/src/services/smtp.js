@@ -7,8 +7,7 @@ import {
   outboxUpdateProgress,
   outboxSetSent,
   outboxSetError
-}
-  from '../actions/application';
+} from '../actions/application';
 import {getIsotopeConfiguration} from '../selectors/globals';
 
 const SNACKBAR_DURATION = 4000;

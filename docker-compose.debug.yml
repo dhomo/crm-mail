@@ -34,7 +34,8 @@ services:
     command: java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -jar /opt/api-0.0.1-SNAPSHOT.jar
 
   crm-client:
-    image: marcnuri/isotope:client-latest
+    build:
+      context: ./client
     # если нужен порт для доступа к фронтенду снаружи то разкоментить 
     # ports:
     #   - "8081:80"
