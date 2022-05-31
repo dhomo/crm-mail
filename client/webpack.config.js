@@ -7,9 +7,9 @@ const getLocalIdent = require('css-loader/lib/getLocalIdent');
 const path = require('path');
 
 const devMode = process.env.NODE_ENV !== 'production';
-const SRC_DIR = __dirname + '/src';
-const DIST_DIR = __dirname + '/dist';
-const ASSETS_DIR = __dirname + '/assets';
+const SRC_DIR = `${__dirname}/src`;
+const DIST_DIR = `${__dirname}/dist`;
+const ASSETS_DIR = `${__dirname}/assets`;
 const GLOBAL_STYLES = 'styles/main.scss';
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -72,9 +72,9 @@ module.exports = {
     'babel-polyfill',
     'whatwg-fetch',
     'abortcontroller-polyfill',
-    SRC_DIR + '/polyfills/eventsource.js',
-    SRC_DIR + '/polyfills/IDBIndex.js',
-    SRC_DIR + '/index.jsx',
+    `${SRC_DIR}/polyfills/eventsource.js`,
+    `${SRC_DIR}/polyfills/IDBIndex.js`,
+    `${SRC_DIR}/index.jsx`,
     'react-hot-loader/patch'
   ],
   output: {
@@ -91,7 +91,7 @@ module.exports = {
         vendors: {
           priority: -10,
           test: /[\\/]node_modules[\\/]/,
-          name: "vendor",
+          name: 'vendor',
           chunks: chunk => chunk.name === 'main' // Unless specified in annotation, import will be named 'main'
         }
       }
@@ -150,7 +150,7 @@ module.exports = {
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
     new HtmlWebpackPlugin({
-      template: SRC_DIR + '/index.html',
+      template: `${SRC_DIR}/index.html`,
       filename: './index.html'
     }),
     new MiniCssExtractPlugin({
@@ -158,7 +158,7 @@ module.exports = {
       chunkFilename: devMode ? '[id].css' : '[id].[hash].css',
     }),
     new CopyWebpackPlugin([
-      {from: ASSETS_DIR, fromArgs: {cache: false}, to: `assets`, force: true},
+      {from: ASSETS_DIR, fromArgs: {cache: false}, to: 'assets', force: true},
       {from: `${SRC_DIR}/favicon.ico`, to: '', force: true}
     ], {
       copyUnmodified: true
