@@ -28,13 +28,12 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.springframework.hateoas.Links;
 import org.springframework.hateoas.RepresentationModel;
 
-import java.util.List;
 
 /**
  * Created by Marc Nuri <marc@marcnuri.com> on 2018-08-11.
  */
 @JsonIgnoreProperties(value = {"links"}, ignoreUnknown = true)
-public class IsotopeResource extends RepresentationModel {
+public class IsotopeResource extends RepresentationModel<IsotopeResource> {
 
     @SuppressWarnings("EmptyMethod")
     @JsonProperty("_links")
