@@ -24,11 +24,12 @@ import com.marcnuri.isotope.api.credentials.CredentialsAuthenticationFilter;
 import com.marcnuri.isotope.api.credentials.CredentialsRefreshFilter;
 import com.marcnuri.isotope.api.credentials.CredentialsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
@@ -40,7 +41,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
  */
 @Configuration
 @EnableWebSecurity
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+public class SecurityConfiguration {
 
     private static final String ACTUATOR_REGEX = "(/api)?/actuator/health";
     private static final String CONFIGURATION_REGEX = "(/api)?/v1/application/configuration";
@@ -52,28 +53,30 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         this.credentialsService = credentialsService;
     }
 
-    @Override
-    protected void configure(HttpSecurity httpSecurity) throws Exception {
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         final RequestMatcher negatedPublicMatchers =  new NegatedRequestMatcher(new OrRequestMatcher(
                 new RegexRequestMatcher(ACTUATOR_REGEX, "GET"),
                 new RegexRequestMatcher(CONFIGURATION_REGEX, "GET"),
                 new RegexRequestMatcher(LOGIN_REGEX, "POST")
         ));
-        httpSecurity
-                .csrf().disable()
-                .sessionManagement()
-                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                    .and()
-                .authorizeRequests()
-                      .requestMatchers(negatedPublicMatchers).authenticated()
-                    .and()
-                .cors()
-                    .and()
-                .logout()
-                    .permitAll()
-                    .and()
-                .addFilterAfter(new CredentialsAuthenticationFilter(
-                        negatedPublicMatchers, credentialsService), BasicAuthenticationFilter.class)
-                .addFilterAfter(new CredentialsRefreshFilter(credentialsService), CredentialsAuthenticationFilter.class);
+        http
+            .csrf().disable()
+            .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+            .authorizeRequests()
+                .requestMatchers(negatedPublicMatchers).authenticated()
+                .and()
+            .cors()
+                .and()
+            .logout()
+                .permitAll()
+                .and()
+            .addFilterAfter(new CredentialsAuthenticationFilter(negatedPublicMatchers, credentialsService),
+                    BasicAuthenticationFilter.class)
+            .addFilterAfter(new CredentialsRefreshFilter(credentialsService),
+                    CredentialsAuthenticationFilter.class);
+        return http.build();
     }
 }
