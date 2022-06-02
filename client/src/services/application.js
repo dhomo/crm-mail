@@ -25,6 +25,8 @@ export const DEFAULT_IMAP_HOST = 'imap.yandex.ru';
 export const DEFAULT_SMTP_PORT = 465;
 export const DEFAULT_SMTP_SSL = true;
 export const DEFAULT_SMTP_HOST = 'smtp.yandex.ru';
+export const DEFAULT_USER = '';
+export const DEFAULT_PASS = '';
 
 const LOGIN_SNACKBAR_DURATION = 4000;
 

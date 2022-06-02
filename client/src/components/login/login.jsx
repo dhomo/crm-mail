@@ -10,6 +10,8 @@ import {
   DEFAULT_SMTP_PORT,
   DEFAULT_SMTP_SSL,
   DEFAULT_SMTP_HOST,
+  DEFAULT_USER,
+  DEFAULT_PASS,
   login
 } from '../../services/application';
 import Button from '../buttons/button';
@@ -30,8 +32,8 @@ const stateFromParams = params => ({
   values: {
     serverHost: params.has('serverHost') ? params.get('serverHost') : DEFAULT_IMAP_HOST,
     serverPort: params.has('serverPort') ? params.get('serverPort').replace(/[^0-9]*/g, '') : DEFAULT_IMAP_PORT,
-    user: params.has('user') ? params.get('user') : '',
-    password: '',
+    user: params.has('user') ? params.get('user') : DEFAULT_USER,
+    password: DEFAULT_PASS,
     imapSsl: params.has('imapSsl') ? params.get('imapSsl') === 'true' : DEFAULT_IMAP_SSL,
     smtpHost: params.has('smtpHost') ? params.get('smtpHost') : DEFAULT_SMTP_HOST,
     smtpPort: params.has('smtpPort') ? params.get('smtpPort').replace(/[^0-9]*/g, '') : DEFAULT_SMTP_PORT,

@@ -1,4 +1,15 @@
 {
+  "adminpanel": {
+    "Login": "Вход в панель администрирования ",
+    "User": "User",
+    "Password": "Password",   
+    "actions": {
+      "Login": "Login"
+    },
+    "errors": {
+      "INVALIDcredentials": "Неверный логин/пароль"
+    }
+  },
   "login": {
     "Login": "Login",
     "Host": "IMAP",

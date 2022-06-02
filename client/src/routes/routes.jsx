@@ -14,6 +14,7 @@ const SwitchWrapper = () => {
     <Switch>
       <Route exact path="/configuration-not-found" render={() => <ConfigurationNotFound />} />
       <ApplicationReadyRoute exact path="/login" render={() => <Login />} />
+      <ApplicationReadyRoute exact path="/adminpanel" render={() => <Adminpanel />} />
       <ApplicationReadyRoute exact path="/" component={App} />
     </Switch>
   );
