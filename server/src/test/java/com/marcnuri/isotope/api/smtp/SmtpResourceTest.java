@@ -45,7 +45,7 @@ public class SmtpResourceTest {
         // Given
 
         // When
-        final ResultActions result = mockMvc.perform(post("/v1/smtp")
+        final ResultActions result = mockMvc.perform(post("/api/v1/smtp")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"recipients\":[{\"type\":\"To\",\"address\":\"to@mail.com\"}]}")
         );
@@ -60,7 +60,7 @@ public class SmtpResourceTest {
         // Given
 
         // When
-        final ResultActions result = mockMvc.perform(post("/v1/smtp")
+        final ResultActions result = mockMvc.perform(post("/api/v1/smtp")
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .content("{}")
         );

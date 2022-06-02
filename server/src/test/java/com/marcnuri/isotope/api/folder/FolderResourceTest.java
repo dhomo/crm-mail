@@ -97,7 +97,7 @@ public class FolderResourceTest {
 
         // When
         final ResultActions result = mockMvc.perform(
-                get("/v1/folders")
+                get("/api/v1/folders")
                         .accept(MediaTypes.HAL_JSON_VALUE));
 
         // Then
@@ -118,7 +118,7 @@ public class FolderResourceTest {
 
         // When
         final ResultActions result = mockMvc.perform(
-                post("/v1/folders")
+                post("/api/v1/folders")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("new-folder")
                         .accept(MediaTypes.HAL_JSON_VALUE));
@@ -141,7 +141,7 @@ public class FolderResourceTest {
 
         // When
         final ResultActions result = mockMvc.perform(
-                post("/v1/folders/L3BhcmVudC9mb2xkZXI=")
+                post("/api/v1/folders/L3BhcmVudC9mb2xkZXI=")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("new-folder")
                         .accept(MediaTypes.HAL_JSON_VALUE));
@@ -162,7 +162,7 @@ public class FolderResourceTest {
 
         // When
         final ResultActions result = mockMvc.perform(
-                delete("/v1/folders/L29yaWdpbmFsL2ZvbGRlcg==")
+                delete("/api/v1/folders/L29yaWdpbmFsL2ZvbGRlcg==")
                         .accept(MediaTypes.HAL_JSON_VALUE));
 
         // Then
@@ -182,7 +182,7 @@ public class FolderResourceTest {
 
         // When
         final ResultActions result = mockMvc.perform(
-                put("/v1/folders/L29yaWdpbmFsL2ZvbGRlcg==/name")
+                put("/api/v1/folders/L29yaWdpbmFsL2ZvbGRlcg==/name")
                         .accept(MediaTypes.HAL_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("31337")
@@ -205,7 +205,7 @@ public class FolderResourceTest {
 
         // When
         final ResultActions result = mockMvc.perform(
-                put("/v1/folders/L29yaWdpbmFsL2ZvbGRlcg==/parent")
+                put("/api/v1/folders/L29yaWdpbmFsL2ZvbGRlcg==/parent")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("L3RhcmdldC9mb2xkZXIvaWQ=")
                         .accept(MediaTypes.HAL_JSON_VALUE));
@@ -227,7 +227,7 @@ public class FolderResourceTest {
 
         // When
         final ResultActions result = mockMvc.perform(
-                put("/v1/folders/L29yaWdpbmFsL2ZvbGRlcg==/parent")
+                put("/api/v1/folders/L29yaWdpbmFsL2ZvbGRlcg==/parent")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaTypes.HAL_JSON_VALUE));
 
@@ -251,7 +251,7 @@ public class FolderResourceTest {
         doReturn(mockFlux).when(imapService).getMessagesFlux(Mockito.eq(new URLName("1337")), Mockito.any());
 
         // When
-        final ResultActions result = mockMvc.perform(get("/v1/folders/MTMzNw==/messages")
+        final ResultActions result = mockMvc.perform(get("/api/v1/folders/MTMzNw==/messages")
                 .accept("text/event-stream"));
 
         // Then
@@ -281,7 +281,7 @@ public class FolderResourceTest {
 
         // When
         final ResultActions result = mockMvc.perform(
-                get("/v1/folders/1337/messages?id=1337")
+                get("/api/v1/folders/1337/messages?id=1337")
                         .accept(MediaTypes.HAL_JSON_VALUE));
 
         // Then
@@ -302,7 +302,7 @@ public class FolderResourceTest {
 
         // When
         final ResultActions result = mockMvc.perform(
-                delete("/v1/folders/MTMzNw==/messages")
+                delete("/api/v1/folders/MTMzNw==/messages")
                         .accept(MediaTypes.HAL_JSON_VALUE));
 
         // Then
@@ -321,7 +321,7 @@ public class FolderResourceTest {
 
         // When
         final ResultActions result = mockMvc.perform(
-                delete("/v1/folders/1337/messages?id=1337")
+                delete("/api/v1/folders/1337/messages?id=1337")
                         .accept(MediaTypes.HAL_JSON_VALUE));
 
         // Then
@@ -342,7 +342,7 @@ public class FolderResourceTest {
 
         // When
         final ResultActions result = mockMvc.perform(
-                get("/v1/folders/MTMzNw==/messages/1337")
+                get("/api/v1/folders/MTMzNw==/messages/1337")
                         .accept(MediaTypes.HAL_JSON_VALUE));
 
         // Then
@@ -360,7 +360,7 @@ public class FolderResourceTest {
 
         // When
         final ResultActions result = mockMvc.perform(
-                get("/v1/folders/MTMzNw==/messages/1337")
+                get("/api/v1/folders/MTMzNw==/messages/1337")
                         .accept("message/rfc822"));
 
         // Then
@@ -374,7 +374,7 @@ public class FolderResourceTest {
 
         // When
         final ResultActions result = mockMvc.perform(
-                put("/v1/folders/1337/messages/1337/seen")
+                put("/api/v1/folders/1337/messages/1337/seen")
                         .content("\"true\"")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaTypes.HAL_JSON_VALUE));
@@ -390,7 +390,7 @@ public class FolderResourceTest {
 
         // When
         final ResultActions result = mockMvc.perform(
-                put("/v1/folders/1337/messages/seen/true")
+                put("/api/v1/folders/1337/messages/seen/true")
                         .content("[1337]")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaTypes.HAL_JSON_VALUE));
@@ -406,7 +406,7 @@ public class FolderResourceTest {
 
         // When
         final ResultActions result = mockMvc.perform(
-                put("/v1/folders/1337/messages/1337/flagged")
+                put("/api/v1/folders/1337/messages/1337/flagged")
                         .content("\"true\"")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaTypes.HAL_JSON_VALUE));

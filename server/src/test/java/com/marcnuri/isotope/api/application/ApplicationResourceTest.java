@@ -83,32 +83,32 @@ public class ApplicationResourceTest {
         // Given
         // Untouched IsotopeApiConfiguration
         // When
-        final ResultActions result = mockMvc.perform(get("/v1/application/configuration")
+        final ResultActions result = mockMvc.perform(get("/api/v1/application/configuration")
                 .accept(MediaTypes.HAL_JSON_VALUE));
         // Then
         result.andExpect(status().isOk());
         result.andExpect(jsonPath("$.googleAnalyticsTrackingId").doesNotExist());
         result.andExpect(jsonPath("$._links").exists());
         result.andExpect(jsonPath("$._links", aMapWithSize(14)));
-        result.andExpect(jsonPath("$._links['application.login'].href", endsWith("/v1/application/login")));
-        result.andExpect(jsonPath("$._links['folders'].href", endsWith("/v1/folders")));
+        result.andExpect(jsonPath("$._links['application.login'].href", endsWith("/api/v1/application/login")));
+        result.andExpect(jsonPath("$._links['folders'].href", endsWith("/api/v1/folders")));
         result.andExpect(jsonPath("$._links.['folders.self'].href",
-                endsWith("/v1/folders/{folderId}")));
+                endsWith("/api/v1/folders/{folderId}")));
         result.andExpect(jsonPath("$._links['folders.messages'].href",
-                endsWith("/v1/folders/{folderId}/messages")));
+                endsWith("/api/v1/folders/{folderId}/messages")));
         result.andExpect(jsonPath("$._links['folders.message'].href",
-                endsWith("/v1/folders/{folderId}/messages/{messageId}")));
+                endsWith("/api/v1/folders/{folderId}/messages/{messageId}")));
         result.andExpect(jsonPath("$._links['folders.message.flagged'].href",
-                endsWith("/v1/folders/{folderId}/messages/{messageId}/flagged")));
+                endsWith("/api/v1/folders/{folderId}/messages/{messageId}/flagged")));
         result.andExpect(jsonPath("$._links['folders.message.move'].href",
-                endsWith("/v1/folders/{folderId}/messages/{messageId}/folder/{toFolderId}")));
+                endsWith("/api/v1/folders/{folderId}/messages/{messageId}/folder/{toFolderId}")));
         result.andExpect(jsonPath("$._links['folders.message.move.bulk'].href",
-                endsWith("/v1/folders/{folderId}/messages/folder/{toFolderId}")));
+                endsWith("/api/v1/folders/{folderId}/messages/folder/{toFolderId}")));
         result.andExpect(jsonPath("$._links['folders.message.seen'].href",
-                endsWith("/v1/folders/{folderId}/messages/{messageId}/seen")));
+                endsWith("/api/v1/folders/{folderId}/messages/{messageId}/seen")));
         result.andExpect(jsonPath("$._links['folders.message.seen.bulk'].href",
-                endsWith("/v1/folders/{folderId}/messages/seen/{seen}")));
-        result.andExpect(jsonPath("$._links.smtp.href", endsWith("/v1/smtp")));
+                endsWith("/api/v1/folders/{folderId}/messages/seen/{seen}")));
+        result.andExpect(jsonPath("$._links.smtp.href", endsWith("/api/v1/smtp")));
     }
 
     @Test
@@ -116,7 +116,7 @@ public class ApplicationResourceTest {
         // Given
         doReturn("UA-1337-33").when(isotopeApiConfiguration).getGoogleAnalyticsTrackingId();
         // When
-        final ResultActions result = mockMvc.perform(get("/v1/application/configuration")
+        final ResultActions result = mockMvc.perform(get("/api/v1/application/configuration")
                 .accept(MediaTypes.HAL_JSON_VALUE));
         // Then
         result.andExpect(status().isOk());
@@ -130,7 +130,7 @@ public class ApplicationResourceTest {
         doAnswer(inv -> inv.getArgument(0)).when(imapService).checkCredentials(Mockito.any());
         doNothing().when(smtpService).checkCredentials(Mockito.any());
         // When
-        final ResultActions result = mockMvc.perform(post("/v1/application/login")
+        final ResultActions result = mockMvc.perform(post("/api/v1/application/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{" +
                         "\"serverHost\":\"host\"," +
@@ -152,7 +152,7 @@ public class ApplicationResourceTest {
     public void login_invalidCredentials_shouldReturnBadRequest() throws Exception {
         // Given
         // When
-        final ResultActions result = mockMvc.perform(post("/v1/application/login")
+        final ResultActions result = mockMvc.perform(post("/api/v1/application/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{}")
                 .accept(MediaTypes.HAL_JSON_VALUE));
