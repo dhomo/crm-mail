@@ -30,7 +30,7 @@ dependencies {
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.3'
 	implementation 'commons-io:commons-io:2.11.0'
 
-//	supress warning: unknown enum constant When.MAYBE	reason: class file for javax.annotation.meta.When not found
+//	suppress warning: unknown enum constant When.MAYBE	reason: class file for javax.annotation.meta.When not found
 	implementation 'com.google.code.findbugs:jsr305:3.0.2'
 
 	compileOnly 'org.projectlombok:lombok:1.18.24'
