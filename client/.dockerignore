@@ -1,5 +1,5 @@
 **
 
-!docker/**
+!nginx-default.conf
 !dist/**
 
