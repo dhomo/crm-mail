@@ -1,10 +1,11 @@
-FROM openjdk:17
+FROM gradle:jdk17 AS builder
+COPY --chown=gradle:gradle . /home/gradle/project
+WORKDIR /home/gradle/project
+RUN gradle bootJar --no-daemon
 
-# для отладки порт
-EXPOSE 5005
+
+FROM openjdk:17
 # рабочий порт
 EXPOSE 9010
-
-COPY ./build/libs /opt
-
-CMD java -jar /opt/api-0.0.1-SNAPSHOT.jar
+COPY --from=builder /home/gradle/project/build/libs/app.jar /opt/app.jar
+CMD java -jar /opt/app.jar

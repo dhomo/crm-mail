@@ -16,20 +16,14 @@ services:
 
   crm-server:
     build:
-      context: .
-      dockerfile: Dockerfile.server
-    # ports:
-      #  порт для доступа к бэкенду снаружи
-      # - "9010:9010"
+      context: ./server
     labels:
       - "traefik.http.routers.crm-server.rule=PathPrefix(`/api`)"
       # Tell Traefik to use the port 9010 to connect to `crm-server`, если порт один то строчка не нужна 
       - "traefik.http.services.crm-server.loadbalancer.server.port=9010"
 
   crm-client:
-    image: marcnuri/isotope:client-latest
-    # если нужен порт для доступа к фронтенду снаружи то разкоментить 
-    # ports:
-    #   - "8081:80"
+    build:
+      context: ./client
     labels:
       - "traefik.http.routers.crm-client.rule=PathPrefix(`/`)"
