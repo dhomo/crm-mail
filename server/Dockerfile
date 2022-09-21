@@ -4,7 +4,7 @@ WORKDIR /home/gradle/project
 RUN gradle bootJar --no-daemon
 
 
-FROM openjdk:17
+FROM eclipse-temurin:17-jre-alpine
 # рабочий порт
 EXPOSE 9010
 COPY --from=builder /home/gradle/project/build/libs/app.jar /opt/app.jar
