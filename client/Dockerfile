@@ -1,9 +1,12 @@
+FROM node:12 as build
+WORKDIR /react-app
+COPY package*.json .
+RUN yarn install
+COPY . .
+RUN yarn run build
+
+
 FROM nginx:1.15.2-alpine
-
-EXPOSE 80
-
 COPY nginx-default.conf /etc/nginx/conf.d/default.conf
-COPY ./dist /usr/share/nginx/html
-
+COPY --from=build /react-app/dist /usr/share/nginx/html
 CMD nginx -g 'daemon off;'
-
