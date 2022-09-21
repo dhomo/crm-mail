@@ -16,7 +16,13 @@ Just run the following commands:
 
 ```
 git clone https://github.com/dhomo/crm-mail.git
-docker-compose up
+docker-compose up -d
+```
+
+If you have changed something in the code, then run:
+
+```
+docker-compose up --build -d
 ```
 
 Point your browser to [localhost](http://localhost) and login using the credentials of your mailserver.
