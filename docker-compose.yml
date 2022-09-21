@@ -27,3 +27,4 @@ services:
       context: ./client
     labels:
       - "traefik.http.routers.crm-client.rule=PathPrefix(`/`)"
+      - "traefik.http.services.crm-client.loadbalancer.server.port=9009"
