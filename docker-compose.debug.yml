@@ -24,14 +24,8 @@ services:
       - "9010:9010"
     labels:
       - "traefik.http.routers.crm-server.rule=PathPrefix(`/api`)"
-      # не знаю зачем была зделана обрезка префиксов, убрал
-      # Create a middleware named `crm-server-stripprefix`
-      # - "traefik.http.middlewares.crm-server-stripprefix.stripprefix.prefixes=/api"
-      # Apply the middleware named `crm-server-stripprefix` to the router named `crm-server`
-      # - "traefik.http.routers.crm-server.middlewares=crm-server-stripprefix@docker"
-      # Tell Traefik to use the port 9010 to connect to `crm-server`, если порт один то строчка не нужна 
       - "traefik.http.services.crm-server.loadbalancer.server.port=9010"
-    command: java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -jar /opt/api-0.0.1-SNAPSHOT.jar
+    command: java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -jar /opt/app.jar
 
   crm-client:
     build:
@@ -41,3 +35,4 @@ services:
     #   - "8081:80"
     labels:
       - "traefik.http.routers.crm-client.rule=PathPrefix(`/`)"
+      - "traefik.http.services.crm-client.loadbalancer.server.port=9009"

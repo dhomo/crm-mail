@@ -9,4 +9,3 @@ RUN yarn run build
 FROM nginx:stable-alpine
 COPY nginx-default.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /react-app/dist /usr/share/nginx/html
-CMD nginx -g 'daemon off;'
