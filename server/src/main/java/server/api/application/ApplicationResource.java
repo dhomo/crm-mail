@@ -108,9 +108,9 @@ public class ApplicationResource {
         ret.add(linkTo(methodOn(FolderResource.class)
                 .createChildFolder(null, null))
                 .withRel(REL_FOLDERS_SELF));
-        ret.add(linkTo(methodOn(FolderResource.class)
-                .getMessages(null, null))
-                .withRel(REL_FOLDERS_MESSAGES));
+//        ret.add(linkTo(methodOn(FolderResource.class)
+//                .getMessages(null, null))
+//                .withRel(REL_FOLDERS_MESSAGES));
         ret.add(linkTo(methodOn(FolderResource.class)
                 .getMessages(null, null))
                 .withRel(REL_FOLDERS_MESSAGES));
