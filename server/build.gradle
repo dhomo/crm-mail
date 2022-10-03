@@ -5,7 +5,7 @@ plugins {
 	id 'jacoco' // создает отчеты о покрытии кода тестами
 }
 
-group = 'com.marcnuri.isotope'
+group = 'dhomo.crmmail'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
 

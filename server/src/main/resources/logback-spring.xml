@@ -2,6 +2,6 @@
 <configuration>
     <include resource="org/springframework/boot/logging/logback/base.xml" />
     <springProfile name="dev">
-        <logger name="com.marcnuri.isotope" level="debug" />
+        <logger name="dhomo.crmmail" level="debug" />
     </springProfile>
 </configuration>
