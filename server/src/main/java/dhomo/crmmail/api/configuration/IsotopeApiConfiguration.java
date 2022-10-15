@@ -39,7 +39,7 @@ import java.util.stream.Stream;
  * Created by Marc Nuri <marc@marcnuri.com> on 2018-08-08.
  */
 @Configuration
-@ComponentScan("com.marcnuri.isotope.api")
+@ComponentScan("dhomo.crmmail.api")
 @EnableConfigurationProperties(ServerProperties.class)
 @Import({WebConfiguration.class})
 public class IsotopeApiConfiguration {
