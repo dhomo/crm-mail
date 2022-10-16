@@ -46,6 +46,7 @@ public class SecurityConfiguration {
     private static final String ACTUATOR_REGEX = "(/api)?/actuator/health";
     private static final String CONFIGURATION_REGEX = "(/api)?/v1/application/configuration";
     private static final String LOGIN_REGEX = "(/api)?/v1/application/login";
+//    public static final String OPEN_API = "/api-docs.*";
     private final CredentialsService credentialsService;
 
     @Autowired
@@ -56,6 +57,7 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         final RequestMatcher negatedPublicMatchers =  new NegatedRequestMatcher(new OrRequestMatcher(
+//                new RegexRequestMatcher(OPEN_API, "GET"),
                 new RegexRequestMatcher(ACTUATOR_REGEX, "GET"),
                 new RegexRequestMatcher(CONFIGURATION_REGEX, "GET"),
                 new RegexRequestMatcher(LOGIN_REGEX, "POST")

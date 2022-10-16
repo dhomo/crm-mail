@@ -29,11 +29,11 @@ dependencies {
 	implementation 'com.sun.mail:javax.mail:1.6.2'
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.4'
 	implementation 'commons-io:commons-io:2.11.0'
-
 //	suppress warning: unknown enum constant When.MAYBE	reason: class file for javax.annotation.meta.When not found
 	implementation 'com.google.code.findbugs:jsr305:3.0.2'
+//    implementation 'org.springdoc:springdoc-openapi-ui:1.6.11'
 
-	compileOnly 'org.projectlombok:lombok:1.18.24'
+    compileOnly 'org.projectlombok:lombok:1.18.24'
 
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 

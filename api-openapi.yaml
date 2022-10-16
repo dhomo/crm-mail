@@ -1,0 +1,753 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+  - url: http://localhost:9010
+    description: Generated server url
+paths:
+  /api/v1/application/login:
+    post:
+      tags:
+        - application
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Credentials'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/Credentials'
+  /api/v1/application/configuration:
+    get:
+      tags:
+        - application
+      operationId: getConfiguration
+      responses:
+        "200":
+          description: OK
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/ConfigurationDto'
+
+
+  /api/v1/folders:
+    get:
+      summary: Loading list of folders
+      tags:
+        - folders
+      operationId: getFolders
+      parameters:
+        - name: loadChildren
+          in: query
+          required: false
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: OK
+          content:
+            application/hal+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Folder'
+    post:
+      summary: createRootFolder
+      description: Creating new 1st level folder with name {}
+      tags:
+        - folders
+      operationId: createRootFolder
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/hal+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Folder'
+  /api/v1/folders/{folderId}:
+    post:
+      summary: createChildFolder
+      description: Creating new folder with name {} under {} folder", newFolderName, folderId
+      tags:
+        - folders
+      operationId: createChildFolder
+      parameters:
+        - name: folderId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/Folder'
+    delete:
+      summary: deleteFolder
+      description: Deleting folder with id {}", folderId
+      tags:
+        - folders
+      operationId: deleteFolder
+      parameters:
+        - name: folderId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/Folder'
+  /api/v1/folders/{folderId}/parent:
+    put:
+      summary: moveFolder
+      description: moveFolder
+      tags:
+        - folders
+      operationId: moveFolder
+      parameters:
+        - name: folderId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/Folder'
+  /api/v1/folders/{folderId}/name:
+    put:
+      summary: renameFolder
+      description: Renaming folder with id {folderId} to {newName}
+      tags:
+        - folders
+      operationId: renameFolder
+      parameters:
+        - name: folderId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: new name
+        content:
+          application/json:
+            schema:
+              type: string
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/Folder'
+
+
+  /api/v1/folders/{folderId}/messages:
+    get:
+      summary: Loading list of messages for folder {}
+      description: тут что то непонятное, два метода, что то асинхронное
+      tags:
+        - /{folderId}/messages
+      operationId: preloadMessages_1
+      parameters:
+        - name: folderId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: array
+            items:
+              type: integer
+              format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Message'
+            text/event-stream:
+              schema:
+                $ref: '#/components/schemas/FluxServerSentEventListMessage'
+    delete:
+      summary: deleteAllFolderMessages or selected
+      description: Deleting ALL messages for folder {} if id not presents
+      tags:
+        - /{folderId}/messages
+      operationId: deleteAllFolderMessages_1
+      parameters:
+        - name: folderId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: integer
+              format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Folder'
+  /api/v1/folders/{folderId}/messages/folder/{toFolderId}:
+    put:
+      summary: moveMessages
+      description: Moving {List<Long> messageIds} messages from folder {} to folder {}
+      tags:
+        - /{folderId}/messages
+      operationId: moveMessages
+      parameters:
+        - name: folderId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: toFolderId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: integer
+                format: int64
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MessageWithFolder'
+
+  /api/v1/folders/{folderId}/messages/seen/{seen}:
+    put:
+      summary: setMessagesSeen
+      tags:
+        - /{folderId}/messages
+      operationId: setMessagesSeen
+      parameters:
+        - name: folderId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: seen
+          in: path
+          required: true
+          schema:
+            type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: integer
+                format: int64
+        required: true
+      responses:
+        "200":
+          description: OK
+
+
+  /api/v1/folders/{folderId}/messages/{messageId}:
+    get:
+      summary: getMessage
+      tags:
+        - /{folderId}/messages/{messageId}/
+      operationId: getMessage_1
+      parameters:
+        - name: folderId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: messageId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/MessageWithFolder'
+  /api/v1/folders/{folderId}/messages/{messageId}/folder/{toFolderId}:
+    put:
+      summary: moveMessage
+      tags:
+        - /{folderId}/messages/{messageId}/
+      operationId: moveMessage
+      parameters:
+        - name: folderId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: messageId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: toFolderId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MessageWithFolder'
+  /api/v1/folders/{folderId}/messages/{messageId}/seen:
+    put:
+      summary: setMessageSeen
+      tags:
+        - /{folderId}/messages/{messageId}/
+      operationId: setMessageSeen
+      parameters:
+        - name: folderId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: messageId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: boolean
+        required: true
+      responses:
+        "200":
+          description: OK
+  /api/v1/folders/{folderId}/messages/{messageId}/flagged:
+    put:
+      summary: setMessageFlagged
+      tags:
+        - /{folderId}/messages/{messageId}/
+      operationId: setMessageFlagged
+      parameters:
+        - name: folderId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: messageId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: boolean
+        required: true
+      responses:
+        "200":
+          description: OK
+  /api/v1/folders/{folderId}/messages/{messageId}/attachments/{id}:
+    get:
+      summary: getAttachment
+      tags:
+        - /{folderId}/messages/{messageId}/
+      operationId: getAttachment
+      parameters:
+        - name: folderId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: messageId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: contentId
+          in: query
+          required: false
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: OK
+
+
+  /api/v1/smtp:
+    post:
+      summary: sendMessage
+      tags:
+        - smtp-resource
+      operationId: sendMessage
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Message'
+        required: true
+      responses:
+        "200":
+          description: OK
+
+components:
+  schemas:
+    Folder:
+      type: object
+      properties:
+        folderId:
+          type: string
+        previousFolderId:
+          type: string
+          description: используется только переименовании папки
+        name:
+          type: string
+        separator:
+          type: string
+        fullName:
+          type: string
+        fullURL:
+          type: string
+        attributes:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+        messageCount:
+          type: integer
+          format: int32
+        newMessageCount:
+          type: integer
+          format: int32
+        unreadMessageCount:
+          type: integer
+          format: int32
+        deletedMessageCount:
+          type: integer
+          format: int32
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/Folder'
+        uidvalidity:
+          type: integer
+          format: int64
+        _links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+    Link:
+      type: object
+      properties:
+        rel:
+          type: string
+        href:
+          type: string
+        hreflang:
+          type: string
+        media:
+          type: string
+        title:
+          type: string
+        type:
+          type: string
+        deprecation:
+          type: string
+        profile:
+          type: string
+        name:
+          type: string
+    Attachment:
+      type: object
+      properties:
+        contentId:
+          type: string
+        fileName:
+          type: string
+        contentType:
+          type: string
+        size:
+          type: integer
+          format: int32
+        content:
+          type: array
+          items:
+            type: string
+            format: byte
+        _links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+    MessageWithFolder:
+      required:
+        - recipients
+      type: object
+      properties:
+        uid:
+          type: integer
+          format: int64
+        messageId:
+          type: string
+        modseq:
+          type: integer
+          format: int64
+        from:
+          type: array
+          items:
+            type: string
+        replyTo:
+          type: array
+          items:
+            type: string
+        recipients:
+          type: array
+          items:
+            $ref: '#/components/schemas/Recipient'
+        subject:
+          type: string
+        receivedDate:
+          type: string
+          format: date-time
+        size:
+          type: integer
+          format: int64
+        flagged:
+          type: boolean
+        seen:
+          type: boolean
+        recent:
+          type: boolean
+        deleted:
+          type: boolean
+        content:
+          type: string
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attachment'
+        references:
+          type: array
+          items:
+            type: string
+        inReplyTo:
+          type: array
+          items:
+            type: string
+        listUnsubscribe:
+          type: array
+          items:
+            type: string
+        folder:
+          $ref: '#/components/schemas/Folder'
+        _links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+    Recipient:
+      type: object
+      properties:
+        type:
+          type: string
+        address:
+          type: string
+    Message:
+      required:
+        - recipients
+      type: object
+      properties:
+        uid:
+          type: integer
+          format: int64
+        messageId:
+          type: string
+        modseq:
+          type: integer
+          format: int64
+        from:
+          type: array
+          items:
+            type: string
+        replyTo:
+          type: array
+          items:
+            type: string
+        recipients:
+          type: array
+          items:
+            $ref: '#/components/schemas/Recipient'
+        subject:
+          type: string
+        receivedDate:
+          type: string
+          format: date-time
+        size:
+          type: integer
+          format: int64
+        flagged:
+          type: boolean
+        seen:
+          type: boolean
+        recent:
+          type: boolean
+        deleted:
+          type: boolean
+        content:
+          type: string
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attachment'
+        references:
+          type: array
+          items:
+            type: string
+        inReplyTo:
+          type: array
+          items:
+            type: string
+        listUnsubscribe:
+          type: array
+          items:
+            type: string
+        _links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+    Credentials:
+      required:
+        - imapSsl
+        - password
+        - serverHost
+        - serverPort
+        - smtpPort
+        - smtpSsl
+        - user
+      type: object
+      properties:
+        details:
+          type: object
+        authenticated:
+          type: boolean
+        encrypted:
+          type: string
+        salt:
+          type: string
+        serverHost:
+          type: string
+        serverPort:
+          type: integer
+          format: int32
+        user:
+          type: string
+        password:
+          type: string
+        imapSsl:
+          type: boolean
+        smtpHost:
+          type: string
+        smtpPort:
+          type: integer
+          format: int32
+        smtpSsl:
+          type: boolean
+        expiryDate:
+          type: string
+          format: date-time
+        principal:
+          type: object
+        credentials:
+          type: object
+        name:
+          type: string
+    FluxServerSentEventListMessage:
+      type: object
+      properties:
+        prefetch:
+          type: integer
+          format: int32
+    ConfigurationDto:
+      type: object
+      properties:
+        googleAnalyticsTrackingId:
+          type: string
+        _links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
