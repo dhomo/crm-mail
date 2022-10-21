@@ -15,7 +15,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Credentials'
+              $ref: '#/components/schemas/LoginRequestDto'
         required: true
       responses:
         "200":
@@ -23,7 +23,7 @@ paths:
           content:
             application/hal+json:
               schema:
-                $ref: '#/components/schemas/Credentials'
+                $ref: '#/components/schemas/LoginResponseDto'
   /api/v1/application/configuration:
     get:
       tags:
@@ -735,6 +735,25 @@ components:
         credentials:
           type: object
         name:
+          type: string
+    LoginResponseDto:
+      required:
+        - encrypted
+        - salt
+      properties:
+        encrypted:
+          type: string
+        salt:
+          type: string
+    LoginRequestDto:
+      required:
+        - password
+        - user
+      type: object
+      properties:
+        user:
+          type: string
+        password:
           type: string
     FluxServerSentEventListMessage:
       type: object
