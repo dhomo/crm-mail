@@ -20,7 +20,7 @@
  */
 package dhomo.crmmail.api.imap;
 
-import dhomo.crmmail.api.configuration.IsotopeApiConfiguration;
+import dhomo.crmmail.api.configuration.AppConfiguration;
 import dhomo.crmmail.api.configuration.WithMockCredentials;
 import dhomo.crmmail.api.credentials.CredentialsService;
 import dhomo.crmmail.api.exception.IsotopeException;
@@ -76,7 +76,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 public class ImapServiceTest {
 
     private IMAPStore imapStore;
-    private IsotopeApiConfiguration isotopeApiConfiguration;
+    private AppConfiguration appConfiguration;
     private MailSSLSocketFactory mailSSLSocketFactory;
     private CredentialsService credentialsService;
 
@@ -90,16 +90,16 @@ public class ImapServiceTest {
         when(Session.getInstance(Mockito.any(), Mockito.any())).thenReturn(mockedSession);
         doReturn(imapStore).when(mockedSession).getStore(Mockito.anyString());
 
-        isotopeApiConfiguration = Mockito.mock(IsotopeApiConfiguration.class);
+        appConfiguration = Mockito.mock(AppConfiguration.class);
         mailSSLSocketFactory = Mockito.mock(MailSSLSocketFactory.class);
         credentialsService = Mockito.mock(CredentialsService.class);
 
-        imapService = new ImapService(isotopeApiConfiguration, mailSSLSocketFactory, credentialsService);
+        imapService = new ImapService(appConfiguration, mailSSLSocketFactory, credentialsService);
     }
 
     @After
     public void tearDown() {
-        isotopeApiConfiguration = null;
+        appConfiguration = null;
         mailSSLSocketFactory = null;
         credentialsService = null;
 

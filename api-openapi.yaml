@@ -745,6 +745,9 @@ components:
           type: string
         salt:
           type: string
+          default: none
+          description: не используется сервером, в будущем будет удалено
+          deprecated: true
     LoginRequestDto:
       required:
         - password

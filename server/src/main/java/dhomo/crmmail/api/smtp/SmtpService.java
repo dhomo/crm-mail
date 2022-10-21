@@ -57,7 +57,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static dhomo.crmmail.api.configuration.IsotopeApiConfiguration.DEFAULT_CONNECTION_TIMEOUT;
+import static dhomo.crmmail.api.configuration.AppConfiguration.DEFAULT_CONNECTION_TIMEOUT;
 import static dhomo.crmmail.api.exception.AuthenticationException.Type.SMTP;
 import static dhomo.crmmail.api.folder.FolderResource.REL_DOWNLOAD;
 import static dhomo.crmmail.api.message.Message.HEADER_IN_REPLY_TO;

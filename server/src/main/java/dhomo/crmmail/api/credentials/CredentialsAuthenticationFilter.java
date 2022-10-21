@@ -55,7 +55,8 @@ public class CredentialsAuthenticationFilter extends GenericFilterBean {
             throws IOException, ServletException {
         final HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         final HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-        if (!requestMatcher.matches(httpServletRequest) || authenticate(httpServletRequest)) {
+        if (!requestMatcher.matches(httpServletRequest)
+                || authenticate(httpServletRequest)) {
             chain.doFilter(request, response);
         } else {
             httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
@@ -69,6 +70,7 @@ public class CredentialsAuthenticationFilter extends GenericFilterBean {
     private boolean authenticate(HttpServletRequest httpServletRequest) {
         try {
             final Credentials credentials = credentialsService.fromRequest(httpServletRequest);
+            credentials.setAuthenticated(true);
             SecurityContextHolder.getContext().setAuthentication(credentials);
             return true;
         } catch (Exception ex) {

@@ -16,7 +16,7 @@
  */
 package dhomo.crmmail.api;
 
-import dhomo.crmmail.api.configuration.IsotopeApiConfiguration;
+import dhomo.crmmail.api.configuration.AppConfiguration;
 import dhomo.crmmail.api.configuration.SSLConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Import;
 import java.security.Security;
 
 @SpringBootApplication(exclude = {HypermediaAutoConfiguration.class})
-@Import({IsotopeApiConfiguration.class, SSLConfiguration.class})
+@Import({AppConfiguration.class, SSLConfiguration.class})
 public class IsotopeApiApplication {
 
 	public static void main(String[] args) {

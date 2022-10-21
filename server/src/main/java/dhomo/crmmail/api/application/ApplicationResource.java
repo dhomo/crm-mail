@@ -20,25 +20,29 @@
  */
 package dhomo.crmmail.api.application;
 
-import dhomo.crmmail.api.configuration.IsotopeApiConfiguration;
+import dhomo.crmmail.api.configuration.AppConfiguration;
 import dhomo.crmmail.api.credentials.Credentials;
+import dhomo.crmmail.api.credentials.CredentialsRepository;
+import dhomo.crmmail.api.credentials.CredentialsService;
+import dhomo.crmmail.api.dto.LoginResponseDto;
+import dhomo.crmmail.api.dto.UserCredentialsDto;
+import dhomo.crmmail.api.dto.LoginRequestDto;
+import dhomo.crmmail.api.exception.AuthenticationException;
+import dhomo.crmmail.api.exception.IsotopeException;
 import dhomo.crmmail.api.folder.FolderResource;
 import dhomo.crmmail.api.imap.ImapService;
 import dhomo.crmmail.api.smtp.SmtpResource;
 import dhomo.crmmail.api.smtp.SmtpService;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Collections;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -48,6 +52,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * Created by Marc Nuri <marc@marcnuri.com> on 2018-08-15.
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(path = "/api/v1/application")
 public class ApplicationResource {
 
@@ -68,16 +73,13 @@ public class ApplicationResource {
     private static final String REL_FOLDERS_MESSAGE_SEEN_BULK = "folders.message.seen.bulk";
     private static final String REL_SMTP = "smtp";
 
-    private final IsotopeApiConfiguration configuration;
+    private final AppConfiguration configuration;
     private final ImapService imapService;
     private final SmtpService smtpService;
+    private final CredentialsService credentialsService;
+    private final ModelMapper mapper;
+    private final CredentialsRepository credentialsRepository;
 
-    @Autowired
-    public ApplicationResource(IsotopeApiConfiguration configuration, ImapService imapService, SmtpService smtpService) {
-        this.configuration = configuration;
-        this.imapService = imapService;
-        this.smtpService = smtpService;
-    }
 
     @GetMapping(path = "/configuration", produces = MediaTypes.HAL_JSON_VALUE)
     public ResponseEntity<ConfigurationDto> getConfiguration() {
@@ -86,18 +88,46 @@ public class ApplicationResource {
     }
 
     @PostMapping(path = "/login", produces = MediaTypes.HAL_JSON_VALUE)
-    public ResponseEntity<Credentials> login(
-            @Validated(Credentials.Login.class) @RequestBody Credentials credentials) {
+    public ResponseEntity<LoginResponseDto> login(
+            @Validated() @RequestBody LoginRequestDto loginRequestDto) {
 
         log.info("User logging into application");
-        final Credentials encryptedCredentials = imapService.checkCredentials(credentials);
+        var credentials = credentialsService.findCredential(loginRequestDto.getUser());
+        credentials.setPassword(loginRequestDto.getPassword());
+        imapService.checkCredentials(credentials);
         smtpService.checkCredentials(credentials);
-        SecurityContextHolder.getContext().setAuthentication(encryptedCredentials);
-        return ResponseEntity.ok(encryptedCredentials);
+        try {
+//            final Credentials encryptedCredentials = credentialsService.encrypt(credentials);
+//            пока не понял нужно ли
+//            SecurityContextHolder.getContext().setAuthentication(encryptedCredentials);
+
+            var loginResponseDto = new LoginResponseDto();
+            loginResponseDto.setEncrypted(credentialsService.encrypt(credentials));
+            loginResponseDto.setSalt("none");
+            return ResponseEntity.ok(loginResponseDto);
+        } catch (IOException ex){
+            throw new IsotopeException("Internal error", ex);
+        }
     }
 
+//    добавляем юзера в список тех кому разрешен доступ, но не проверяем т.к. пароля не знаем и не храним
+    @PutMapping(path = "/users/")
+    public ResponseEntity putUser(@Validated() @RequestBody UserCredentialsDto userCredentialsDto) {
+
+        log.info("Create or update user email credentials");
+        try {
+            var credentials = mapper.map(userCredentialsDto, Credentials.class);
+
+            credentialsRepository.saveAndFlush(credentials);
+            return ResponseEntity.ok("");
+        } catch (RuntimeException ex){
+            throw new AuthenticationException("Invalid credentials", ex);
+        }
+    }
+
+
     @SuppressWarnings("ConstantConditions")
-    private ConfigurationDto toDto(IsotopeApiConfiguration configuration) {
+    private ConfigurationDto toDto(AppConfiguration configuration) {
         final ConfigurationDto ret = new ConfigurationDto();
         ret.setGoogleAnalyticsTrackingId(configuration.getGoogleAnalyticsTrackingId());
         ret.add(linkTo(methodOn(ApplicationResource.class)

@@ -89,9 +89,9 @@ public class WebConfiguration implements WebMvcConfigurer, AsyncConfigurer {
     @Scope(SCOPE_PROTOTYPE)
     @Qualifier(IMAP_SERVICE_PROTOTYPE)
     public ImapService imapService(
-            IsotopeApiConfiguration isotopeApiConfiguration, MailSSLSocketFactory mailSSLSocketFactory,
+            AppConfiguration appConfiguration, MailSSLSocketFactory mailSSLSocketFactory,
             CredentialsService credentialsService) {
 
-        return new ImapService(isotopeApiConfiguration, mailSSLSocketFactory, credentialsService);
+        return new ImapService(appConfiguration, mailSSLSocketFactory, credentialsService);
     }
 }

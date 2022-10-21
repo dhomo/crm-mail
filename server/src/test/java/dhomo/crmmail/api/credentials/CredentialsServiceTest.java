@@ -22,9 +22,7 @@ package dhomo.crmmail.api.credentials;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dhomo.crmmail.api.configuration.IsotopeApiConfiguration;
-import dhomo.crmmail.api.credentials.Credentials;
-import dhomo.crmmail.api.credentials.CredentialsService;
+import dhomo.crmmail.api.configuration.AppConfiguration;
 import dhomo.crmmail.api.exception.AuthenticationException;
 import org.junit.After;
 import org.junit.Before;
@@ -59,15 +57,16 @@ import static org.mockito.Mockito.doThrow;
 public class CredentialsServiceTest {
 
     private CredentialsService credentialsService;
-
+    @MockBean
+    private CredentialsRepository credentialsRepository;
     @MockBean
     private ObjectMapper objectMapper;
     @MockBean
-    private IsotopeApiConfiguration isotopeApiConfiguration;
+    private AppConfiguration appConfiguration;
 
     @Before
     public void setUp() {
-        credentialsService = new CredentialsService(objectMapper, isotopeApiConfiguration);
+        credentialsService = new CredentialsService(objectMapper, appConfiguration, credentialsRepository);
     }
 
     @After
@@ -81,7 +80,7 @@ public class CredentialsServiceTest {
     public void checkHost_trustedHost_shouldNotThrowException() {
         // Given
         final String trustedHost = "broken.trust.tom";
-        doReturn(Stream.of(trustedHost).collect(Collectors.toSet())).when(isotopeApiConfiguration).getTrustedHosts();
+        doReturn(Stream.of(trustedHost).collect(Collectors.toSet())).when(appConfiguration).getTrustedHosts();
         final Credentials toTest = new Credentials();
         toTest.setServerHost(trustedHost);
 
@@ -96,7 +95,7 @@ public class CredentialsServiceTest {
     public void checkHost_emptyTrustedHostConfiguration_shouldNotThrowException() {
         // Given
         final String trustedHost = "broken.trust.tom";
-        doReturn(Collections.emptySet()).when(isotopeApiConfiguration).getTrustedHosts();
+        doReturn(Collections.emptySet()).when(appConfiguration).getTrustedHosts();
         final Credentials toTest = new Credentials();
         toTest.setServerHost("trust.issues.com");
 
@@ -111,7 +110,7 @@ public class CredentialsServiceTest {
     public void checkHost_notTrustedHost_shouldThrowException() {
         // Given
         final String trustedHost = "borken.trust.tom";
-        doReturn(Stream.of(trustedHost).collect(Collectors.toSet())).when(isotopeApiConfiguration).getTrustedHosts();
+        doReturn(Stream.of(trustedHost).collect(Collectors.toSet())).when(appConfiguration).getTrustedHosts();
         final Credentials toTest = new Credentials();
         toTest.setServerHost("trust.issues.com");
 
@@ -128,9 +127,9 @@ public class CredentialsServiceTest {
     @Test
     public void refreshCredentials_validCredentialsAboutToExpire_shouldWriteResponseHeaders() throws Exception {
         // Given
-        doReturn(Duration.ofMillis(1337L)).when(isotopeApiConfiguration).getCredentialsDuration();
-        doReturn("I'M SECRET").when(isotopeApiConfiguration).getEncryptionPassword();
-        doReturn(Duration.ofMinutes(5L)).when(isotopeApiConfiguration).getCredentialsRefreshBeforeDuration();
+        doReturn(Duration.ofMillis(1337L)).when(appConfiguration).getCredentialsDuration();
+        doReturn("I'M SECRET").when(appConfiguration).getEncryptionPassword();
+        doReturn(Duration.ofMinutes(5L)).when(appConfiguration).getCredentialsRefreshBeforeDuration();
         doReturn("{}").when(objectMapper).writeValueAsString(Mockito.any(Credentials.class));
 
         final HttpServletResponse response = new MockHttpServletResponse();
@@ -148,9 +147,9 @@ public class CredentialsServiceTest {
     @Test
     public void refreshCredentials_validCredentialsJustCreated_shouldNotWriteResponseHeaders() throws Exception {
         // Given
-        doReturn(Duration.ofMillis(1337L)).when(isotopeApiConfiguration).getCredentialsDuration();
-        doReturn("I'M SECRET").when(isotopeApiConfiguration).getEncryptionPassword();
-        doReturn(Duration.ofMinutes(5L)).when(isotopeApiConfiguration).getCredentialsRefreshBeforeDuration();
+        doReturn(Duration.ofMillis(1337L)).when(appConfiguration).getCredentialsDuration();
+        doReturn("I'M SECRET").when(appConfiguration).getEncryptionPassword();
+        doReturn(Duration.ofMinutes(5L)).when(appConfiguration).getCredentialsRefreshBeforeDuration();
         doReturn("{}").when(objectMapper).writeValueAsString(Mockito.any(Credentials.class));
 
         final HttpServletResponse response = new MockHttpServletResponse();
@@ -168,9 +167,9 @@ public class CredentialsServiceTest {
     @Test
     public void refreshCredentials_invalidCredentialsAboutToExpire_shouldNotWriteResponseHeaders() throws Exception {
         // Given
-        doReturn(Duration.ofMillis(1337L)).when(isotopeApiConfiguration).getCredentialsDuration();
-        doReturn("I'M SECRET").when(isotopeApiConfiguration).getEncryptionPassword();
-        doReturn(Duration.ofMinutes(15)).when(isotopeApiConfiguration).getCredentialsRefreshBeforeDuration();
+        doReturn(Duration.ofMillis(1337L)).when(appConfiguration).getCredentialsDuration();
+        doReturn("I'M SECRET").when(appConfiguration).getEncryptionPassword();
+        doReturn(Duration.ofMinutes(15)).when(appConfiguration).getCredentialsRefreshBeforeDuration();
         doThrow(JsonProcessingException.class).when(objectMapper).writeValueAsString(Mockito.any(Credentials.class));
         final HttpServletResponse response = new MockHttpServletResponse();
         final Credentials credentials = new Credentials();

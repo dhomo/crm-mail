@@ -43,7 +43,7 @@ import java.util.stream.Stream;
 @ComponentScan("dhomo.crmmail.api")
 @EnableConfigurationProperties(ServerProperties.class)
 @Import({WebConfiguration.class})
-public class IsotopeApiConfiguration {
+public class AppConfiguration {
 
     public static final int DEFAULT_CONNECTION_TIMEOUT = 5000;
     @SuppressWarnings("squid:S2068")
@@ -60,6 +60,7 @@ public class IsotopeApiConfiguration {
     private static final String GOOGLE_ANALYTICS_TRACKING_ID = "GOOGLE_ANALYTICS_TRACKING_ID";
 
     public static final String CREDENTIALS_SALT = "SALT";
+    public static final String CREDENTIALS_SALT_DEFAULT = KeyGenerators.string().generateKey();
 
     public static final String CREDENTIALS_DURATION_MINUTES = "CREDENTIALS_DURATION_MINUTES";
     private static final long CREDENTIALS_DURATION_MINUTES_DEFAULT = 15;
@@ -70,7 +71,7 @@ public class IsotopeApiConfiguration {
     private final Environment environment;
 
     @Autowired
-    public IsotopeApiConfiguration(Environment environment) {
+    public AppConfiguration(Environment environment) {
         this.environment = environment;
     }
 
@@ -110,6 +111,6 @@ public class IsotopeApiConfiguration {
     }
 
     public String getSalt(){
-        return environment.getProperty(CREDENTIALS_SALT, KeyGenerators.string().generateKey());
+        return environment.getProperty(CREDENTIALS_SALT, CREDENTIALS_SALT_DEFAULT);
     }
 }

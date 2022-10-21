@@ -20,7 +20,7 @@
  */
 package dhomo.crmmail.api.imap;
 
-import dhomo.crmmail.api.configuration.IsotopeApiConfiguration;
+import dhomo.crmmail.api.configuration.AppConfiguration;
 import dhomo.crmmail.api.credentials.Credentials;
 import dhomo.crmmail.api.credentials.CredentialsService;
 import dhomo.crmmail.api.exception.AuthenticationException;
@@ -73,7 +73,7 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static dhomo.crmmail.api.configuration.IsotopeApiConfiguration.DEFAULT_CONNECTION_TIMEOUT;
+import static dhomo.crmmail.api.configuration.AppConfiguration.DEFAULT_CONNECTION_TIMEOUT;
 import static dhomo.crmmail.api.exception.AuthenticationException.Type.IMAP;
 import static dhomo.crmmail.api.folder.FolderResource.addLinks;
 import static dhomo.crmmail.api.folder.FolderUtils.addSystemFolders;
@@ -103,35 +103,30 @@ public class ImapService {
     static final int DEFAULT_INITIAL_MESSAGES_BATCH_SIZE = 20;
     static final int DEFAULT_MAX_MESSAGES_BATCH_SIZE = 640;
 
-    private final IsotopeApiConfiguration isotopeApiConfiguration;
+    private final AppConfiguration appConfiguration;
     private final MailSSLSocketFactory mailSSLSocketFactory;
-    private final CredentialsService credentialsService;
 
     private IMAPStore imapStore;
 
     @Autowired
     public ImapService(
-            IsotopeApiConfiguration isotopeApiConfiguration, MailSSLSocketFactory mailSSLSocketFactory,
+            AppConfiguration appConfiguration, MailSSLSocketFactory mailSSLSocketFactory,
             CredentialsService credentialsService) {
 
-        this.isotopeApiConfiguration = isotopeApiConfiguration;
+        this.appConfiguration = appConfiguration;
         this.mailSSLSocketFactory = mailSSLSocketFactory;
-        this.credentialsService = credentialsService;
     }
 
     /**
-     * Checks if specified {@link Credentials} are valid and returns a new Credentials object with
-     * encrypted values.
+     * Checks if specified {@link Credentials} are valid
      *
      * @param credentials to validate
-     * @return credentials object with encrypted values
+     * @throws AuthenticationException if credentials are not valid
      */
-    public Credentials checkCredentials(Credentials credentials) {
+    public void checkCredentials(Credentials credentials) {
         try {
-            credentialsService.checkHost(credentials);
             getImapStore(credentials).getDefaultFolder();
-            return credentialsService.encrypt(credentials);
-        } catch (MessagingException | IOException e) {
+        } catch (MessagingException e) {
             throw new AuthenticationException(IMAP);
         }
     }
@@ -593,7 +588,7 @@ public class ImapService {
                     && bp instanceof MimeBodyPart
                     && ((MimeBodyPart) bp).getContentID() != null) {
                 // If image is "not too big" embed as base64 data uri - successive IMAP connections will be more expensive
-                if (bp.getSize() <= isotopeApiConfiguration.getEmbeddedImageSizeThreshold()) {
+                if (bp.getSize() <= appConfiguration.getEmbeddedImageSizeThreshold()) {
                     finalMessage.setContent(replaceEmbeddedImage(finalMessage.getContent(), (MimeBodyPart)bp));
                 } else {
                     attachments.add(new Attachment(

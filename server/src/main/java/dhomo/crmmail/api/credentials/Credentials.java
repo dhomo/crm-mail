@@ -23,12 +23,19 @@ package dhomo.crmmail.api.credentials;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.Collections;
@@ -39,31 +46,43 @@ import java.util.Objects;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true, value = {"authorities"})
+@Entity
+@Getter
+@Setter
 public class Credentials extends AbstractAuthenticationToken implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = -3763522029969923952L;
 
     private static final GrantedAuthority ISOTOPE_USER = new SimpleGrantedAuthority("ISOTOPE_USER");
 
-    private String encrypted;
-    private String salt;
     @NotNull(groups=Login.class)
     private String serverHost;
+
     @NotNull(groups=Login.class)
     @Positive(groups=Login.class)
     private Integer serverPort;
-    @NotNull(groups=Login.class)
+
+    @Id @NotNull(groups=Login.class)
+    @Column(name = "user_name")
     private String user;
+
+    @Transient
     @NotNull(groups=Login.class)
     private String password;
+
     @NotNull(groups=Login.class)
     private Boolean imapSsl;
+
     private String smtpHost;
+
     @NotNull(groups=Login.class)
     @Positive(groups=Login.class)
     private Integer smtpPort;
+
     @NotNull(groups=Login.class)
     private Boolean smtpSsl;
+
     private ZonedDateTime expiryDate;
 
     @JsonCreator
@@ -82,103 +101,13 @@ public class Credentials extends AbstractAuthenticationToken implements Serializ
     }
 
 
-    public String getEncrypted() {
-        return encrypted;
-    }
-
-    public void setEncrypted(String encrypted) {
-        this.encrypted = encrypted;
-    }
-
-    public String getSalt() {
-        return salt;
-    }
-
-    public void setSalt(String salt) {
-        this.salt = salt;
-    }
-
-    public String getServerHost() {
-        return serverHost;
-    }
-
-    public void setServerHost(String serverHost) {
-        this.serverHost = serverHost;
-    }
-
-    public Integer getServerPort() {
-        return serverPort;
-    }
-
-    public void setServerPort(Integer serverPort) {
-        this.serverPort = serverPort;
-    }
-
-    public String getUser() {
-        return user;
-    }
-
-    public void setUser(String user) {
-        this.user = user;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Boolean getImapSsl() {
-        return imapSsl;
-    }
-
-    public void setImapSsl(Boolean imapSsl) {
-        this.imapSsl = imapSsl;
-    }
-
-    public String getSmtpHost() {
-        return smtpHost;
-    }
-
-    public void setSmtpHost(String smtpHost) {
-        this.smtpHost = smtpHost;
-    }
-
-    public Integer getSmtpPort() {
-        return smtpPort;
-    }
-
-    public void setSmtpPort(Integer smtpPort) {
-        this.smtpPort = smtpPort;
-    }
-
-    public Boolean getSmtpSsl() {
-        return smtpSsl;
-    }
-
-    public void setSmtpSsl(Boolean smtpSsl) {
-        this.smtpSsl = smtpSsl;
-    }
-
-    public ZonedDateTime getExpiryDate() {
-        return expiryDate;
-    }
-
-    public void setExpiryDate(ZonedDateTime expiryDate) {
-        this.expiryDate = expiryDate;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Credentials that = (Credentials) o;
-        return Objects.equals(encrypted, that.encrypted) &&
-                Objects.equals(salt, that.salt) &&
-                Objects.equals(serverHost, that.serverHost) &&
+        return  Objects.equals(serverHost, that.serverHost) &&
                 Objects.equals(serverPort, that.serverPort) &&
                 Objects.equals(user, that.user) &&
                 Objects.equals(password, that.password) &&
@@ -191,8 +120,7 @@ public class Credentials extends AbstractAuthenticationToken implements Serializ
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(super.hashCode(), encrypted, salt, serverHost, serverPort, user, password, imapSsl, smtpHost, smtpPort, smtpSsl, expiryDate);
+        return Objects.hash(super.hashCode(), serverHost, serverPort, user, password, imapSsl, smtpHost, smtpPort, smtpSsl, expiryDate);
     }
 
     /**

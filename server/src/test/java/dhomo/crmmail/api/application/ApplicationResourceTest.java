@@ -20,7 +20,7 @@
  */
 package dhomo.crmmail.api.application;
 
-import dhomo.crmmail.api.configuration.IsotopeApiConfiguration;
+import dhomo.crmmail.api.configuration.AppConfiguration;
 import dhomo.crmmail.api.imap.ImapService;
 import dhomo.crmmail.api.smtp.SmtpService;
 import org.junit.After;
@@ -60,7 +60,7 @@ public class ApplicationResourceTest {
     @Autowired
     private ApplicationResource applicationResource;
     @MockBean
-    private IsotopeApiConfiguration isotopeApiConfiguration;
+    private AppConfiguration appConfiguration;
     @MockBean(name = IMAP_SERVICE_PROTOTYPE)
     private ImapService imapService;
     @MockBean
@@ -81,7 +81,7 @@ public class ApplicationResourceTest {
     @Test
     public void getConfiguration_na_shouldReturnOk() throws Exception {
         // Given
-        // Untouched IsotopeApiConfiguration
+        // Untouched AppConfiguration
         // When
         final ResultActions result = mockMvc.perform(get("/api/v1/application/configuration")
                 .accept(MediaTypes.HAL_JSON_VALUE));
@@ -114,7 +114,7 @@ public class ApplicationResourceTest {
     @Test
     public void getConfiguration_optionalEnvVariablesSet_shouldReturnOk() throws Exception {
         // Given
-        doReturn("UA-1337-33").when(isotopeApiConfiguration).getGoogleAnalyticsTrackingId();
+        doReturn("UA-1337-33").when(appConfiguration).getGoogleAnalyticsTrackingId();
         // When
         final ResultActions result = mockMvc.perform(get("/api/v1/application/configuration")
                 .accept(MediaTypes.HAL_JSON_VALUE));

@@ -41,7 +41,7 @@ import java.util.List;
  */
 @SuppressWarnings("unchecked")
 @ControllerAdvice(basePackageClasses = IsotopeApiApplication.class)
-public class IsotopeControllerAdvice extends ResponseEntityExceptionHandler {
+public class CustomControllerAdvice extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(IsotopeException.class)
     public <T extends IsotopeException> ResponseEntity<String> handleIsotopeException(T exception) {

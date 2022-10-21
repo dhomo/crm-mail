@@ -13,26 +13,64 @@ services:
     volumes:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
 
   crm-server:
     build:
       context: ./server
+    image: crm-server
+    depends_on:
+      - crm-db
     ports:
       # порт для отладки
       - "5005:5005"
       # порт для доступа к бэкенду снаружи
       - "9010:9010"
+    env_file:
+      - server.env
+    environment:
+      DB_USERNAME: "postgres"
+      DB_PASSWORD: "db_pass"
     labels:
       - "traefik.http.routers.crm-server.rule=PathPrefix(`/api`)"
       - "traefik.http.services.crm-server.loadbalancer.server.port=9010"
     command: java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -jar /opt/app.jar
+    restart: unless-stopped
 
   crm-client:
     build:
       context: ./client
+    image: crm-client
     # если нужен порт для доступа к фронтенду снаружи то разкоментить 
     # ports:
     #   - "8081:80"
     labels:
       - "traefik.http.routers.crm-client.rule=PathPrefix(`/`)"
       - "traefik.http.services.crm-client.loadbalancer.server.port=9009"
+    restart: unless-stopped
+
+
+  crm-db:
+    image: postgres:14-alpine
+    environment:
+      POSTGRES_DB: "postgres"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "db_pass"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+#      - ../2. Init Database:/docker-entrypoint-initdb.d
+      - ./postgresql:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G

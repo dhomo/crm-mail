@@ -20,7 +20,6 @@
  */
 package dhomo.crmmail.api.configuration;
 
-import dhomo.crmmail.api.configuration.IsotopeApiConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -38,12 +37,12 @@ import static org.mockito.Mockito.doReturn;
 public class IsotopeApiConfigurationTest {
 
     private Environment environment;
-    private IsotopeApiConfiguration istotopeApiConfiguration;
+    private AppConfiguration istotopeApiConfiguration;
 
     @Before
     public void setUp() {
         environment = Mockito.mock(Environment.class);
-        istotopeApiConfiguration = new IsotopeApiConfiguration(environment);
+        istotopeApiConfiguration = new AppConfiguration(environment);
     }
 
     @Test
