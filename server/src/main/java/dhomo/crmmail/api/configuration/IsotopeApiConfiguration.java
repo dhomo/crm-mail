@@ -27,6 +27,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
+import org.springframework.security.crypto.keygen.KeyGenerators;
 
 import java.time.Duration;
 import java.time.temporal.TemporalAmount;
@@ -59,7 +60,6 @@ public class IsotopeApiConfiguration {
     private static final String GOOGLE_ANALYTICS_TRACKING_ID = "GOOGLE_ANALYTICS_TRACKING_ID";
 
     public static final String CREDENTIALS_SALT = "SALT";
-    public static final String CREDENTIALS_SALT_DEFAULT_VALUE = "default_salt_123456789";
 
     public static final String CREDENTIALS_DURATION_MINUTES = "CREDENTIALS_DURATION_MINUTES";
     private static final long CREDENTIALS_DURATION_MINUTES_DEFAULT = 15;
@@ -110,6 +110,6 @@ public class IsotopeApiConfiguration {
     }
 
     public String getSalt(){
-        return environment.getProperty(CREDENTIALS_SALT, CREDENTIALS_SALT_DEFAULT_VALUE);
+        return environment.getProperty(CREDENTIALS_SALT, KeyGenerators.string().generateKey());
     }
 }
