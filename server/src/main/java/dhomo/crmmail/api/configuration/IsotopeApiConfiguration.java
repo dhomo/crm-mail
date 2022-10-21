@@ -58,8 +58,14 @@ public class IsotopeApiConfiguration {
 
     private static final String GOOGLE_ANALYTICS_TRACKING_ID = "GOOGLE_ANALYTICS_TRACKING_ID";
 
-    private static final int CREDENTIALS_DURATION_MINUTES = 15;
-    private static final int CREDENTIALS_REFRESH_BEFORE_DURATION_MINUTES = 10;
+    public static final String CREDENTIALS_SALT = "SALT";
+    public static final String CREDENTIALS_SALT_DEFAULT_VALUE = "default_salt_123456789";
+
+    public static final String CREDENTIALS_DURATION_MINUTES = "CREDENTIALS_DURATION_MINUTES";
+    private static final long CREDENTIALS_DURATION_MINUTES_DEFAULT = 15;
+
+    public static final String CREDENTIALS_REFRESH_BEFORE_DURATION_MINUTES = "CREDENTIALS_REFRESH_BEFORE_DURATION_MINUTES";
+    private static final long CREDENTIALS_REFRESH_BEFORE_DURATION_MINUTES_DEFAULT = 10;
 
     private final Environment environment;
 
@@ -94,11 +100,16 @@ public class IsotopeApiConfiguration {
     }
 
     public TemporalAmount getCredentialsDuration() {
-        return Duration.ofMinutes(CREDENTIALS_DURATION_MINUTES);
+        return Duration.ofMinutes(environment.getProperty(CREDENTIALS_DURATION_MINUTES, Long.class,
+                CREDENTIALS_DURATION_MINUTES_DEFAULT));
     }
 
     public TemporalAmount getCredentialsRefreshBeforeDuration() {
-        return Duration.ofMinutes(CREDENTIALS_REFRESH_BEFORE_DURATION_MINUTES);
+        return Duration.ofMinutes(environment.getProperty(CREDENTIALS_REFRESH_BEFORE_DURATION_MINUTES, Long.class,
+                CREDENTIALS_REFRESH_BEFORE_DURATION_MINUTES_DEFAULT));
     }
 
+    public String getSalt(){
+        return environment.getProperty(CREDENTIALS_SALT, CREDENTIALS_SALT_DEFAULT_VALUE);
+    }
 }
