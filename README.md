@@ -16,6 +16,7 @@ Just run the following commands:
 
 ```
 git clone https://github.com/dhomo/crm-mail.git
+cd crm-mail
 cp server.env.sample server.env
 docker-compose up -d
 ```
