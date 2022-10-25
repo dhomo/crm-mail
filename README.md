@@ -22,6 +22,7 @@ docker-compose up -d
 for windows:
 ```
 git clone https://github.com/dhomo/crm-mail.git
+cd crm-mail
 copy server.env.sample server.env
 docker-compose up -d
 ```
