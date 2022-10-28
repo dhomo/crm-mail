@@ -35,35 +35,35 @@ import static org.mockito.Mockito.doReturn;
  * Created by Marc Nuri <marc@marcnuri.com> on 2019-07-28.
  */
 public class IsotopeApiConfigurationTest {
+//
+//    private Environment environment;
+//    private AppConfiguration istotopeApiConfiguration;
+//
+//    @Before
+//    public void setUp() {
+//        environment = Mockito.mock(Environment.class);
+//        istotopeApiConfiguration = new AppConfiguration(environment);
+//    }
+//
+//    @Test
+//    public void getEncryptionPassword_envVariableSet_shouldReturnEnvValue() {
+//        // Given
+//        doReturn("1234").when(environment)
+//                .getProperty(eq("ENCRYPTION_PASSWORD"), anyString());
+//        // When
+//        final String result = istotopeApiConfiguration.getEncryptionPassword();
+//        // Then
+//        assertThat(result, is("1234"));
+//    }
 
-    private Environment environment;
-    private AppConfiguration istotopeApiConfiguration;
-
-    @Before
-    public void setUp() {
-        environment = Mockito.mock(Environment.class);
-        istotopeApiConfiguration = new AppConfiguration(environment);
-    }
-
-    @Test
-    public void getEncryptionPassword_envVariableSet_shouldReturnEnvValue() {
-        // Given
-        doReturn("1234").when(environment)
-                .getProperty(eq("ENCRYPTION_PASSWORD"), anyString());
-        // When
-        final String result = istotopeApiConfiguration.getEncryptionPassword();
-        // Then
-        assertThat(result, is("1234"));
-    }
-
-    @Test
-    public void getGoogleAnalyticsTrackingId_envVariableSet_shouldReturnEnvValue() {
-        // Given
-        doReturn("UA-1337-33").when(environment).getProperty(eq("GOOGLE_ANALYTICS_TRACKING_ID"));
-        // When
-        final String result = istotopeApiConfiguration.getGoogleAnalyticsTrackingId();
-        // Then
-        assertThat(result, is("UA-1337-33"));
-    }
+//    @Test
+//    public void getGoogleAnalyticsTrackingId_envVariableSet_shouldReturnEnvValue() {
+//        // Given
+//        doReturn("UA-1337-33").when(environment).getProperty(eq("GOOGLE_ANALYTICS_TRACKING_ID"));
+//        // When
+//        final String result = istotopeApiConfiguration.getGoogleAnalyticsTrackingId();
+//        // Then
+//        assertThat(result, is("UA-1337-33"));
+//    }
 
 }

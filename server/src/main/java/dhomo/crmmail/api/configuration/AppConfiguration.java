@@ -20,97 +20,52 @@
  */
 package dhomo.crmmail.api.configuration;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.Getter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.core.env.Environment;
+
 import org.springframework.security.crypto.keygen.KeyGenerators;
 
 import java.time.Duration;
 import java.time.temporal.TemporalAmount;
 import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Created by Marc Nuri <marc@marcnuri.com> on 2018-08-08.
  */
 @Configuration
-@ComponentScan("dhomo.crmmail.api")
-@EnableConfigurationProperties(ServerProperties.class)
-@Import({WebConfiguration.class})
+//@ComponentScan("dhomo.crmmail.api")
+//@EnableConfigurationProperties(ServerProperties.class)
+//@Import({WebConfiguration.class})
+@Getter
 public class AppConfiguration {
 
     public static final int DEFAULT_CONNECTION_TIMEOUT = 5000;
-    @SuppressWarnings("squid:S2068")
-    private static final String ENCRYPTION_PASSWORD = "ENCRYPTION_PASSWORD";
-    @SuppressWarnings("squid:S2068")
-    private static final String ENCRYPTION_PASSWORD_DEFAULT = "THIS IS THE ENCRYPTION PASSWORD DEFAULT " +
-            "IN ORDER TO HAVE REAL SECURITY IT SHOULD BE REPLACED USING 'ENCRYPTION_PASSWORD' ENVIRONMENT VARIABLE";
 
-    private static final String TRUSTED_HOSTS = "TRUSTED_HOSTS";
+    @Value("${ENCRYPTION_PASSWORD:THIS IS PASSWORD DEFAULT. IT SHOULD BE REPLACED USING ENV VARIABLE\"}")
+    private String encryptionPassword;
 
-    private static final String EMBEDDED_IMAGE_SIZE_THRESHOLD = "EMBEDDED_IMAGE_SIZE_THRESHOLD";
-    private static final long EMBEDDED_IMAGE_SIZE_THRESHOLD_DEFAULT_50KB = 51200L;
+    // :#{null} работает так: если переменная окружения не определена, то оставляем предыдущее значение
+    @Value("${TRUSTED_HOSTS:#{null}}")
+    private Set<String> trustedHosts = Collections.emptySet();
 
-    private static final String GOOGLE_ANALYTICS_TRACKING_ID = "GOOGLE_ANALYTICS_TRACKING_ID";
+    @Value("${EMBEDDED_IMAGE_SIZE_THRESHOLD:51200}")
+    private long embeddedImageSizeThreshold;
 
-    public static final String CREDENTIALS_SALT = "SALT";
-    public static final String CREDENTIALS_SALT_DEFAULT = KeyGenerators.string().generateKey();
+    @Value("${CREDENTIALS_SALT:#{null}}")
+    private String salt = KeyGenerators.string().generateKey();
 
-    public static final String CREDENTIALS_DURATION_MINUTES = "CREDENTIALS_DURATION_MINUTES";
-    private static final long CREDENTIALS_DURATION_MINUTES_DEFAULT = 15;
+    private TemporalAmount credentialsDuration;
+    private TemporalAmount credentialsRefreshBeforeDuration ;
 
-    public static final String CREDENTIALS_REFRESH_BEFORE_DURATION_MINUTES = "CREDENTIALS_REFRESH_BEFORE_DURATION_MINUTES";
-    private static final long CREDENTIALS_REFRESH_BEFORE_DURATION_MINUTES_DEFAULT = 10;
 
-    private final Environment environment;
-
-    @Autowired
-    public AppConfiguration(Environment environment) {
-        this.environment = environment;
-    }
-
-    /**
-     * Retrieves the encryption password from the <code>ENCRYPTION_PASSWORD</code> environment variable.
-     *
-     * If no password was specified in an environment variable ENCRYPTION_PASSWORD_DEFAULT will be used by default.
-     *
-     * @return the password for encryption operations
-     */
-    public String getEncryptionPassword() {
-        return environment.getProperty(ENCRYPTION_PASSWORD, ENCRYPTION_PASSWORD_DEFAULT);
-    }
-
-    public Set<String> getTrustedHosts() {
-        final String trustedHosts = environment.getProperty(TRUSTED_HOSTS, "");
-        return trustedHosts.isEmpty() ? Collections.emptySet() :
-                Stream.of(trustedHosts.split("\\,")).map(String::trim).collect(Collectors.toSet());
-    }
-
-    public long getEmbeddedImageSizeThreshold() {
-        return environment.getProperty(EMBEDDED_IMAGE_SIZE_THRESHOLD, Long.class, EMBEDDED_IMAGE_SIZE_THRESHOLD_DEFAULT_50KB);
-    }
-
-    public String getGoogleAnalyticsTrackingId() {
-        return environment.getProperty(GOOGLE_ANALYTICS_TRACKING_ID);
-    }
-
-    public TemporalAmount getCredentialsDuration() {
-        return Duration.ofMinutes(environment.getProperty(CREDENTIALS_DURATION_MINUTES, Long.class,
-                CREDENTIALS_DURATION_MINUTES_DEFAULT));
-    }
-
-    public TemporalAmount getCredentialsRefreshBeforeDuration() {
-        return Duration.ofMinutes(environment.getProperty(CREDENTIALS_REFRESH_BEFORE_DURATION_MINUTES, Long.class,
-                CREDENTIALS_REFRESH_BEFORE_DURATION_MINUTES_DEFAULT));
-    }
-
-    public String getSalt(){
-        return environment.getProperty(CREDENTIALS_SALT, CREDENTIALS_SALT_DEFAULT);
+    public AppConfiguration(@Value("${CREDENTIALS_DURATION_MINUTES:15}") long credentialsDurationMinutes,
+                            @Value("${CREDENTIALS_REFRESH_BEFORE_DURATION_MINUTES:10}") long crRefBeforeDurMinutes) {
+        credentialsDuration = Duration.ofMinutes(credentialsDurationMinutes);
+        credentialsRefreshBeforeDuration = Duration.ofMinutes(crRefBeforeDurMinutes);
     }
 }
