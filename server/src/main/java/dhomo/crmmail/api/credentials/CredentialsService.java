@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Set;
 
 import static dhomo.crmmail.api.exception.AuthenticationException.Type.BLACKLISTED;
@@ -129,6 +130,10 @@ public class CredentialsService {
         var credentials = credentialsRepository.findById(user)
                 .orElseThrow(()->new NotFoundException("User not found"));
         return (credentials);
+    }
+
+    public List<Credentials> getAllCredentials(){
+        return credentialsRepository.findAll();
     }
 
     public void saveCredential(Credentials credentials){

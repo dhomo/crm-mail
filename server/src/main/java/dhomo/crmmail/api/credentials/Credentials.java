@@ -83,6 +83,7 @@ public class Credentials extends AbstractAuthenticationToken implements Serializ
     @NotNull(groups=Login.class)
     private Boolean smtpSsl;
 
+    @Transient
     private ZonedDateTime expiryDate;
 
     @JsonCreator

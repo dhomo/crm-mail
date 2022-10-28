@@ -27,6 +27,7 @@ import dhomo.crmmail.api.credentials.CredentialsService;
 import dhomo.crmmail.api.dto.LoginResponseDto;
 import dhomo.crmmail.api.dto.UserCredentialsDto;
 import dhomo.crmmail.api.dto.LoginRequestDto;
+import dhomo.crmmail.api.dto.UsersSetDto;
 import dhomo.crmmail.api.exception.AuthenticationException;
 import dhomo.crmmail.api.exception.IsotopeException;
 import dhomo.crmmail.api.folder.FolderResource;
@@ -39,11 +40,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -77,8 +81,6 @@ public class ApplicationResource {
     private final ImapService imapService;
     private final SmtpService smtpService;
     private final CredentialsService credentialsService;
-    private final ModelMapper mapper;
-    private final CredentialsRepository credentialsRepository;
 
 
     @GetMapping(path = "/configuration", produces = MediaTypes.HAL_JSON_VALUE)
@@ -109,22 +111,6 @@ public class ApplicationResource {
             throw new IsotopeException("Internal error", ex);
         }
     }
-
-//    добавляем юзера в список тех кому разрешен доступ, но не проверяем т.к. пароля не знаем и не храним
-    @PutMapping(path = "/users/")
-    public ResponseEntity putUser(@Validated() @RequestBody UserCredentialsDto userCredentialsDto) {
-
-        log.info("Create or update user email credentials");
-        try {
-            var credentials = mapper.map(userCredentialsDto, Credentials.class);
-
-            credentialsRepository.saveAndFlush(credentials);
-            return ResponseEntity.ok("");
-        } catch (RuntimeException ex){
-            throw new AuthenticationException("Invalid credentials", ex);
-        }
-    }
-
 
     @SuppressWarnings("ConstantConditions")
     private ConfigurationDto toDto(AppConfiguration configuration) {
