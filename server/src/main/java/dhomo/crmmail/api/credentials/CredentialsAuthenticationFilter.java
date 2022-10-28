@@ -20,17 +20,18 @@
  */
 package dhomo.crmmail.api.credentials;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.web.filter.GenericFilterBean;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -38,32 +39,48 @@ import java.io.IOException;
 /**
  * Created by Marc Nuri <marc@marcnuri.com> on 2019-02-23.
  */
-public class CredentialsAuthenticationFilter extends GenericFilterBean {
+@RequiredArgsConstructor
+@Slf4j
+public class CredentialsAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final Logger log = LoggerFactory.getLogger(CredentialsAuthenticationFilter.class);
-
-    private final CredentialsService credentialsService;
     private final RequestMatcher requestMatcher;
+    private final CredentialsService credentialsService;
 
-    public CredentialsAuthenticationFilter(RequestMatcher requestMatcher, CredentialsService credentialsService) {
-        this.requestMatcher = requestMatcher;
-        this.credentialsService = credentialsService;
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return !requestMatcher.matches(request) || !authenticationIsRequired();
+    }
+
+    private boolean authenticationIsRequired() {
+        // Only reauthenticate if username doesn't match SecurityContextHolder and user
+        // isn't authenticated (see SEC-53)
+        Authentication existingAuth = SecurityContextHolder.getContext().getAuthentication();
+        if (existingAuth == null || !existingAuth.isAuthenticated()) {
+            return true;
+        }
+
+        // Handle unusual condition where an AnonymousAuthenticationToken is already
+        // present. This shouldn't happen very often, as BasicProcessingFitler is meant to
+        // be earlier in the filter chain than AnonymousAuthenticationFilter.
+        // Nevertheless, presence of both an AnonymousAuthenticationToken together with a
+        // BASIC authentication request header should indicate reauthentication using the
+        // BASIC protocol is desirable. This behaviour is also consistent with that
+        // provided by form and digest, both of which force re-authentication if the
+        // respective header is detected (and in doing so replace/ any existing
+        // AnonymousAuthenticationToken). See SEC-610.
+        return (existingAuth instanceof AnonymousAuthenticationToken);
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
-        final HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-        final HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-        if (!requestMatcher.matches(httpServletRequest)
-                || authenticate(httpServletRequest)) {
-            chain.doFilter(request, response);
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        if (authenticate(request)) {
+            filterChain.doFilter(request, response);
         } else {
-            httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
-            httpServletResponse.setContentType("text/html");
-            httpServletResponse.getWriter().write("Unauthorized\n");
-            httpServletResponse.getWriter().close();
-            httpServletResponse.flushBuffer();
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setContentType("text/html");
+            response.getWriter().write("Unauthorized\n");
+            response.getWriter().close();
+            response.flushBuffer();
         }
     }
 

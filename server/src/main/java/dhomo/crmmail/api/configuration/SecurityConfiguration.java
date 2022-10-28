@@ -23,12 +23,21 @@ package dhomo.crmmail.api.configuration;
 import dhomo.crmmail.api.credentials.CredentialsAuthenticationFilter;
 import dhomo.crmmail.api.credentials.CredentialsRefreshFilter;
 import dhomo.crmmail.api.credentials.CredentialsService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
@@ -41,17 +50,38 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
  */
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfiguration {
 
     private static final String ACTUATOR_REGEX = "(/api)?/actuator/health";
     private static final String CONFIGURATION_REGEX = "(/api)?/v1/application/configuration";
     private static final String LOGIN_REGEX = "(/api)?/v1/application/login";
 //    public static final String OPEN_API = "/api-docs.*";
+
     private final CredentialsService credentialsService;
 
-    @Autowired
-    public SecurityConfiguration(CredentialsService credentialsService) {
-        this.credentialsService = credentialsService;
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+    @Bean
+    public UserDetailsService userDetailsService(@Value("${ADMIN_PASS:pass}") String pass) {
+        UserDetails user = User
+                .withUsername("admin")
+                .password(passwordEncoder().encode(pass))
+                .roles("ADMIN")
+                .build();
+        return new InMemoryUserDetailsManager(user);
+    }
+
+    // если правильно понимаю то это создаст отдельную цепочку фильтров или вовсе не погонит по цепочке фильтров заматченные урлы
+    // нужно протестить
+    @Bean
+    public WebSecurityCustomizer ignoreResources() {
+        return (webSecurity) -> webSecurity
+                .ignoring()
+                .antMatchers("/test/*");
     }
 
     @Bean
@@ -64,16 +94,14 @@ public class SecurityConfiguration {
         ));
         http
             .csrf().disable()
-            .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .httpBasic()
+                .and()
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
             .authorizeRequests()
                 .requestMatchers(negatedPublicMatchers).authenticated()
                 .and()
             .cors()
-                .and()
-            .logout()
-                .permitAll()
                 .and()
             .addFilterAfter(new CredentialsAuthenticationFilter(negatedPublicMatchers, credentialsService),
                     BasicAuthenticationFilter.class)
