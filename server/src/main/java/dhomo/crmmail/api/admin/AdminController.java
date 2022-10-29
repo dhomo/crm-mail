@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,13 +24,17 @@ import java.util.stream.Collectors;
 public class AdminController {
 
     private final ModelMapper mapper;
-    // пока все просто будет долбиться напрямик в репозиторий,е сли логика потребуется посложнее то будем через сервис работать
+    // пока код простой - будет долбиться напрямик в репозиторий, а если логика потребуется посложнее то будем через сервис работать
     private final CredentialsRepository credentialsRepository;
     private final CredentialsService credentialsService;
 
+    @RequestMapping(path ="/login",
+            method = {RequestMethod.GET, RequestMethod.PUT, RequestMethod.POST })
+    public ResponseEntity login(){
+        return ResponseEntity.ok().build();
+    }
 
-    //    добавляем юзера в список тех кому разрешен доступ, но не проверяем т.к. пароля не знаем и не храним
-
+    //    Добавляем юзера в список тех кому разрешен доступ, но не проверяем т.к. пароля не знаем и не храним
     @PutMapping(path = "/users")
     public ResponseEntity putUser(@Validated() @RequestBody UserCredentialsDto userCredentialsDto) {
 
@@ -46,11 +49,9 @@ public class AdminController {
         }
     }
 
-    //    добавляем юзера в список тех кому разрешен доступ, но не проверяем т.к. пароля не знаем и не храним
+    //    Добавляем юзера в список тех кому разрешен доступ, но не проверяем т.к. пароля не знаем и не храним
     @GetMapping(path = "/users")
     public ResponseEntity<UsersSetDto> getUsers() {
-        var auth = SecurityContextHolder.getContext().getAuthentication();
-
         log.info("Get all user email credentials");
         var usersSetDto = new UsersSetDto();
         usersSetDto.setUsersSet(credentialsService.getAllCredentials()

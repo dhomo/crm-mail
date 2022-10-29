@@ -5,7 +5,52 @@ info:
 servers:
   - url: http://localhost:9010
     description: Generated server url
+
 paths:
+  /api/v1/admin/login:
+    get:
+      tags:
+        - admin
+      summary: "проверка логина админского"
+      security:
+        - basic: []
+      responses:
+        "200":
+          description: "OK"
+
+  /api/v1/admin/users:
+    get:
+      tags:
+        - admin
+      summary: "список юзеров"
+      operationId: "getUsers"
+      security:
+        - basic: []
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsersSetDto"
+
+    put:
+      tags:
+        - admin
+      summary: "загрузить список юзеров"
+      operationId: "putUser"
+      security:
+        - basic: [ ]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserCredentialsDto"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+
   /api/v1/application/login:
     post:
       tags:
@@ -468,7 +513,47 @@ paths:
           description: OK
 
 components:
+  securitySchemes:
+    basic:
+      type: http
+      scheme: basic
+      description: имя admin, пароль передается в переменной окружения в сервер
+      in: header
+
   schemas:
+    UsersSetDto:
+      type: object
+      properties:
+        usersSet:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserCredentialsDto'
+
+    UserCredentialsDto:
+      type: object
+      properties:
+        user:
+          type: string
+          example: paa@inova-perm.com
+        serverHost:
+          type: string
+          example: imap.yandex.ru
+        serverPort:
+          type: integer
+          format: int32
+          example: 993
+        imapSsl:
+          type: boolean
+        smtpHost:
+          type: string
+          example: smtp.yandex.ru
+        smtpPort:
+          type: integer
+          format: int32
+          example: 465
+        smtpSsl:
+          type: boolean
+
     Folder:
       type: object
       properties:
