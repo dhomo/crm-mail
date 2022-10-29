@@ -20,6 +20,7 @@
  */
 package dhomo.crmmail.api.message;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import dhomo.crmmail.api.exception.IsotopeException;
 import dhomo.crmmail.api.resource.IsotopeResource;
 import com.sun.mail.imap.IMAPMessage;
@@ -56,6 +57,7 @@ public class Message extends IsotopeResource implements Serializable {
     @NotEmpty(groups = {SmtpSend.class})
     private List<Recipient> recipients;
     private String subject;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
     private ZonedDateTime receivedDate;
     private Long size;
     private Boolean flagged;
