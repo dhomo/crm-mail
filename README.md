@@ -27,6 +27,10 @@ cd crm-mail
 copy server.env.sample server.env
 docker-compose up -d
 ```
+Чтоб почистить за собой образы сборки
+```
+docker image prune -f
+```
 
 ### server.env 
 Of course, the values for the variables (password and salt) must be set new.
