@@ -35,6 +35,7 @@ import dhomo.crmmail.api.imap.ImapService;
 import dhomo.crmmail.api.smtp.SmtpResource;
 import dhomo.crmmail.api.smtp.SmtpService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,12 +56,11 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 /**
  * Created by Marc Nuri <marc@marcnuri.com> on 2018-08-15.
  */
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/api/v1/application")
 public class ApplicationResource {
-
-    private static final Logger log = LoggerFactory.getLogger(ApplicationResource.class);
 
     private static final String REL_APPLICATION_LOGIN = "application.login";
     private static final String REL_FOLDERS = "folders";

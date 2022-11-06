@@ -36,8 +36,7 @@ import com.sun.mail.imap.IMAPFolder;
 import com.sun.mail.imap.IMAPMessage;
 import com.sun.mail.imap.IMAPStore;
 import com.sun.mail.util.MailSSLSocketFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.MediaType;
@@ -88,13 +87,12 @@ import static javax.mail.Folder.READ_WRITE;
 /**
  * Created by Marc Nuri <marc@marcnuri.com> on 2018-08-08.
  */
+@Slf4j
 @Service
 @RequestScope
 @Primary
 @SuppressWarnings("squid:S4529")
 public class ImapService {
-
-    private static final Logger log = LoggerFactory.getLogger(ImapService.class);
 
     private static final String IMAP_PROTOCOL = "imap";
     private static final String IMAPS_PROTOCOL = "imaps";

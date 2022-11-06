@@ -27,8 +27,7 @@ import dhomo.crmmail.api.exception.AuthenticationException;
 import dhomo.crmmail.api.exception.NotFoundException;
 import dhomo.crmmail.api.http.HttpHeaders;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.encrypt.Encryptors;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.stereotype.Service;
@@ -47,11 +46,10 @@ import static dhomo.crmmail.api.exception.AuthenticationException.Type.BLACKLIST
 /**
  * Created by Marc Nuri <marc@marcnuri.com> on 2018-08-15.
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CredentialsService {
-
-    private static final Logger log = LoggerFactory.getLogger(CredentialsService.class);
 
     private final ObjectMapper objectMapper;
     private final AppConfiguration appConfiguration;

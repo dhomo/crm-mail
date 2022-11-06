@@ -21,8 +21,7 @@
 package dhomo.crmmail.api.smtp;
 
 import dhomo.crmmail.api.message.Message;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -37,11 +36,10 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * Created by Marc Nuri <marc@marcnuri.com> on 2018-10-07.
  */
+@Slf4j
 @RestController
 @RequestMapping(path = "/api/v1/smtp")
 public class SmtpResource {
-
-    private static final Logger log = LoggerFactory.getLogger(SmtpResource.class);
 
     private final ObjectFactory<SmtpService> smtpServiceFactory;
 

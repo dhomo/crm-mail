@@ -46,6 +46,7 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
 import dhomo.crmmail.api.configuration.WebConfiguration;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.mail.MessagingException;
 import javax.mail.URLName;
@@ -62,12 +63,11 @@ import static org.springframework.http.MediaType.TEXT_EVENT_STREAM_VALUE;
 /**
  * Created by Marc Nuri <marc@marcnuri.com> on 2018-08-08.
  */
+@Slf4j
 @RestController
 @RequestMapping(path = "/api/v1/folders")
 @SuppressWarnings("squid:S4529")
 public class FolderResource implements ApplicationContextAware {
-
-    private static final Logger log = LoggerFactory.getLogger(FolderResource.class);
 
     public static final String REL_DOWNLOAD = "download";
 

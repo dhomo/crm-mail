@@ -28,8 +28,7 @@ import dhomo.crmmail.api.message.Attachment;
 import dhomo.crmmail.api.message.Message;
 import dhomo.crmmail.api.message.MessageUtils;
 import com.sun.mail.util.MailSSLSocketFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -66,11 +65,10 @@ import static dhomo.crmmail.api.message.Message.HEADER_REFERENCES;
 /**
  * Created by Marc Nuri <marc@marcnuri.com> on 2018-10-07.
  */
+@Slf4j
 @Service
 @RequestScope
 public class SmtpService {
-
-    private static final Logger log = LoggerFactory.getLogger(SmtpService.class);
 
     private static final String SMTP_PROTOCOL = "smtp";
     private static final String SMTPS_PROTOCOL = "smtps";

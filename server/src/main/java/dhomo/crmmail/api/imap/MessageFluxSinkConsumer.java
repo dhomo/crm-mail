@@ -25,8 +25,7 @@ import dhomo.crmmail.api.exception.IsotopeException;
 import dhomo.crmmail.api.message.Message;
 import com.sun.mail.imap.IMAPFolder;
 import com.sun.mail.imap.IMAPStore;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.codec.ServerSentEvent;
 import reactor.core.publisher.FluxSink;
 
@@ -48,9 +47,8 @@ import static dhomo.crmmail.api.imap.ImapService.IMAP_CAPABILITY_CONDSTORE;
  *
  * <p>Created by Marc Nuri <marc@marcnuri.com> on 2018-10-09.
  */
+@Slf4j
 public class MessageFluxSinkConsumer implements Consumer<FluxSink<ServerSentEvent<List<Message>>>> {
-
-    private static final Logger log = LoggerFactory.getLogger(MessageFluxSinkConsumer.class);
 
     private Credentials credentials;
     private URLName folderId;
