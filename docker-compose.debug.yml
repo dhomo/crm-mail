@@ -34,7 +34,7 @@ services:
     labels:
       - "traefik.http.routers.crm-server.rule=PathPrefix(`/api`)"
       - "traefik.http.services.crm-server.loadbalancer.server.port=9010"
-    command: java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -jar /opt/app.jar
+    command: java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -Dspring.profiles.active=dev -jar /opt/app.jar
     restart: unless-stopped
 
   crm-client:
