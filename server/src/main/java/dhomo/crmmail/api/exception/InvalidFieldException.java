@@ -22,6 +22,7 @@ package dhomo.crmmail.api.exception;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
@@ -51,10 +52,14 @@ public class InvalidFieldException extends IsotopeException {
         errors = new HashMap<>();
     }
 
-    public void addError(ObjectError objectError) {
-        errors.put(
-                objectError instanceof FieldError ? ((FieldError)objectError).getField() : objectError.getObjectName(),
-                objectError.getDefaultMessage());
+    public InvalidFieldException(BindingResult bindingResult){
+        super(HttpStatus.BAD_REQUEST, null, null);
+        errors = new HashMap<>();
+        for (ObjectError err : bindingResult.getAllErrors()) {
+            errors.put(
+                    err instanceof FieldError fieldError ? fieldError.getField() : err.getObjectName(),
+                    err.getDefaultMessage());
+        }
     }
 
     @Override
