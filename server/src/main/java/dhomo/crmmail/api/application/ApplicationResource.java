@@ -21,14 +21,9 @@
 package dhomo.crmmail.api.application;
 
 import dhomo.crmmail.api.configuration.AppConfiguration;
-import dhomo.crmmail.api.credentials.Credentials;
-import dhomo.crmmail.api.credentials.CredentialsRepository;
 import dhomo.crmmail.api.credentials.CredentialsService;
 import dhomo.crmmail.api.dto.LoginResponseDto;
-import dhomo.crmmail.api.dto.UserCredentialsDto;
 import dhomo.crmmail.api.dto.LoginRequestDto;
-import dhomo.crmmail.api.dto.UsersSetDto;
-import dhomo.crmmail.api.exception.AuthenticationException;
 import dhomo.crmmail.api.exception.IsotopeException;
 import dhomo.crmmail.api.folder.FolderResource;
 import dhomo.crmmail.api.imap.ImapService;
@@ -36,19 +31,13 @@ import dhomo.crmmail.api.smtp.SmtpResource;
 import dhomo.crmmail.api.smtp.SmtpService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -99,10 +88,6 @@ public class ApplicationResource {
         imapService.checkCredentials(credentials);
         smtpService.checkCredentials(credentials);
         try {
-//            final Credentials encryptedCredentials = credentialsService.encrypt(credentials);
-//            пока не понял нужно ли
-//            SecurityContextHolder.getContext().setAuthentication(encryptedCredentials);
-
             var loginResponseDto = new LoginResponseDto();
             loginResponseDto.setEncrypted(credentialsService.encrypt(credentials));
             loginResponseDto.setSalt("none");
@@ -115,7 +100,6 @@ public class ApplicationResource {
     @SuppressWarnings("ConstantConditions")
     private ConfigurationDto toDto(AppConfiguration configuration) {
         final ConfigurationDto ret = new ConfigurationDto();
-//        ret.setGoogleAnalyticsTrackingId(configuration.getGoogleAnalyticsTrackingId());
         ret.add(linkTo(methodOn(ApplicationResource.class)
                 .login(null))
                 .withRel(REL_APPLICATION_LOGIN));
@@ -124,9 +108,6 @@ public class ApplicationResource {
         ret.add(linkTo(methodOn(FolderResource.class)
                 .createChildFolder(null, null))
                 .withRel(REL_FOLDERS_SELF));
-//        ret.add(linkTo(methodOn(FolderResource.class)
-//                .getMessages(null, null))
-//                .withRel(REL_FOLDERS_MESSAGES));
         ret.add(linkTo(methodOn(FolderResource.class)
                 .getMessages(null, null))
                 .withRel(REL_FOLDERS_MESSAGES));
