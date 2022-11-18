@@ -29,21 +29,15 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
-import java.util.Collections;
-import java.util.Objects;
+import java.util.*;
 
-/**
- * Created by Marc Nuri <marc@marcnuri.com> on 2018-08-15.
- */
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true, value = {"authorities"})
 @Entity
@@ -83,24 +77,37 @@ public class Credentials extends AbstractAuthenticationToken implements Serializ
     @NotNull(groups=Login.class)
     private Boolean smtpSsl;
 
+    @OneToMany(fetch = FetchType.EAGER)
+    private Set<Role> roles;
+
     @Transient
     private ZonedDateTime expiryDate;
+
+
 
     @JsonCreator
     public Credentials() {
         super(Collections.singleton(ISOTOPE_USER));
     }
 
+    @Transient
     @Override
     public Object getPrincipal() {
         return getUser();
     }
 
+    @Transient
     @Override
     public Object getCredentials() {
         return getPassword();
     }
 
+
+    @Transient
+    @Override
+    public Collection<GrantedAuthority> getAuthorities() {
+        return roles.stream().map(role -> (GrantedAuthority) role).toList();
+    }
 
     @Override
     public boolean equals(Object o) {

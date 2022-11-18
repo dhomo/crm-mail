@@ -34,6 +34,7 @@ dependencies {
 //	suppress warning: unknown enum constant When.MAYBE	reason: class file for javax.annotation.meta.When not found
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
     implementation 'org.modelmapper:modelmapper:3.1.0'
+    implementation 'com.vladmihalcea:hibernate-types-55:2.20.0'
 //    implementation 'org.springdoc:springdoc-openapi-ui:1.6.11'
 
     compileOnly 'org.projectlombok:lombok:1.18.24'

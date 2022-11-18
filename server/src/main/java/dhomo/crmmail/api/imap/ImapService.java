@@ -22,15 +22,16 @@ package dhomo.crmmail.api.imap;
 
 import dhomo.crmmail.api.configuration.AppConfiguration;
 import dhomo.crmmail.api.credentials.Credentials;
-import dhomo.crmmail.api.credentials.CredentialsService;
 import dhomo.crmmail.api.exception.AuthenticationException;
 import dhomo.crmmail.api.exception.InvalidFieldException;
 import dhomo.crmmail.api.exception.IsotopeException;
 import dhomo.crmmail.api.exception.NotFoundException;
 import dhomo.crmmail.api.folder.Folder;
 import dhomo.crmmail.api.folder.FolderUtils;
+import dhomo.crmmail.api.lead.LeadRepository;
 import dhomo.crmmail.api.message.Attachment;
 import dhomo.crmmail.api.message.Message;
+import dhomo.crmmail.api.message.MessageRepository;
 import dhomo.crmmail.api.message.MessageWithFolder;
 import com.sun.mail.imap.IMAPFolder;
 import com.sun.mail.imap.IMAPMessage;
@@ -61,14 +62,10 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeUtility;
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Properties;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -84,14 +81,11 @@ import static dhomo.crmmail.api.message.MessageUtils.replaceEmbeddedImage;
 import static javax.mail.Folder.READ_ONLY;
 import static javax.mail.Folder.READ_WRITE;
 
-/**
- * Created by Marc Nuri <marc@marcnuri.com> on 2018-08-08.
- */
+
 @Slf4j
 @Service
 @RequestScope
 @Primary
-@SuppressWarnings("squid:S4529")
 public class ImapService {
 
     private static final String IMAP_PROTOCOL = "imap";
@@ -103,16 +97,26 @@ public class ImapService {
 
     private final AppConfiguration appConfiguration;
     private final MailSSLSocketFactory mailSSLSocketFactory;
+    private final MessageRepository messageRepository;
+    private final LeadRepository leadRepository;
 
     private IMAPStore imapStore;
 
     @Autowired
     public ImapService(
             AppConfiguration appConfiguration, MailSSLSocketFactory mailSSLSocketFactory,
-            CredentialsService credentialsService) {
+            MessageRepository messageRepository, LeadRepository leadRepository) {
 
         this.appConfiguration = appConfiguration;
         this.mailSSLSocketFactory = mailSSLSocketFactory;
+        this.messageRepository = messageRepository;
+        this.leadRepository = leadRepository;
+    }
+
+    @Transactional
+    public void fillLeads(Message message){
+        var byMessagesMessageId = leadRepository.findByMessages_MessageId(message.getMessageId());
+        message.setLeadDtoIdNameSet(byMessagesMessageId);
     }
 
     /**
@@ -292,6 +296,8 @@ public class ImapService {
             final MessageWithFolder ret = MessageWithFolder.from(folder, imapMessage);
             readContentIntoMessage(folderId, imapMessage, ret);
             folder.close();
+            // дополним данными о лидах связанным с этим email'ом
+            fillLeads(ret);
             return ret;
         } catch (MessagingException | IOException ex) {
             log.error("Error loading messages for folder: " + folderId.toString(), ex);
@@ -325,9 +331,11 @@ public class ImapService {
                     folder.getMessagesByUID(uids.stream().mapToLong(Long::longValue).toArray()))
                     .filter(Objects::nonNull)
                     .map(IMAPMessage.class::cast)
-                    .collect(Collectors.toList());
+                    .toList();
+            // пока заполнены только uid в messages
             for(IMAPMessage imapMessage : messages) {
                 final Message message = Message.from(folder, imapMessage);
+//                fillLeads(message);
                 ret.add(message);
                 imapMessage.setPeek(true);
                 readContentIntoMessage(folderId, imapMessage, message);
@@ -522,7 +530,9 @@ public class ImapService {
         } else {
             messages = folder.getMessages();
         }
+        // Message[] у нас сейчас пустые
         envelopeFetch(folder, messages);
+        // а теперь Message[] у нас заполнены
         final Long highestModseq;
         if (fetchModseq && messages.length > 0) {
             highestModseq = folder.getHighestModSeq() == -1L ?
@@ -531,7 +541,11 @@ public class ImapService {
             highestModseq = null;
         }
         return Stream.of(messages)
-                .map(m -> Message.from(folder, (IMAPMessage)m))
+                .map(m -> {
+                    var ret = Message.from(folder, (IMAPMessage)m);
+                    fillLeads(ret);
+                    return ret;
+                })
                 .peek(m -> m.setModseq(highestModseq))
                 .sorted(Comparator.comparingLong(Message::getUid).reversed())
                 .collect(Collectors.toList());

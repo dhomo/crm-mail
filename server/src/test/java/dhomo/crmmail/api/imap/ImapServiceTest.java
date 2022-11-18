@@ -31,6 +31,8 @@ import com.sun.mail.imap.IMAPFolder;
 import com.sun.mail.imap.IMAPMessage;
 import com.sun.mail.imap.IMAPStore;
 import com.sun.mail.util.MailSSLSocketFactory;
+import dhomo.crmmail.api.lead.LeadRepository;
+import dhomo.crmmail.api.message.MessageRepository;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -79,6 +81,8 @@ public class ImapServiceTest {
     private AppConfiguration appConfiguration;
     private MailSSLSocketFactory mailSSLSocketFactory;
     private CredentialsService credentialsService;
+    private MessageRepository messageRepository;
+    private LeadRepository leadRepository;
 
     private ImapService imapService;
 
@@ -94,7 +98,7 @@ public class ImapServiceTest {
         mailSSLSocketFactory = Mockito.mock(MailSSLSocketFactory.class);
         credentialsService = Mockito.mock(CredentialsService.class);
 
-        imapService = new ImapService(appConfiguration, mailSSLSocketFactory, credentialsService);
+        imapService = new ImapService(appConfiguration, mailSSLSocketFactory, messageRepository, leadRepository);
     }
 
     @After

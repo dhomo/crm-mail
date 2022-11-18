@@ -22,22 +22,30 @@ package dhomo.crmmail.api.message;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import dhomo.crmmail.api.resource.IsotopeResource;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.Hibernate;
 
-import java.io.Serializable;
+import javax.persistence.Basic;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
 import java.util.Objects;
 
-/**
- * Created by Marc Nuri <marc@marcnuri.com> on 2018-09-11.
- */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Attachment extends IsotopeResource implements Serializable {
+@Entity
+@Getter
+@Setter
+@NoArgsConstructor
+public class Attachment extends IsotopeResource {
 
-    private static final long serialVersionUID = 4001902363078332347L;
-
+    @Id
     private String contentId;
     private String fileName;
     private String contentType;
     private Integer size;
+    @Basic(fetch = FetchType.LAZY)
     private byte[] content;
 
     public Attachment(String contentId, String fileName, String contentType, Integer size) {
@@ -47,60 +55,16 @@ public class Attachment extends IsotopeResource implements Serializable {
         this.size = size;
     }
 
-    public String getContentId() {
-        return contentId;
-    }
-
-    public void setContentId(String contentId) {
-        this.contentId = contentId;
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
-    public String getContentType() {
-        return contentType;
-    }
-
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
-    }
-
-    public Integer getSize() {
-        return size;
-    }
-
-    public void setSize(Integer size) {
-        this.size = size;
-    }
-
-    public byte[] getContent() {
-        return content;
-    }
-
-    public void setContent(byte[] content) {
-        this.content = content;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
         Attachment that = (Attachment) o;
-        return Objects.equals(contentId, that.contentId) &&
-                Objects.equals(fileName, that.fileName) &&
-                Objects.equals(contentType, that.contentType) &&
-                Objects.equals(size, that.size);
+        return contentId != null && Objects.equals(contentId, that.contentId);
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(contentId, fileName, contentType, size);
+        return getClass().hashCode();
     }
 }

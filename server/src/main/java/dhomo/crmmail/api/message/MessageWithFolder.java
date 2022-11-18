@@ -23,25 +23,16 @@ package dhomo.crmmail.api.message;
 import dhomo.crmmail.api.folder.Folder;
 import com.sun.mail.imap.IMAPFolder;
 import com.sun.mail.imap.IMAPMessage;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Objects;
 
-/**
- * Created by Marc Nuri <marc@marcnuri.com> on 2018-09-17.
- */
+@Getter
+@Setter
 public class MessageWithFolder extends Message {
 
-    private static final long serialVersionUID = 6864526689572356395L;
-
     private Folder folder;
-
-    public Folder getFolder() {
-        return folder;
-    }
-
-    public void setFolder(Folder folder) {
-        this.folder = folder;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -54,7 +45,6 @@ public class MessageWithFolder extends Message {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(super.hashCode(), folder);
     }
 

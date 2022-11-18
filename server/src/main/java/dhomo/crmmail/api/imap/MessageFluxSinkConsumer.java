@@ -109,8 +109,7 @@ public class MessageFluxSinkConsumer implements Consumer<FluxSink<ServerSentEven
                         .build();
                 serverSentEventFluxSink.next(event);
                 end = start - 1;
-                batchSize = (batchSize * 2 ) > DEFAULT_MAX_MESSAGES_BATCH_SIZE ? DEFAULT_MAX_MESSAGES_BATCH_SIZE :
-                        batchSize * 2;
+                batchSize = Math.min((batchSize * 2), DEFAULT_MAX_MESSAGES_BATCH_SIZE);
             } while (end > 0 && !serverSentEventFluxSink.isCancelled());
         } catch(IOException ex) {
             log.debug("Response stream has already been closed ({})", ex.getMessage());

@@ -23,11 +23,10 @@ package dhomo.crmmail.api.folder;
 import dhomo.crmmail.api.imap.ImapService;
 import dhomo.crmmail.api.message.Attachment;
 import dhomo.crmmail.api.message.Message;
+import dhomo.crmmail.api.message.MessageRepository;
 import dhomo.crmmail.api.message.MessageWithFolder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.ObjectFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.hateoas.MediaTypes;
@@ -60,25 +59,20 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.http.MediaType.TEXT_EVENT_STREAM_VALUE;
 
-/**
- * Created by Marc Nuri <marc@marcnuri.com> on 2018-08-08.
- */
+
 @Slf4j
 @RestController
 @RequestMapping(path = "/api/v1/folders")
-@SuppressWarnings("squid:S4529")
+@RequiredArgsConstructor
 public class FolderResource implements ApplicationContextAware {
 
     public static final String REL_DOWNLOAD = "download";
 
     private final ObjectFactory<ImapService> imapServiceFactory;
+    private final MessageRepository messageRepository;
 
     private ApplicationContext applicationContext;
 
-    @Autowired
-    public FolderResource(ObjectFactory<ImapService> imapServiceFactory) {
-        this.imapServiceFactory = imapServiceFactory;
-    }
 
     @GetMapping(path = "", produces = MediaTypes.HAL_JSON_VALUE)
     public ResponseEntity<List<Folder>> getFolders(

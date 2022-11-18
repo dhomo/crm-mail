@@ -20,9 +20,10 @@
  */
 package dhomo.crmmail.api.configuration;
 
-import dhomo.crmmail.api.credentials.CredentialsService;
 import dhomo.crmmail.api.imap.ImapService;
 import com.sun.mail.util.MailSSLSocketFactory;
+import dhomo.crmmail.api.lead.LeadRepository;
+import dhomo.crmmail.api.message.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -90,8 +91,8 @@ public class WebConfiguration implements WebMvcConfigurer, AsyncConfigurer {
     @Qualifier(IMAP_SERVICE_PROTOTYPE)
     public ImapService imapService(
             AppConfiguration appConfiguration, MailSSLSocketFactory mailSSLSocketFactory,
-            CredentialsService credentialsService) {
+            MessageRepository messageRepository, LeadRepository leadRepository) {
 
-        return new ImapService(appConfiguration, mailSSLSocketFactory, credentialsService);
+        return new ImapService(appConfiguration, mailSSLSocketFactory, messageRepository, leadRepository);
     }
 }

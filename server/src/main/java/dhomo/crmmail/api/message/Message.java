@@ -21,233 +21,133 @@
 package dhomo.crmmail.api.message;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.vladmihalcea.hibernate.type.array.ListArrayType;
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import dhomo.crmmail.api.exception.IsotopeException;
+import dhomo.crmmail.api.lead.Lead;
+import dhomo.crmmail.api.lead.dto.LeadDto_id_name;
 import dhomo.crmmail.api.resource.IsotopeResource;
 import com.sun.mail.imap.IMAPMessage;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.Hibernate;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
 
 import javax.mail.*;
 import javax.mail.Message.RecipientType;
 import javax.mail.internet.InternetAddress;
+import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
-import java.io.Serializable;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-/**
- * Created by Marc Nuri <marc@marcnuri.com> on 2018-08-10.
- */
-@SuppressWarnings({"WeakerAccess", "unused"})
-public class Message extends IsotopeResource implements Serializable {
 
-    private static final long serialVersionUID = -1068972394742882009L;
+@Getter
+@Setter
+@Entity
+@Table(name = "message")
+@TypeDefs({
+        @TypeDef(name = "list-array", typeClass = ListArrayType.class),
+        @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
+})
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class Message extends IsotopeResource {
 
     private static final String CET_ZONE_ID = "CET";
     public static final String HEADER_IN_REPLY_TO = "In-Reply-To";
     public static final String HEADER_REFERENCES = "References";
     public static final String HEADER_LIST_UNSUBSCRIBE = "List-Unsubscribe";
 
+    // id письма в папке, может меняться
+    @Transient
     private Long uid;
+
+    // id email'a уникальный
+    @Column(nullable = false, unique = true, updatable = false)
+    @Id
     private String messageId;
+
+    @Transient
     private Long modseq;
+
+    @Column(name = "from_column", columnDefinition = "text[]")
+    @Type(type = "list-array")
     private List<String> from;
-    private List<String>  replyTo;
+
+    @Column(columnDefinition = "text[]")
+    @Type(type = "list-array")
+    private List<String> replyTo;
+
     @NotEmpty(groups = {SmtpSend.class})
+    @Column(columnDefinition = "jsonb")
+    @Type(type = "jsonb")
     private List<Recipient> recipients;
+
     private String subject;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
     private ZonedDateTime receivedDate;
+
     private Long size;
-    private Boolean flagged;
-    private Boolean seen;
-    private Boolean recent;
-    private Boolean deleted;
+
+    @Transient
+    private Boolean flagged, seen, recent, deleted;
+
+    @Basic(fetch = FetchType.LAZY)
+    @Column(columnDefinition = "text")
     private String content;
-    private List<Attachment> attachments;
-    private List<String> references;
+
+    @OneToMany
+    private List<Attachment> attachments = new ArrayList<>();
+
+    @Column(name = "references_col", columnDefinition = "text[]")
+    @Type(type = "list-array")
+    private List<String> references = new ArrayList<>();
+
+    @Column(columnDefinition = "text[]")
+    @Type(type = "list-array")
     private List<String> inReplyTo;
+
+    @Column(columnDefinition = "text[]")
+    @Type(type = "list-array")
     private List<String> listUnsubscribe;
 
-    public Long getUid() {
-        return uid;
-    }
+    @JsonIgnore
+    @ManyToMany(mappedBy = "messages", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    Set<Lead> leads = new LinkedHashSet<>();
 
-    public void setUid(Long uid) {
-        this.uid = uid;
-    }
-
-    public String getMessageId() {
-        return messageId;
-    }
-
-    public void setMessageId(String messageId) {
-        this.messageId = messageId;
-    }
-
-    public Long getModseq() {
-        return modseq;
-    }
-
-    public void setModseq(Long modseq) {
-        this.modseq = modseq;
-    }
-
-    public List<String> getFrom() {
-        return from;
-    }
-
-    public void setFrom(List<String> from) {
-        this.from = from;
-    }
-
-    public List<String> getReplyTo() {
-        return replyTo;
-    }
-
-    public void setReplyTo(List<String> replyTo) {
-        this.replyTo = replyTo;
-    }
-
-    public List<Recipient> getRecipients() {
-        return recipients;
-    }
-
-    public void setRecipients(List<Recipient> recipients) {
-        this.recipients = recipients;
-    }
-
-    public String getSubject() {
-        return subject;
-    }
-
-    public void setSubject(String subject) {
-        this.subject = subject;
-    }
-
-    public ZonedDateTime getReceivedDate() {
-        return receivedDate;
-    }
-
-    public void setReceivedDate(ZonedDateTime receivedDate) {
-        this.receivedDate = receivedDate;
-    }
-
-    public Long getSize() {
-        return size;
-    }
-
-    public void setSize(Long size) {
-        this.size = size;
-    }
-
-    public Boolean getFlagged() {
-        return flagged;
-    }
-
-    public void setFlagged(Boolean flagged) {
-        this.flagged = flagged;
-    }
-
-    public Boolean getSeen() {
-        return seen;
-    }
-
-    public void setSeen(Boolean seen) {
-        this.seen = seen;
-    }
-
-    public Boolean getRecent() {
-        return recent;
-    }
-
-    public void setRecent(Boolean recent) {
-        this.recent = recent;
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public List<Attachment> getAttachments() {
-        return attachments;
-    }
-
-    public void setAttachments(List<Attachment> attachments) {
-        this.attachments = attachments;
-    }
-
-    public List<String> getReferences() {
-        return references;
-    }
-
-    public void setReferences(List<String> references) {
-        this.references = references;
-    }
-
-    public List<String> getInReplyTo() {
-        return inReplyTo;
-    }
-
-    public void setInReplyTo(List<String> inReplyTo) {
-        this.inReplyTo = inReplyTo;
-    }
-
-    public List<String> getListUnsubscribe() {
-        return listUnsubscribe;
-    }
-
-    public void setListUnsubscribe(List<String> listUnsubscribe) {
-        this.listUnsubscribe = listUnsubscribe;
-    }
+    @Transient
+    @JsonProperty("leadsShort")
+    Set<LeadDto_id_name> leadDtoIdNameSet;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
         Message message = (Message) o;
-        return Objects.equals(uid, message.uid) &&
-                Objects.equals(messageId, message.messageId) &&
-                Objects.equals(modseq, message.modseq) &&
-                Objects.equals(from, message.from) &&
-                Objects.equals(replyTo, message.replyTo) &&
-                Objects.equals(recipients, message.recipients) &&
-                Objects.equals(subject, message.subject) &&
-                Objects.equals(receivedDate, message.receivedDate) &&
-                Objects.equals(size, message.size) &&
-                Objects.equals(flagged, message.flagged) &&
-                Objects.equals(seen, message.seen) &&
-                Objects.equals(recent, message.recent) &&
-                Objects.equals(deleted, message.deleted) &&
-                Objects.equals(content, message.content) &&
-                Objects.equals(attachments, message.attachments) &&
-                Objects.equals(references, message.references) &&
-                Objects.equals(inReplyTo, message.inReplyTo) &&
-                Objects.equals(listUnsubscribe, message.listUnsubscribe);
+        return messageId != null && Objects.equals(messageId, message.messageId);
     }
 
     @Override
     public int hashCode() {
+        return getClass().hashCode();
+    }
 
-        return Objects.hash(super.hashCode(), uid, messageId, modseq, from, replyTo, recipients, subject, receivedDate, size, flagged, seen, recent, deleted, content, attachments, references, inReplyTo, listUnsubscribe);
+    @Override
+    public String toString() {
+        return "Message{" + "uid=" + uid + ", messageId='" + messageId + '\'' + '}';
     }
 
     /**
-     * Maps an {@link com.sun.mail.imap.IMAPStore} to a {@link Message}.
+     * Maps an {@link com.sun.mail.imap.IMAPMessage} to a {@link Message}.
      *
      * This method should only map those fields that are retrieved performed an IMAP fetch command (ENVELOPE,
      * UID, FLAGS...)
@@ -259,6 +159,9 @@ public class Message extends IsotopeResource implements Serializable {
      * @param imapMessage original message to map
      * @return mapped Message with fulfilled envelope fields
      */
+    //F extends Folder & UIDFolder вполне можно заменить F extends IMAPFolder, никто кроме него и не подходит,
+    // и вряд ли планируется какая-то другая реализация.
+    // или вообще дженерик убрать наследников IMAPFolder в этот метод тоже вряд kb будут оправлять
     public static <M extends Message, F extends Folder & UIDFolder> M from(
             Class<M> clazz, F folder, IMAPMessage imapMessage) {
 

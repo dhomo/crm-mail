@@ -22,16 +22,16 @@ package dhomo.crmmail.api.message;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.io.Serializable;
 import java.util.Objects;
 
-/**
- * Created by Marc Nuri <marc@marcnuri.com> on 2018-08-28.
- */
-public class Recipient implements Serializable {
-
-    private static final long serialVersionUID = -1389623045340754035L;
+@Getter
+@Setter
+@NoArgsConstructor
+public class Recipient {
 
     private String type;
     private String address;
@@ -42,21 +42,6 @@ public class Recipient implements Serializable {
         this.address = address;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -69,7 +54,6 @@ public class Recipient implements Serializable {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(type, address);
     }
 }
