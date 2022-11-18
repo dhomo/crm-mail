@@ -22,9 +22,6 @@ package dhomo.crmmail.api.exception;
 
 import org.springframework.http.HttpStatus;
 
-/**
- * Created by Marc Nuri <marc@marcnuri.com> on 2018-09-15.
- */
 public class NotFoundException extends IsotopeException {
 
     public NotFoundException(String message) {

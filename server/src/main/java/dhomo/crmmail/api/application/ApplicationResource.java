@@ -42,9 +42,6 @@ import java.util.Collections;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-/**
- * Created by Marc Nuri <marc@marcnuri.com> on 2018-08-15.
- */
 @Slf4j
 @RestController
 @RequiredArgsConstructor

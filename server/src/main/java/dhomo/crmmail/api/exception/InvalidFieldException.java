@@ -32,9 +32,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-/**
- * Created by Marc Nuri <marc@marcnuri.com> on 2018-08-17.
- */
 public class InvalidFieldException extends IsotopeException {
 
     private final Map<String, String> errors;

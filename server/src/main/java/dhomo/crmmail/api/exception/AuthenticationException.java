@@ -22,9 +22,6 @@ package dhomo.crmmail.api.exception;
 
 import org.springframework.http.HttpStatus;
 
-/**
- * Created by Marc Nuri <marc@marcnuri.com> on 2018-08-18.
- */
 public class AuthenticationException extends IsotopeException {
 
     public enum Type {

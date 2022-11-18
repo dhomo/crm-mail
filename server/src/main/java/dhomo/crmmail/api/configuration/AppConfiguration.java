@@ -22,9 +22,6 @@ package dhomo.crmmail.api.configuration;
 
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 import org.springframework.security.crypto.keygen.KeyGenerators;
@@ -34,13 +31,7 @@ import java.time.temporal.TemporalAmount;
 import java.util.Collections;
 import java.util.Set;
 
-/**
- * Created by Marc Nuri <marc@marcnuri.com> on 2018-08-08.
- */
 @Configuration
-//@ComponentScan("dhomo.crmmail.api")
-//@EnableConfigurationProperties(ServerProperties.class)
-//@Import({WebConfiguration.class})
 @Getter
 public class AppConfiguration {
 

@@ -43,9 +43,6 @@ import java.util.Set;
 
 import static dhomo.crmmail.api.exception.AuthenticationException.Type.BLACKLISTED;
 
-/**
- * Created by Marc Nuri <marc@marcnuri.com> on 2018-08-15.
- */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -125,9 +122,8 @@ public class CredentialsService {
     }
 
     public Credentials findCredential(String user) {
-        var credentials = credentialsRepository.findById(user)
-                .orElseThrow(()->new NotFoundException("User not found"));
-        return (credentials);
+        return (credentialsRepository.findById(user)
+                .orElseThrow(()->new NotFoundException("User not found")));
     }
 
     public List<Credentials> getAllCredentials(){

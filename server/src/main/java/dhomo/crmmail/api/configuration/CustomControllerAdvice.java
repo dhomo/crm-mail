@@ -35,13 +35,8 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.springframework.web.util.WebUtils;
 
-import javax.annotation.Nonnull;
-
 import static dhomo.crmmail.api.http.HttpHeaders.ISOTOPE_EXCEPTION;
 
-/**
- * Created by Marc Nuri <marc@marcnuri.com> on 2018-08-17.
- */
 @SuppressWarnings("unchecked")
 @ControllerAdvice
 public class CustomControllerAdvice extends ResponseEntityExceptionHandler {

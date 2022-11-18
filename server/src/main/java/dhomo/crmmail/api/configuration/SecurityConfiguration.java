@@ -45,9 +45,6 @@ import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-/**
- * Created by Marc Nuri <marc@marcnuri.com> on 2019-02-23.
- */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -77,12 +74,12 @@ public class SecurityConfiguration {
 
     // если правильно понимаю то это создаст отдельную цепочку фильтров или вовсе не погонит по цепочке фильтров заматченные урлы
     // нужно протестить
-    @Bean
-    public WebSecurityCustomizer ignoreResources() {
-        return (webSecurity) -> webSecurity
-                .ignoring()
-                .antMatchers("/test/*");
-    }
+//    @Bean
+//    public WebSecurityCustomizer ignoreResources() {
+//        return (webSecurity) -> webSecurity
+//                .ignoring()
+//                .antMatchers("/test/*");
+//    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {

@@ -39,13 +39,11 @@ import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 import static org.springframework.beans.factory.config.BeanDefinition.SCOPE_PROTOTYPE;
 
-/**
- * Created by Marc Nuri <marc@marcnuri.com> on 2018-08-09.
- */
 @Configuration
 @EnableWebMvc
 public class WebConfiguration implements WebMvcConfigurer, AsyncConfigurer {

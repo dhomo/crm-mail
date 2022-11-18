@@ -36,9 +36,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-/**
- * Created by Marc Nuri <marc@marcnuri.com> on 2019-02-23.
- */
 @RequiredArgsConstructor
 @Slf4j
 public class CredentialsAuthenticationFilter extends OncePerRequestFilter {

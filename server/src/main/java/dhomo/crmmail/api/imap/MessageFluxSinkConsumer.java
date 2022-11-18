@@ -44,8 +44,6 @@ import static dhomo.crmmail.api.imap.ImapService.IMAP_CAPABILITY_CONDSTORE;
 /**
  * {@link FluxSink} {@link Consumer} implementation to extract messages in batches from the provided folder and send
  * {@link ServerSentEvent}s with the extracted message batches.
- *
- * <p>Created by Marc Nuri <marc@marcnuri.com> on 2018-10-09.
  */
 @Slf4j
 public class MessageFluxSinkConsumer implements Consumer<FluxSink<ServerSentEvent<List<Message>>>> {
