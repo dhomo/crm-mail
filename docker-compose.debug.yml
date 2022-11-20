@@ -28,9 +28,6 @@ services:
       - "9010:9010"
     env_file:
       - server.env
-    environment:
-      DB_USERNAME: "postgres"
-      DB_PASSWORD: "db_pass"
     labels:
       - "traefik.http.routers.crm-server.rule=PathPrefix(`/api`)"
       - "traefik.http.services.crm-server.loadbalancer.server.port=9010"
@@ -43,7 +40,7 @@ services:
     image: crm-client
     # если нужен порт для доступа к фронтенду снаружи то разкоментить 
     # ports:
-    #   - "8081:80"
+    #   - "8081:9009"
     labels:
       - "traefik.http.routers.crm-client.rule=PathPrefix(`/`)"
       - "traefik.http.services.crm-client.loadbalancer.server.port=9009"
