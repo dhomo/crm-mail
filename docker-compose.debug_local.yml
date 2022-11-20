@@ -1,0 +1,62 @@
+version: '3'
+
+services:
+  reverse-proxy:
+    image: traefik:2.9
+    command:
+      - "--providers.file.filename=dynamic_conf.yml"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--log.level=DEBUG"
+      - "--entryPoints.web.address=:80"
+      - "--entryPoints.websecure.address=:443"
+    ports:
+      # The HTTP port
+      - "80:80"
+      # The Web UI (enabled by --api.insecure=true)
+      - "8080:8080"
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock
+#     dynamic config
+      - ./dynamic_conf.yml:/dynamic_conf.yml
+    restart: unless-stopped
+
+
+  crm-client:
+    build:
+      context: ./client
+    image: crm-client
+    # если нужен порт для доступа к фронтенду с хоста (localhost:9009) то разкоментить
+    # ports:
+    #   - "9009:9009"
+    labels:
+      - "traefik.http.routers.crm-client.rule=PathPrefix(`/`)"
+      - "traefik.http.services.crm-client.loadbalancer.server.port=9009"
+    restart: unless-stopped
+
+
+  crm-db:
+    image: postgres:14-alpine
+    environment:
+      POSTGRES_DB: "postgres"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "db_pass"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+#      - ../2. Init Database:/docker-entrypoint-initdb.d
+      - ./postgresql:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
