@@ -42,3 +42,4 @@ out/
 
 /postgresql/
 /server.env
+/.env

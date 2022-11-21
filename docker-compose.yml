@@ -12,13 +12,13 @@ services:
 
       - --entrypoints.websecure.address=:443
       - --entrypoints.websecure.http.tls.certResolver=myresolver
-      - --entrypoints.websecure.http.tls.domains[0].main=example.com
+      - --entrypoints.websecure.http.tls.domains[0].main=${DOMAIN_TLS:-example.com}
 
-      - --certificatesresolvers.myresolver.acme.email=test@example.com
+      - --certificatesresolvers.myresolver.acme.email=${EMAIL_TLS:-test@example.com}
       - --certificatesresolvers.myresolver.acme.storage=acme.json
 #     Let's Encrypt staging server.
 #     To use Let's Encrypt production server just comment
-      - --certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
+#      - --certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
       - --certificatesresolvers.myresolver.acme.tlschallenge=true
       - --certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web
 
