@@ -9,15 +9,13 @@ services:
       #      HTTPS redirection (80 to 443)
       - --entrypoints.web.http.redirections.entryPoint.to=websecure
       - --entrypoints.web.http.redirections.entryPoint.scheme=https
-
-      - --entrypoints.websecure.address=:443
+      - --entryPoints.websecure.address=:443
       - --entrypoints.websecure.http.tls.certResolver=myresolver
       - --entrypoints.websecure.http.tls.domains[0].main=${DOMAIN_TLS:-example.com}
 
       - --certificatesresolvers.myresolver.acme.email=${EMAIL_TLS:-test@example.com}
       - --certificatesresolvers.myresolver.acme.storage=acme.json
 #     Let's Encrypt staging server.
-#     To use Let's Encrypt production server just comment
 #      - --certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
       - --certificatesresolvers.myresolver.acme.tlschallenge=true
       - --certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web
@@ -56,9 +54,7 @@ services:
     image: crm-client
     labels:
       - traefik.enable=true
-      - traefik.http.routers.crm-client.rule=Host(`example.com`) && PathPrefix(`/`)
-# если только один порт выставлен из контейнера, то его и должен использовать, но почему-то прицепляется по умолчанию к 80 порту
-# поэтому задал порт явно
+      - traefik.http.routers.crm-client.rule=PathPrefix(`/`)
       - traefik.http.services.crm-client.loadbalancer.server.port=9009
       - traefik.http.routers.crm-client.entrypoints=websecure
     restart: unless-stopped
