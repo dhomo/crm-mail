@@ -1,7 +1,7 @@
 FROM node:12 as build
 WORKDIR /react-app
 COPY package*.json .
-RUN yarn install
+RUN yarn install --network-timeout 100000
 COPY . .
 RUN yarn run build
 
