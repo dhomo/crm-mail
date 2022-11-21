@@ -1,15 +1,14 @@
 version: '3'
 
 services:
-  reverse-proxy:
+  traefik:
     image: traefik:2.9
     command:
-      - "--providers.file.filename=dynamic_conf.yml"
+      - "--providers.file.filename=traefik_spring_local.yml"
       - "--api.insecure=true"
       - "--providers.docker=true"
-      - "--log.level=DEBUG"
+#      - "--log.level=DEBUG"
       - "--entryPoints.web.address=:80"
-      - "--entryPoints.websecure.address=:443"
     ports:
       # The HTTP port
       - "80:80"
@@ -19,7 +18,7 @@ services:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock
 #     dynamic config
-      - ./dynamic_conf.yml:/dynamic_conf.yml
+      - ./traefik_spring_local.yml:/traefik_spring_local.yml
     restart: unless-stopped
 
 
@@ -31,8 +30,8 @@ services:
     # ports:
     #   - "9009:9009"
     labels:
-      - "traefik.http.routers.crm-client.rule=PathPrefix(`/`)"
-      - "traefik.http.services.crm-client.loadbalancer.server.port=9009"
+      - traefik.http.routers.crm-client.rule=PathPrefix(`/`)
+      - traefik.http.services.crm-client.loadbalancer.server.port=9009
     restart: unless-stopped
 
 

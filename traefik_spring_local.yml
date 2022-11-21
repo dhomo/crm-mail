@@ -6,14 +6,14 @@ http:
     to_server:
       rule: PathPrefix(`/api`)
       # If the rule matches, forward to the service (declared below)
-      service: server_service
+      service: spring_local
       entryPoints:
         - web
 
   # Add the service
   services:
     # Define how to reach an existing service on our infrastructure
-    server_service:
+    spring_local:
       loadBalancer:
         servers:
           # On Linux, for versions of Docker older than 20.10.0, for host.docker.internal to be defined,

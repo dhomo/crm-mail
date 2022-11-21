@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  reverse-proxy:
+  traefik:
     image: traefik:2.7
     # Enables the web UI and tells Traefik to listen to docker
     command: --api.insecure=true --providers.docker
@@ -25,25 +25,25 @@ services:
       # порт для отладки
       - "5005:5005"
       # порт для доступа к бэкенду снаружи
-      - "9010:9010"
+#      - "9010:9010"
     env_file:
       - server.env
     labels:
-      - "traefik.http.routers.crm-server.rule=PathPrefix(`/api`)"
-      - "traefik.http.services.crm-server.loadbalancer.server.port=9010"
-    command: java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -Dspring.profiles.active=dev -jar /opt/app.jar
+      - traefik.http.routers.crm-server.rule=PathPrefix(`/api`)
+      - traefik.http.services.crm-server.loadbalancer.server.port=9010
+    command: java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -jar /opt/app.jar
     restart: unless-stopped
 
   crm-client:
     build:
       context: ./client
     image: crm-client
-    # если нужен порт для доступа к фронтенду снаружи то разкоментить 
+    # если нужен порт для доступа к фронтенду снаружи, то разкоментить
     # ports:
     #   - "8081:9009"
     labels:
-      - "traefik.http.routers.crm-client.rule=PathPrefix(`/`)"
-      - "traefik.http.services.crm-client.loadbalancer.server.port=9009"
+      - traefik.http.routers.crm-client.rule=PathPrefix(`/`)
+      - traefik.http.services.crm-client.loadbalancer.server.port=9009
     restart: unless-stopped
 
 
@@ -64,7 +64,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 10s
     restart: unless-stopped
     deploy:
       resources:
