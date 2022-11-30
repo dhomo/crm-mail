@@ -59,8 +59,7 @@ describe('LoginSnackbar component test suite', () => {
     test('Initial values from URL Params', () => {
       // Given
       const location = {
-        search: '?serverHost=server.host&serverPort=1337&user=user@user&imapSsl=false' +
-        '&smtpHost=smtp.host&smtpPort=313373&smtpSsl=false'
+        search: '?user=user@user'
       };
       const props = {
         t: jest.fn(messageKey => messageKey),
@@ -70,13 +69,7 @@ describe('LoginSnackbar component test suite', () => {
       // When
       const login = shallow(<Login {...props}/>);
       // Then
-      expect(login.state().values.serverHost).toBe('server.host');
-      expect(login.state().values.serverPort).toBe('1337');
       expect(login.state().values.user).toBe('user@user');
-      expect(login.state().values.imapSsl).toBe(false);
-      expect(login.state().values.smtpHost).toBe('smtp.host');
-      expect(login.state().values.smtpPort).toBe('313373');
-      expect(login.state().values.smtpSsl).toBe(false);
     });
     test('Initial values from Redux', () => {
       // Given
@@ -87,26 +80,14 @@ describe('LoginSnackbar component test suite', () => {
         t: jest.fn(messageKey => messageKey),
         location,
         formValues: {
-          serverHost: 'server.redux.host',
-          serverPort: 1337,
           user: 'user@redux',
-          imapSsl: false,
-          smtpHost: 'smtp.host',
-          smtpPort: 313373,
-          smtpSsl: false
         },
         application: INITIAL_STATE.application
       };
       // When
       const login = shallow(<Login {...props}/>);
       // Then
-      expect(login.state().values.serverHost).toBe('server.redux.host');
-      expect(login.state().values.serverPort).toBe(1337);
       expect(login.state().values.user).toBe('user@redux');
-      expect(login.state().values.imapSsl).toBe(false);
-      expect(login.state().values.smtpHost).toBe('smtp.host');
-      expect(login.state().values.smtpPort).toBe(313373);
-      expect(login.state().values.smtpSsl).toBe(false);
     });
   });
 });

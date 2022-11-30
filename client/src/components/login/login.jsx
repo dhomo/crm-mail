@@ -4,17 +4,10 @@ import {Redirect, withRouter} from 'react-router-dom';
 import {translate} from 'react-i18next';
 import {Link} from 'react-router-dom';
 import {
-  DEFAULT_IMAP_PORT,
-  DEFAULT_IMAP_SSL,
-  DEFAULT_IMAP_HOST,
-  DEFAULT_SMTP_PORT,
-  DEFAULT_SMTP_SSL,
-  DEFAULT_SMTP_HOST,
   login
 } from '../../services/application';
 import Button from '../buttons/button';
 import LoginSnackbar from './login-snackbar';
-import Switch from '../form/switch/switch';
 import TextField from '../form/text-field/text-field';
 import Spinner from '../spinner/spinner';
 import mainCss from '../../styles/main.scss';
@@ -24,24 +17,17 @@ import styles from './login.scss';
  * Returns a Login component valid state from the current URL params
  *
  * @param {URLSearchParams} params
- * @returns {{values: {serverHost: string, serverPort: number, user: string, password: string, imapSsl: boolean, smtpHost: string, smtpPort: number, smtpSsl: boolean}, advanced: boolean}}
+ * @returns {{values: {user: string, password: string}}}
  */
 const stateFromParams = params => ({
   values: {
-    serverHost: params.has('serverHost') ? params.get('serverHost') : DEFAULT_IMAP_HOST,
-    serverPort: params.has('serverPort') ? params.get('serverPort').replace(/[^0-9]*/g, '') : DEFAULT_IMAP_PORT,
     user: params.has('user') ? params.get('user') : '',
-    password: '',
-    imapSsl: params.has('imapSsl') ? params.get('imapSsl') === 'true' : DEFAULT_IMAP_SSL,
-    smtpHost: params.has('smtpHost') ? params.get('smtpHost') : DEFAULT_SMTP_HOST,
-    smtpPort: params.has('smtpPort') ? params.get('smtpPort').replace(/[^0-9]*/g, '') : DEFAULT_SMTP_PORT,
-    smtpSsl: params.has('smtpSsl') ? params.get('smtpSsl') === 'true' : DEFAULT_SMTP_SSL
-  },
-  advanced: false
+    password: ''
+  }
 });
 
 const stateFromFormValues = formValues => ({
-  values: {...formValues, password: ''}, advanced: false
+  values: {...formValues, password: ''}
 });
 
 export class Login extends Component {
@@ -57,8 +43,7 @@ export class Login extends Component {
 
   render() {
     const t = this.props.t;
-    const {serverHost, serverPort, user, password, imapSsl, smtpHost, smtpPort, smtpSsl} = this.state.values;
-    const {advanced} = this.state;
+    const {user, password} = this.state.values;
     if (this.props.application.user.credentials) {
       return <Redirect to="/"/>;
     }
@@ -74,43 +59,13 @@ export class Login extends Component {
               <h2 className={styles.subtitle}>{t('login.Login')}</h2>
             </header>
             <form onSubmit={this.login}>
-              <div className={styles.server}>
-                <TextField id='serverHost' fieldClass={`${styles.formField} ${styles.serverHost}`}
-                  value={serverHost} onChange={this.onFieldChange}
-                  focused={this.isFocused('serverHost')} required={true} autoComplete='on' label={t('login.Host')}/>
-                <TextField key='serverPort' id='serverPort' fieldClass={`${styles.formField} ${styles.serverPort}`}
-                  type='number' min='0'
-                  value={serverPort} onChange={this.onFieldChange}
-                  focused={this.isFocused('serverPort')} required={true} autoComplete='on' label={t('login.Port')}/>
-              </div>
               <TextField id='user' fieldClass={`${styles.formField} ${styles.fullWidth}`}
                 value={user} onChange={this.onFieldChange}
                 focused={this.isFocused('user')} required={true} autoComplete='on' label={t('login.User')}/>
               <TextField id='password' type={'password'} fieldClass={`${styles.formField} ${styles.fullWidth}`}
                 value={password} onChange={this.onFieldChange}
-                focused={this.isFocused('password')} required={true} label={t('login.Password')}/>
-              <Button className={styles.advancedButton} label={t('login.Advanced')}
-                icon={advanced ? 'unfold_less' : 'unfold_more'}
-                onClick={e => this.toggleAdvanced(e)}
+                focused={this.isFocused('password')} required={true} label={t('login.Password')}
               />
-              {advanced &&
-                <div className={styles.advancedContainer}>
-                  <Switch id='imapSsl' checked={imapSsl} label={t('login.ImapSSL')}
-                    onToggle={() => this.onToggle('imapSsl')}/>
-                  <h3 className={styles.section}>{t('login.SMTP')}</h3>
-                  <div className={styles.server}>
-                    <TextField id='smtpHost' fieldClass={`${styles.formField} ${styles.fullWidth} ${styles.serverHost}`}
-                      value={smtpHost} onChange={this.onFieldChange}
-                      focused={this.isFocused('smtpHost')} label={t('login.Host')}/>
-                    <TextField id='smtpPort' fieldClass={`${styles.formField} ${styles.fullWidth} ${styles.serverPort}`}
-                      type='number' min='0' required={true}
-                      value={smtpPort} onChange={this.onFieldChange}
-                      focused={this.isFocused('smtpPort')} label={t('login.Port')}/>
-                  </div>
-                  <Switch id='smtpSsl' checked={smtpSsl} label={t('login.SmtpSSL')}
-                    onToggle={() => this.onToggle('smtpSsl')}/>
-                </div>
-              }
               <Button type={'submit'}
                 className={`${styles.loginButton} ${mainCss['mdc-button--unelevated']} ${styles.fullWidth}`}
                 label={t('login.actions.Login')} />
@@ -147,11 +102,6 @@ export class Login extends Component {
     });
   }
 
-  toggleAdvanced(event) {
-    event.preventDefault();
-    event.target.blur();
-    this.setState({advanced: !this.state.advanced});
-  }
 
   login(event) {
     event.preventDefault();
