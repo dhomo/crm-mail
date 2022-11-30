@@ -21,7 +21,7 @@ public class LeadStatus {
 
     @NotNull
     @PositiveOrZero
-    @Column(unique = true)
+    @Column(unique = true, columnDefinition = "order_col")
     private Long order;
 
     @Column(unique = true)

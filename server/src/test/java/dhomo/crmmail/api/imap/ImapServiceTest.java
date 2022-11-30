@@ -22,7 +22,7 @@ package dhomo.crmmail.api.imap;
 
 import dhomo.crmmail.api.configuration.AppConfiguration;
 import dhomo.crmmail.api.configuration.WithMockCredentials;
-import dhomo.crmmail.api.credentials.CredentialsService;
+import dhomo.crmmail.api.credentials.UsersService;
 import dhomo.crmmail.api.exception.IsotopeException;
 import dhomo.crmmail.api.exception.NotFoundException;
 import dhomo.crmmail.api.folder.Folder;
@@ -80,7 +80,7 @@ public class ImapServiceTest {
     private IMAPStore imapStore;
     private AppConfiguration appConfiguration;
     private MailSSLSocketFactory mailSSLSocketFactory;
-    private CredentialsService credentialsService;
+    private UsersService usersService;
     private MessageRepository messageRepository;
     private LeadRepository leadRepository;
 
@@ -96,7 +96,7 @@ public class ImapServiceTest {
 
         appConfiguration = Mockito.mock(AppConfiguration.class);
         mailSSLSocketFactory = Mockito.mock(MailSSLSocketFactory.class);
-        credentialsService = Mockito.mock(CredentialsService.class);
+        usersService = Mockito.mock(UsersService.class);
 
         imapService = new ImapService(appConfiguration, mailSSLSocketFactory, messageRepository, leadRepository);
     }
@@ -105,7 +105,7 @@ public class ImapServiceTest {
     public void tearDown() {
         appConfiguration = null;
         mailSSLSocketFactory = null;
-        credentialsService = null;
+        usersService = null;
 
         imapService = null;
     }

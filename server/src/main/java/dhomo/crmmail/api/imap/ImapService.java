@@ -501,12 +501,12 @@ public class ImapService {
     IMAPStore getImapStore(Credentials credentials) throws MessagingException {
         if (imapStore == null) {
             final Session session = Session.getInstance(initMailProperties(credentials, mailSSLSocketFactory), null);
-            imapStore = (IMAPStore) session.getStore(credentials.getImapSsl() ? IMAPS_PROTOCOL : IMAP_PROTOCOL);
+            imapStore = (IMAPStore) session.getStore(credentials.getPrincipal().getImapSsl() ? IMAPS_PROTOCOL : IMAP_PROTOCOL);
             imapStore.connect(
-                    credentials.getServerHost(),
-                    credentials.getServerPort(),
-                    credentials.getUser(),
-                    credentials.getPassword());
+                    credentials.getPrincipal().getServerHost(),
+                    credentials.getPrincipal().getServerPort(),
+                    credentials.getName(),
+                    credentials.getCredentials());
             log.debug("Opened new ImapStore session");
         }
         return imapStore;
@@ -664,7 +664,7 @@ public class ImapService {
 
     private static Properties initMailProperties(@NonNull Credentials credentials, MailSSLSocketFactory mailSSLSocketFactory) {
         final Properties ret = new Properties();
-        ret.put("mail.imap.ssl.enable", credentials.getImapSsl());
+        ret.put("mail.imap.ssl.enable", credentials.getPrincipal().getImapSsl());
         ret.put("mail.imap.connectiontimeout", DEFAULT_CONNECTION_TIMEOUT);
         ret.put("mail.imap.connectionpooltimeout", DEFAULT_CONNECTION_TIMEOUT);
         ret.put("mail.imap.ssl.socketFactory", mailSSLSocketFactory);

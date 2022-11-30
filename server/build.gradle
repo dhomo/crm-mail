@@ -1,6 +1,6 @@
 plugins {
     id 'org.springframework.boot' version '2.7.5'
-    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id 'io.spring.dependency-management' version '1.1.0'
     id 'java'
     id 'jacoco' // создает отчеты о покрытии кода тестами
 }
@@ -36,6 +36,10 @@ dependencies {
     implementation 'org.modelmapper:modelmapper:3.1.0'
     implementation 'com.vladmihalcea:hibernate-types-55:2.20.0'
 //    implementation 'org.springdoc:springdoc-openapi-ui:1.6.11'
+
+//    Project to build Jackson module (jar) to support JSON serialization and deserialization
+//    of Hibernate (http://hibernate.org) specific datatypes and properties; especially lazy-loading aspects.
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5:2.14.0'
 
     compileOnly 'org.projectlombok:lombok:1.18.24'
 

@@ -2,24 +2,33 @@ package dhomo.crmmail.api.credentials;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
+import lombok.experimental.Accessors;
+import org.hibernate.Hibernate;
 import org.springframework.security.core.GrantedAuthority;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.util.LinkedHashSet;
+import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Getter
 @Setter
-@ToString
+@Table(name = "role")
+@Accessors(chain = true)
 public class Role implements GrantedAuthority {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;
 
+    @NotNull @NotBlank
+    @Column(unique = true)
     String role;
+
+    @ManyToMany(mappedBy = "roles")
+    private Set<User> users = new LinkedHashSet<>();
 
     @Override
     public String getAuthority() {
@@ -29,13 +38,18 @@ public class Role implements GrantedAuthority {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Role role)) return false;
-
-        return id.equals(role.id);
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Role role = (Role) o;
+        return id != null && Objects.equals(id, role.id);
     }
 
     @Override
     public int hashCode() {
         return id.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" + "id = " + id + ", " + "role = " + role + ")";
     }
 }

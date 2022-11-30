@@ -21,12 +21,13 @@
 package dhomo.crmmail.api.configuration;
 
 import dhomo.crmmail.api.credentials.Credentials;
+import dhomo.crmmail.api.credentials.User;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithSecurityContextFactory;
 
 import java.time.Duration;
-import java.time.ZonedDateTime;
+import java.time.Instant;
 
 /**
  * Created by Marc Nuri <marc@marcnuri.com> on 2019-02-25.
@@ -36,17 +37,16 @@ public class WithMockCredentialsSecurityContextFactory implements WithSecurityCo
     public SecurityContext createSecurityContext(WithMockCredentials mockCredentials) {
         final SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
 
-        final Credentials credentials = new Credentials();
+        final Credentials credentials = Credentials.authenticated(new User(),
+                mockCredentials.password(), Instant.now().plus(Duration.ofMinutes(15L)));
         securityContext.setAuthentication(credentials);
-        credentials.setServerHost(mockCredentials.serverHost());
-        credentials.setServerPort(mockCredentials.serverPort());
-        credentials.setUser(mockCredentials.user());
-        credentials.setPassword(mockCredentials.password());
-        credentials.setImapSsl(mockCredentials.imapSsl());
-        credentials.setSmtpHost(mockCredentials.smtpHost());
-        credentials.setSmtpPort(mockCredentials.smtpPort());
-        credentials.setSmtpSsl(mockCredentials.smtpSsl());
-        credentials.setExpiryDate(ZonedDateTime.now().plus(Duration.ofMinutes(15L)));
+        credentials.getPrincipal().setServerHost(mockCredentials.serverHost());
+        credentials.getPrincipal().setServerPort(mockCredentials.serverPort());
+        credentials.getPrincipal().setUserName(mockCredentials.user());
+        credentials.getPrincipal().setImapSsl(mockCredentials.imapSsl());
+        credentials.getPrincipal().setSmtpHost(mockCredentials.smtpHost());
+        credentials.getPrincipal().setSmtpPort(mockCredentials.smtpPort());
+        credentials.getPrincipal().setSmtpSsl(mockCredentials.smtpSsl());
         return securityContext;
     }
 }

@@ -38,7 +38,7 @@ public class AppConfiguration {
     public static final int DEFAULT_CONNECTION_TIMEOUT = 5000;
 
     @Value("${ENCRYPTION_PASSWORD:THIS IS PASSWORD DEFAULT. IT SHOULD BE REPLACED USING ENV VARIABLE\"}")
-    private String encryptionPassword;
+    private String tokenEncryptionPassword;
 
     // :#{null} работает так: если переменная окружения не определена, то оставляем предыдущее значение
     @Value("${TRUSTED_HOSTS:#{null}}")
@@ -48,7 +48,7 @@ public class AppConfiguration {
     private long embeddedImageSizeThreshold;
 
     @Value("${CREDENTIALS_SALT:#{null}}")
-    private String salt = KeyGenerators.string().generateKey();
+    private String tokenSalt = KeyGenerators.string().generateKey();
 
     private TemporalAmount credentialsDuration;
     private TemporalAmount credentialsRefreshBeforeDuration ;

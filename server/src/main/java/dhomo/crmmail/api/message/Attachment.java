@@ -27,10 +27,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.Hibernate;
 
-import javax.persistence.Basic;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Objects;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -45,6 +42,7 @@ public class Attachment extends IsotopeResource {
     private String fileName;
     private String contentType;
     private Integer size;
+    @Lob
     @Basic(fetch = FetchType.LAZY)
     private byte[] content;
 

@@ -20,17 +20,18 @@
  */
 package dhomo.crmmail.api.configuration;
 
-import dhomo.crmmail.api.credentials.CredentialsAuthenticationFilter;
 import dhomo.crmmail.api.credentials.CredentialsRefreshFilter;
-import dhomo.crmmail.api.credentials.CredentialsService;
+import dhomo.crmmail.api.credentials.CustomAuthProvider;
+import dhomo.crmmail.api.credentials.UsersService;
+import dhomo.crmmail.api.credentials.TokenAuthenticationConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -39,71 +40,71 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-@Configuration
+
 @EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfiguration {
 
-    private static final String ACTUATOR_REGEX = "(/api)?/actuator/health";
-    private static final String CONFIGURATION_REGEX = "(/api)?/v1/application/configuration";
-    private static final String LOGIN_REGEX = "(/api)?/v1/application/login";
-//    public static final String OPEN_API = "/api-docs.*";
+    private final RequestMatcher publicMatchers =  new OrRequestMatcher(
+            //                new RegexRequestMatcher(OPEN_API, "GET"),
+            new RegexRequestMatcher("(/api)?/actuator/health", "GET"),
+            new RegexRequestMatcher("(/api)?/v1/application/configuration", "GET"),
+            new RegexRequestMatcher("(/api)?/v1/application/login", "POST")
+    );
 
-    private final CredentialsService credentialsService;
+    private final UsersService usersService;
+    private final CustomAuthProvider customAuthProvider;
+    private final TokenAuthenticationConverter tokenAuthConverter;
+    private final AppConfiguration configuration;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
     @Bean
     public UserDetailsService userDetailsService(@Value("${ADMIN_PASS:pass}") String pass) {
-        UserDetails user = User
-                .withUsername("admin")
+        UserDetails admin = User.withUsername("admin")
                 .password(passwordEncoder().encode(pass))
                 .roles("ADMIN")
                 .build();
-        return new InMemoryUserDetailsManager(user);
+        return new InMemoryUserDetailsManager(admin);
     }
 
-    // если правильно понимаю то это создаст отдельную цепочку фильтров или вовсе не погонит по цепочке фильтров заматченные урлы
-    // нужно протестить
-//    @Bean
-//    public WebSecurityCustomizer ignoreResources() {
-//        return (webSecurity) -> webSecurity
-//                .ignoring()
-//                .antMatchers("/test/*");
-//    }
+    @Bean
+    public AuthenticationManager authManager(HttpSecurity http, PasswordEncoder bCryptPasswordEncoder,
+                                             UserDetailsService userDetailsService) throws Exception {
+
+        AuthenticationManagerBuilder authManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+        authManagerBuilder.authenticationProvider(customAuthProvider);
+        authManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
+        return authManagerBuilder.build();
+    }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        final RequestMatcher negatedPublicMatchers =  new NegatedRequestMatcher(new OrRequestMatcher(
-//                new RegexRequestMatcher(OPEN_API, "GET"),
-                new RegexRequestMatcher(ACTUATOR_REGEX, "GET"),
-                new RegexRequestMatcher(CONFIGURATION_REGEX, "GET"),
-                new RegexRequestMatcher(LOGIN_REGEX, "POST")
-        ));
-        http
-            .csrf().disable()
-            .httpBasic()
-                .and()
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-            .authorizeRequests()
-                .requestMatchers(negatedPublicMatchers).authenticated()
-                .and()
-            .cors()
-                .and()
-            .addFilterAfter(new CredentialsAuthenticationFilter(negatedPublicMatchers, credentialsService),
-                    BasicAuthenticationFilter.class)
-            .addFilterAfter(new CredentialsRefreshFilter(credentialsService),
-                    CredentialsAuthenticationFilter.class);
+    public SecurityFilterChain filterChain(final HttpSecurity http,
+                                           final AuthenticationManager authenticationManager) throws Exception {
+
+        http.csrf().disable();
+        http.cors();
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        http.authenticationManager(authenticationManager);
+        http.httpBasic();
+        http.authorizeRequests()
+                .requestMatchers(publicMatchers).permitAll()
+                .anyRequest().authenticated();
+        var authFilter = new AuthenticationFilter(authenticationManager, tokenAuthConverter);
+        authFilter.setSuccessHandler((request, response, authentication) -> {/* do nothing*/});
+        http.addFilterAfter(authFilter, BasicAuthenticationFilter.class);
+        http.addFilterAfter(new CredentialsRefreshFilter(usersService, configuration),
+                    AuthenticationFilter.class);
         return http.build();
     }
 }

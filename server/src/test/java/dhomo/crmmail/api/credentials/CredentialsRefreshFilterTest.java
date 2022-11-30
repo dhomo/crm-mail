@@ -20,57 +20,66 @@
  */
 package dhomo.crmmail.api.credentials;
 
-import dhomo.crmmail.api.credentials.Credentials;
-import dhomo.crmmail.api.credentials.CredentialsRefreshFilter;
-import dhomo.crmmail.api.credentials.CredentialsService;
+import dhomo.crmmail.api.configuration.AppConfiguration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.time.Duration;
+import java.time.Instant;
 
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
 
 /**
  * Created by Marc Nuri <marc@marcnuri.com> on 2019-02-23.
  */
+@RunWith(SpringJUnit4ClassRunner.class)
 public class CredentialsRefreshFilterTest {
 
-    private CredentialsService credentialsService;
+    private UsersService usersService;
     private CredentialsRefreshFilter credentialsRefreshFilter;
+    @MockBean
+    private AppConfiguration appConfiguration;
 
     @Before
     public void setUp() {
-        credentialsService = Mockito.mock(CredentialsService.class);
-        credentialsRefreshFilter = new CredentialsRefreshFilter(credentialsService);
+        usersService = Mockito.mock(UsersService.class);
+        credentialsRefreshFilter = new CredentialsRefreshFilter(usersService, appConfiguration);
     }
 
     @After
     public void tearDown() {
         credentialsRefreshFilter = null;
-        credentialsService = null;
+        usersService = null;
+        appConfiguration = null;
     }
 
     @Test
     public void doFilter_authenticatedUser_shouldRefreshCredentials() throws Exception {
         // Given
-        final Credentials credentials = new Credentials();
+        final Credentials credentials =  Credentials.authenticated(new User(),null, Instant.now().plus(Duration.ofMinutes(1L)));
         SecurityContextHolder.getContext().setAuthentication(credentials);
         final HttpServletResponse response = new MockHttpServletResponse();
         final FilterChain mockFilterChain = Mockito.mock(FilterChain.class);
+
+        doReturn(Duration.ofMinutes(5L)).when(appConfiguration).getCredentialsRefreshBeforeDuration();
 
         // When
         credentialsRefreshFilter.doFilter(new MockHttpServletRequest(), response, mockFilterChain);
 
         // Then
-        verify(credentialsService, times(1)).refreshCredentials(Mockito.eq(credentials), Mockito.eq(response));
+        verify(usersService, times(1)).getEncryptedAuthToken(Mockito.eq(credentials));
         verify(mockFilterChain, times(1)).doFilter(Mockito.any(ServletRequest.class), Mockito.eq(response));
     }
 
@@ -85,8 +94,7 @@ public class CredentialsRefreshFilterTest {
         credentialsRefreshFilter.doFilter(new MockHttpServletRequest(), response, mockFilterChain);
 
         // Then
-        verify(credentialsService, times(0))
-                .refreshCredentials(Mockito.any(Credentials.class), Mockito.any(HttpServletResponse.class));
+        verify(usersService, times(0)).getEncryptedAuthToken(Mockito.any(Credentials.class));
         verify(mockFilterChain, times(1)).doFilter(Mockito.any(ServletRequest.class), Mockito.eq(response));
     }
 }

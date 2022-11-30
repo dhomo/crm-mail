@@ -22,6 +22,7 @@ package dhomo.crmmail.api.smtp;
 
 import dhomo.crmmail.api.configuration.WithMockCredentials;
 import dhomo.crmmail.api.credentials.Credentials;
+import dhomo.crmmail.api.credentials.User;
 import dhomo.crmmail.api.exception.AuthenticationException;
 import dhomo.crmmail.api.http.IsotopeURLDataSource;
 import dhomo.crmmail.api.message.Attachment;
@@ -116,11 +117,11 @@ public class SmtpServiceTest {
     @Test
     public void checkCredentials_validCredentials_shouldNotFail() {
         // Given
-        final Credentials credentials = new Credentials();
-        credentials.setUser("valid");
-        credentials.setServerHost("email.com");
-        credentials.setSmtpSsl(true);
-        credentials.setSmtpPort(1);
+        final Credentials credentials = Credentials.unauthenticated(new User(), "");
+        credentials.getPrincipal().setUserName("valid");
+        credentials.getPrincipal().setServerHost("email.com");
+        credentials.getPrincipal().setSmtpSsl(true);
+        credentials.getPrincipal().setSmtpPort(1);
 
         // When
         smtpService.checkCredentials(credentials);
@@ -132,14 +133,14 @@ public class SmtpServiceTest {
     @Test(expected = AuthenticationException.class)
     public void checkCredentials_invalidCredentials_shouldThrowException() throws Exception {
         // Given
-        final Credentials credentials = new Credentials();
-        credentials.setUser("invalid");
-        credentials.setServerHost("email.com");
-        credentials.setSmtpSsl(true);
-        credentials.setSmtpPort(1);
+        final Credentials credentials =  Credentials.unauthenticated(new User(), "");
+        credentials.getPrincipal().setUserName("invalid");
+        credentials.getPrincipal().setServerHost("email.com");
+        credentials.getPrincipal().setSmtpSsl(true);
+        credentials.getPrincipal().setSmtpPort(1);
         doThrow(new MessagingException()).when(mockedTransport).connect(
-                Mockito.eq(credentials.getServerHost()), Mockito.eq(credentials.getSmtpPort()),
-                Mockito.eq(credentials.getUser()), Mockito.eq(credentials.getPassword()));
+                Mockito.eq(credentials.getPrincipal().getServerHost()), Mockito.eq(credentials.getPrincipal().getSmtpPort()),
+                Mockito.eq(credentials.getPrincipal().getUserName()), Mockito.eq(credentials.getCredentials()));
 
         // When
         smtpService.checkCredentials(credentials);

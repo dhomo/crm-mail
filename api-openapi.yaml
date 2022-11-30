@@ -1,56 +1,55 @@
 openapi: 3.0.1
 info:
-  title: OpenAPI definition
-  version: v0
+  title: CRM-mail OpenAPI definition
+  version: v1
 servers:
-  - url: http://localhost:9010
+  - url: 'http://localhost:9010'
     description: Generated server url
-
 paths:
   /api/v1/admin/login:
     get:
       tags:
         - admin
-      summary: "проверка логина админского"
+      summary: проверка логина админского
       security:
         - basic: []
       responses:
-        "200":
-          description: "OK"
-
+        '200':
+          description: OK
+      description: ''
+    parameters: []
   /api/v1/admin/users:
     get:
       tags:
         - admin
-      summary: "список юзеров"
-      operationId: "getUsers"
+      summary: список юзеров
+      operationId: getUsers
       security:
         - basic: []
       responses:
-        "200":
-          description: "OK"
+        '200':
+          description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UsersSetDto"
-
+                $ref: '#/components/schemas/UsersSetDto'
     put:
       tags:
         - admin
-      summary: "загрузить список юзеров"
-      operationId: "putUser"
+      summary: загрузить список юзеров
+      operationId: putUser
       security:
-        - basic: [ ]
+        - basic: []
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserCredentialsDto"
+              $ref: '#/components/schemas/UserCredentialsDto'
         required: true
       responses:
-        "200":
-          description: "OK"
-
+        '200':
+          description: OK
+      description: Добавить пользователя
   /api/v1/application/login:
     post:
       tags:
@@ -63,7 +62,7 @@ paths:
               $ref: '#/components/schemas/LoginRequestDto'
         required: true
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/hal+json:
@@ -75,14 +74,12 @@ paths:
         - application
       operationId: getConfiguration
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/hal+json:
               schema:
                 $ref: '#/components/schemas/ConfigurationDto'
-
-
   /api/v1/folders:
     get:
       summary: Loading list of folders
@@ -96,7 +93,7 @@ paths:
           schema:
             type: boolean
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/hal+json:
@@ -106,7 +103,7 @@ paths:
                   $ref: '#/components/schemas/Folder'
     post:
       summary: createRootFolder
-      description: Creating new 1st level folder with name {}
+      description: 'Creating new 1st level folder with name {}'
       tags:
         - folders
       operationId: createRootFolder
@@ -117,7 +114,7 @@ paths:
               type: string
         required: true
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/hal+json:
@@ -125,10 +122,10 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Folder'
-  /api/v1/folders/{folderId}:
+  '/api/v1/folders/{folderId}':
     post:
       summary: createChildFolder
-      description: Creating new folder with name {} under {} folder", newFolderName, folderId
+      description: 'Creating new folder with name {} under {} folder", newFolderName, folderId'
       tags:
         - folders
       operationId: createChildFolder
@@ -145,7 +142,7 @@ paths:
               type: string
         required: true
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/hal+json:
@@ -153,7 +150,7 @@ paths:
                 $ref: '#/components/schemas/Folder'
     delete:
       summary: deleteFolder
-      description: Deleting folder with id {}", folderId
+      description: 'Deleting folder with id {}", folderId'
       tags:
         - folders
       operationId: deleteFolder
@@ -164,13 +161,13 @@ paths:
           schema:
             type: string
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/hal+json:
               schema:
                 $ref: '#/components/schemas/Folder'
-  /api/v1/folders/{folderId}/parent:
+  '/api/v1/folders/{folderId}/parent':
     put:
       summary: moveFolder
       description: moveFolder
@@ -189,16 +186,16 @@ paths:
             schema:
               type: string
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/hal+json:
               schema:
                 $ref: '#/components/schemas/Folder'
-  /api/v1/folders/{folderId}/name:
+  '/api/v1/folders/{folderId}/name':
     put:
       summary: renameFolder
-      description: Renaming folder with id {folderId} to {newName}
+      description: 'Renaming folder with id {folderId} to {newName}'
       tags:
         - folders
       operationId: renameFolder
@@ -216,20 +213,18 @@ paths:
               type: string
         required: true
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/hal+json:
               schema:
                 $ref: '#/components/schemas/Folder'
-
-
-  /api/v1/folders/{folderId}/messages:
+  '/api/v1/folders/{folderId}/messages':
     get:
-      summary: Loading list of messages for folder {}
-      description: тут что то непонятное, два метода, что то асинхронное
+      summary: 'Loading list of messages for folder {}'
+      description: 'тут что то непонятное, два метода, что то асинхронное'
       tags:
-        - /{folderId}/messages
+        - '/{folderId}/messages'
       operationId: preloadMessages_1
       parameters:
         - name: folderId
@@ -246,7 +241,7 @@ paths:
               type: integer
               format: int64
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
@@ -259,9 +254,9 @@ paths:
                 $ref: '#/components/schemas/FluxServerSentEventListMessage'
     delete:
       summary: deleteAllFolderMessages or selected
-      description: Deleting ALL messages for folder {} if id not presents
+      description: 'Deleting ALL messages for folder {} if id not presents'
       tags:
-        - /{folderId}/messages
+        - '/{folderId}/messages'
       operationId: deleteAllFolderMessages_1
       parameters:
         - name: folderId
@@ -278,18 +273,18 @@ paths:
               type: integer
               format: int64
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Folder'
-  /api/v1/folders/{folderId}/messages/folder/{toFolderId}:
+  '/api/v1/folders/{folderId}/messages/folder/{toFolderId}':
     put:
       summary: moveMessages
-      description: Moving {List<Long> messageIds} messages from folder {} to folder {}
+      description: 'Moving {List<Long> messageIds} messages from folder {} to folder {}'
       tags:
-        - /{folderId}/messages
+        - '/{folderId}/messages'
       operationId: moveMessages
       parameters:
         - name: folderId
@@ -312,7 +307,7 @@ paths:
                 format: int64
         required: true
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
@@ -320,12 +315,11 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/MessageWithFolder'
-
-  /api/v1/folders/{folderId}/messages/seen/{seen}:
+  '/api/v1/folders/{folderId}/messages/seen/{seen}':
     put:
       summary: setMessagesSeen
       tags:
-        - /{folderId}/messages
+        - '/{folderId}/messages'
       operationId: setMessagesSeen
       parameters:
         - name: folderId
@@ -348,15 +342,13 @@ paths:
                 format: int64
         required: true
       responses:
-        "200":
+        '200':
           description: OK
-
-
-  /api/v1/folders/{folderId}/messages/{messageId}:
+  '/api/v1/folders/{folderId}/messages/{messageId}':
     get:
       summary: getMessage
       tags:
-        - /{folderId}/messages/{messageId}/
+        - '/{folderId}/messages/{messageId}/'
       operationId: getMessage_1
       parameters:
         - name: folderId
@@ -371,17 +363,17 @@ paths:
             type: integer
             format: int64
       responses:
-        "200":
+        '200':
           description: OK
           content:
             '*/*':
               schema:
                 $ref: '#/components/schemas/MessageWithFolder'
-  /api/v1/folders/{folderId}/messages/{messageId}/folder/{toFolderId}:
+  '/api/v1/folders/{folderId}/messages/{messageId}/folder/{toFolderId}':
     put:
       summary: moveMessage
       tags:
-        - /{folderId}/messages/{messageId}/
+        - '/{folderId}/messages/{messageId}/'
       operationId: moveMessage
       parameters:
         - name: folderId
@@ -401,7 +393,7 @@ paths:
           schema:
             type: string
       responses:
-        "200":
+        '200':
           description: OK
           content:
             '*/*':
@@ -409,11 +401,11 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/MessageWithFolder'
-  /api/v1/folders/{folderId}/messages/{messageId}/seen:
+  '/api/v1/folders/{folderId}/messages/{messageId}/seen':
     put:
       summary: setMessageSeen
       tags:
-        - /{folderId}/messages/{messageId}/
+        - '/{folderId}/messages/{messageId}/'
       operationId: setMessageSeen
       parameters:
         - name: folderId
@@ -434,13 +426,13 @@ paths:
               type: boolean
         required: true
       responses:
-        "200":
+        '200':
           description: OK
-  /api/v1/folders/{folderId}/messages/{messageId}/flagged:
+  '/api/v1/folders/{folderId}/messages/{messageId}/flagged':
     put:
       summary: setMessageFlagged
       tags:
-        - /{folderId}/messages/{messageId}/
+        - '/{folderId}/messages/{messageId}/'
       operationId: setMessageFlagged
       parameters:
         - name: folderId
@@ -461,13 +453,13 @@ paths:
               type: boolean
         required: true
       responses:
-        "200":
+        '200':
           description: OK
-  /api/v1/folders/{folderId}/messages/{messageId}/attachments/{id}:
+  '/api/v1/folders/{folderId}/messages/{messageId}/attachments/{id}':
     get:
       summary: getAttachment
       tags:
-        - /{folderId}/messages/{messageId}/
+        - '/{folderId}/messages/{messageId}/'
       operationId: getAttachment
       parameters:
         - name: folderId
@@ -492,10 +484,8 @@ paths:
           schema:
             type: boolean
       responses:
-        "200":
+        '200':
           description: OK
-
-
   /api/v1/smtp:
     post:
       summary: sendMessage
@@ -509,17 +499,15 @@ paths:
               $ref: '#/components/schemas/Message'
         required: true
       responses:
-        "200":
+        '200':
           description: OK
-
 components:
   securitySchemes:
     basic:
       type: http
       scheme: basic
-      description: имя admin, пароль передается в переменной окружения в сервер
+      description: 'имя admin, пароль передается в переменной окружения в сервер'
       in: header
-
   schemas:
     UsersSetDto:
       type: object
@@ -528,7 +516,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UserCredentialsDto'
-
     UserCredentialsDto:
       type: object
       properties:
@@ -553,7 +540,6 @@ components:
           example: 465
         smtpSsl:
           type: boolean
-
     Folder:
       type: object
       properties:
@@ -619,6 +605,7 @@ components:
           type: string
         name:
           type: string
+      title: ''
     Attachment:
       type: object
       properties:
@@ -713,8 +700,6 @@ components:
         address:
           type: string
     Message:
-      required:
-        - recipients
       type: object
       properties:
         uid:
@@ -831,18 +816,18 @@ components:
         salt:
           type: string
           default: none
-          description: не используется сервером, в будущем будет удалено
+          description: 'не используется сервером, в будущем будет удалено'
           deprecated: true
     LoginRequestDto:
-      required:
-        - password
-        - user
       type: object
       properties:
         user:
           type: string
         password:
           type: string
+      required:
+        - user
+        - password
     FluxServerSentEventListMessage:
       type: object
       properties:

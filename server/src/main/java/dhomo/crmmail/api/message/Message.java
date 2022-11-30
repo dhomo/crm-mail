@@ -29,7 +29,6 @@ import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import dhomo.crmmail.api.exception.IsotopeException;
 import dhomo.crmmail.api.lead.Lead;
 import dhomo.crmmail.api.lead.dto.LeadDto_id_name;
-import dhomo.crmmail.api.resource.IsotopeResource;
 import com.sun.mail.imap.IMAPMessage;
 import lombok.Getter;
 import lombok.Setter;
@@ -49,7 +48,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-
 @Getter
 @Setter
 @Entity
@@ -59,7 +57,7 @@ import java.util.stream.Stream;
         @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 })
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Message extends IsotopeResource {
+public class Message {
 
     private static final String CET_ZONE_ID = "CET";
     public static final String HEADER_IN_REPLY_TO = "In-Reply-To";
@@ -78,7 +76,7 @@ public class Message extends IsotopeResource {
     @Transient
     private Long modseq;
 
-    @Column(name = "from_column", columnDefinition = "text[]")
+    @Column(name = "from_col", columnDefinition = "text[]")
     @Type(type = "list-array")
     private List<String> from;
 
@@ -101,7 +99,7 @@ public class Message extends IsotopeResource {
     @Transient
     private Boolean flagged, seen, recent, deleted;
 
-    @Basic(fetch = FetchType.LAZY)
+    @Lob
     @Column(columnDefinition = "text")
     private String content;
 

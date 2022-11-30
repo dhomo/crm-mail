@@ -21,9 +21,11 @@
 package dhomo.crmmail.api.application;
 
 import dhomo.crmmail.api.configuration.AppConfiguration;
-import dhomo.crmmail.api.credentials.CredentialsService;
+import dhomo.crmmail.api.credentials.Credentials;
+import dhomo.crmmail.api.credentials.UsersService;
 import dhomo.crmmail.api.dto.LoginResponseDto;
 import dhomo.crmmail.api.dto.LoginRequestDto;
+import dhomo.crmmail.api.exception.AuthenticationException;
 import dhomo.crmmail.api.exception.IsotopeException;
 import dhomo.crmmail.api.folder.FolderResource;
 import dhomo.crmmail.api.imap.ImapService;
@@ -66,7 +68,7 @@ public class ApplicationResource {
     private final AppConfiguration configuration;
     private final ImapService imapService;
     private final SmtpService smtpService;
-    private final CredentialsService credentialsService;
+    private final UsersService usersService;
 
 
     @GetMapping(path = "/configuration", produces = MediaTypes.HAL_JSON_VALUE)
@@ -80,13 +82,17 @@ public class ApplicationResource {
             @Validated() @RequestBody LoginRequestDto loginRequestDto) {
 
         log.info("User logging into application");
-        var credentials = credentialsService.findCredential(loginRequestDto.getUser());
-        credentials.setPassword(loginRequestDto.getPassword());
+        final var credentials = Credentials.unauthenticated(
+                usersService.findUser(loginRequestDto.getUser()),
+                loginRequestDto.getPassword());
+        if (!credentials.getPrincipal().isEnabled()){
+            throw new AuthenticationException(AuthenticationException.Type.DISABLED);
+        }
         imapService.checkCredentials(credentials);
         smtpService.checkCredentials(credentials);
         try {
             var loginResponseDto = new LoginResponseDto();
-            loginResponseDto.setEncrypted(credentialsService.encrypt(credentials));
+            loginResponseDto.setEncrypted(usersService.getEncryptedAuthToken(credentials));
             loginResponseDto.setSalt("none");
             return ResponseEntity.ok(loginResponseDto);
         } catch (IOException ex){
