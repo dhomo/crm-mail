@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -27,12 +27,11 @@ public class LeadService {
     private final ObjectFactory<ImapService> imapServiceFactory;
 
     @Transactional
-    public void addMessage(UUID leadUUID, String  folderId, Long messageUid){
-        var lead = leadRepository.findById(leadUUID)
-                .orElseThrow(()-> new NotFoundException("Lead " + leadUUID + "not found"));
+    public void addEmailMessage(Long leadID, String  folderId, Long messageUid){
+        var lead = leadRepository.findById(leadID)
+                .orElseThrow(()-> new NotFoundException("Lead " + leadID + "not found"));
         Message message = imapServiceFactory.getObject().getMessage(Folder.toId(folderId), messageUid);
-        message = messageRepository.findById(message.getMessageId()).orElse(message);
-        lead.addMessage(message);
+        lead.addLeadEvent(message);
         leadRepository.save(lead);
     }
 
@@ -60,5 +59,13 @@ public class LeadService {
             if (lead.getCreationDateTime() == null) lead.setCreationDateTime(ZonedDateTime.now());
         }
         return leadRepository.save(lead);
+    }
+
+    public Lead getLead(Long leadId) {
+        Lead lead = leadRepository.findById(leadId).filter(new SecurityPredicate()).orElseThrow();
+        lead.setLeadEvents(lead.getLeadEvents().stream()
+                .filter(new SecurityPredicate())
+                .collect(Collectors.toSet()));
+        return lead;
     }
 }

@@ -1,5 +1,6 @@
-package dhomo.crmmail.api.credentials;
+package dhomo.crmmail.api.authentication;
 
+import dhomo.crmmail.api.credentials.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.*;

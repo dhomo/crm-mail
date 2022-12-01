@@ -20,7 +20,7 @@
  */
 package dhomo.crmmail.api.http;
 
-import dhomo.crmmail.api.credentials.Credentials;
+import dhomo.crmmail.api.authentication.Credentials;
 import org.springframework.lang.NonNull;
 
 import javax.activation.DataSource;

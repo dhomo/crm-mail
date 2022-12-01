@@ -21,7 +21,7 @@
 package dhomo.crmmail.api.smtp;
 
 import dhomo.crmmail.api.configuration.WithMockCredentials;
-import dhomo.crmmail.api.credentials.Credentials;
+import dhomo.crmmail.api.authentication.Credentials;
 import dhomo.crmmail.api.credentials.User;
 import dhomo.crmmail.api.exception.AuthenticationException;
 import dhomo.crmmail.api.http.IsotopeURLDataSource;

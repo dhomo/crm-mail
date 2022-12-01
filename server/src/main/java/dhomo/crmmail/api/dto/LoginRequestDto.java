@@ -1,17 +1,15 @@
 package dhomo.crmmail.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import dhomo.crmmail.api.credentials.Credentials;
-import lombok.AllArgsConstructor;
+import dhomo.crmmail.api.authentication.Credentials;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
- * A DTO for the {@link dhomo.crmmail.api.credentials.Credentials} entity
+ * A DTO for the {@link Credentials} entity
  */
 @Data
 @JsonIgnoreProperties(ignoreUnknown=true)

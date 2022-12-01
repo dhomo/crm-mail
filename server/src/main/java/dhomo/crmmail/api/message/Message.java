@@ -20,18 +20,17 @@
  */
 package dhomo.crmmail.api.message;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sun.mail.imap.IMAPMessage;
 import com.vladmihalcea.hibernate.type.array.ListArrayType;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import dhomo.crmmail.api.exception.IsotopeException;
-import dhomo.crmmail.api.lead.Lead;
 import dhomo.crmmail.api.lead.dto.LeadDto_id_name;
-import com.sun.mail.imap.IMAPMessage;
+import dhomo.crmmail.api.lead.leadEvents.LeadEvent;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
@@ -50,14 +49,12 @@ import java.util.stream.Stream;
 
 @Getter
 @Setter
+@Accessors(chain = true)
 @Entity
-@Table(name = "message")
-@TypeDefs({
-        @TypeDef(name = "list-array", typeClass = ListArrayType.class),
-        @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
-})
+@Table(name = "email_message", indexes = {@Index(name = "idx_message_messageid", columnList = "messageId")})
+@TypeDefs({@TypeDef(name = "list-array", typeClass = ListArrayType.class), @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)})
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Message {
+public class Message extends LeadEvent {
 
     private static final String CET_ZONE_ID = "CET";
     public static final String HEADER_IN_REPLY_TO = "In-Reply-To";
@@ -70,7 +67,6 @@ public class Message {
 
     // id email'a уникальный
     @Column(nullable = false, unique = true, updatable = false)
-    @Id
     private String messageId;
 
     @Transient
@@ -91,7 +87,7 @@ public class Message {
 
     private String subject;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+    // @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
     private ZonedDateTime receivedDate;
 
     private Long size;
@@ -118,9 +114,6 @@ public class Message {
     @Type(type = "list-array")
     private List<String> listUnsubscribe;
 
-    @JsonIgnore
-    @ManyToMany(mappedBy = "messages", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-    Set<Lead> leads = new LinkedHashSet<>();
 
     @Transient
     @JsonProperty("leadsShort")
@@ -132,6 +125,12 @@ public class Message {
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
         Message message = (Message) o;
         return messageId != null && Objects.equals(messageId, message.messageId);
+    }
+
+    @Transient
+    @Override
+    public String getType() {
+        return "Message";
     }
 
     @Override

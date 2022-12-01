@@ -20,6 +20,8 @@
  */
 package dhomo.crmmail.api.credentials;
 
+import dhomo.crmmail.api.authentication.Credentials;
+import dhomo.crmmail.api.authentication.CredentialsRefreshFilter;
 import dhomo.crmmail.api.configuration.AppConfiguration;
 import org.junit.After;
 import org.junit.Before;

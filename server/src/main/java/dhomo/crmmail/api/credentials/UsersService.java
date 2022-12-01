@@ -22,6 +22,7 @@ package dhomo.crmmail.api.credentials;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dhomo.crmmail.api.authentication.Credentials;
 import dhomo.crmmail.api.configuration.AppConfiguration;
 import dhomo.crmmail.api.exception.AuthenticationException;
 import lombok.RequiredArgsConstructor;

@@ -20,7 +20,7 @@
  */
 package dhomo.crmmail.api.imap;
 
-import dhomo.crmmail.api.credentials.Credentials;
+import dhomo.crmmail.api.authentication.Credentials;
 import dhomo.crmmail.api.exception.IsotopeException;
 import dhomo.crmmail.api.message.Message;
 import com.sun.mail.imap.IMAPFolder;

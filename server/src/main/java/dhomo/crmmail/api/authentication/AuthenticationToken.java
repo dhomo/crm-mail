@@ -1,4 +1,4 @@
-package dhomo.crmmail.api.credentials;
+package dhomo.crmmail.api.authentication;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;

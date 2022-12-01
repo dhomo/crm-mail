@@ -21,7 +21,7 @@
 package dhomo.crmmail.api.imap;
 
 import dhomo.crmmail.api.configuration.AppConfiguration;
-import dhomo.crmmail.api.credentials.Credentials;
+import dhomo.crmmail.api.authentication.Credentials;
 import dhomo.crmmail.api.exception.AuthenticationException;
 import dhomo.crmmail.api.exception.InvalidFieldException;
 import dhomo.crmmail.api.exception.IsotopeException;

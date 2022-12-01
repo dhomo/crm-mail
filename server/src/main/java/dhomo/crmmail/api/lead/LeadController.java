@@ -9,7 +9,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 
 @Slf4j
@@ -30,11 +29,11 @@ public class LeadController {
         return ResponseEntity.ok(leadService.getaAllLeads());
     }
 
-    @PutMapping("/{uuid}")
-    ResponseEntity addMessage(@PathVariable UUID uuid,
-                              @RequestParam("folderId") String  folderId, @RequestParam("uid") Long uid){
+    @PutMapping("/{id}")
+    ResponseEntity<?> addMessage(@PathVariable Long id,
+                              @RequestParam("folderId") String  folderId, @RequestParam("messageUid") Long messageUid){
 
-        leadService.addMessage(uuid, folderId, uid);
+        leadService.addEmailMessage(id, folderId, messageUid);
         return ResponseEntity.ok().build();
     }
 }

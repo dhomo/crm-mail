@@ -5,13 +5,12 @@ import dhomo.crmmail.api.lead.leadStatus.LeadStatus;
 
 import java.time.ZonedDateTime;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * A Projection for the {@link Lead} entity
  */
 public interface LeadInfo {
-    UUID getId();
+    Long getId();
 
     String getName();
 

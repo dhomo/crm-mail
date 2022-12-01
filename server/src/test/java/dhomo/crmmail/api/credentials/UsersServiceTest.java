@@ -20,31 +20,21 @@
  */
 package dhomo.crmmail.api.credentials;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dhomo.crmmail.api.authentication.Credentials;
 import dhomo.crmmail.api.configuration.AppConfiguration;
 import dhomo.crmmail.api.exception.AuthenticationException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.servlet.http.HttpServletResponse;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static dhomo.crmmail.api.http.HttpHeaders.ISOTOPE_CREDENTIALS;
-import static dhomo.crmmail.api.http.HttpHeaders.ISOTOPE_SALT;
-import static org.hamcrest.Matchers.emptyOrNullString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;

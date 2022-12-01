@@ -21,7 +21,7 @@
 package dhomo.crmmail.api.application;
 
 import dhomo.crmmail.api.configuration.AppConfiguration;
-import dhomo.crmmail.api.credentials.Credentials;
+import dhomo.crmmail.api.authentication.Credentials;
 import dhomo.crmmail.api.credentials.UsersService;
 import dhomo.crmmail.api.dto.LoginResponseDto;
 import dhomo.crmmail.api.dto.LoginRequestDto;

@@ -1,4 +1,4 @@
-package dhomo.crmmail.api.credentials;
+package dhomo.crmmail.api.authentication;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @Component
 @RequiredArgsConstructor
-public class TokenAuthenticationConverter implements AuthenticationConverter {
+public class TokenAutheConverter implements AuthenticationConverter {
 
     private final AppConfiguration appConf;
     private final ObjectMapper objectMapper;

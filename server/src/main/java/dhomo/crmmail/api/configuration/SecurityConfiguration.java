@@ -20,10 +20,10 @@
  */
 package dhomo.crmmail.api.configuration;
 
-import dhomo.crmmail.api.credentials.CredentialsRefreshFilter;
-import dhomo.crmmail.api.credentials.CustomAuthProvider;
+import dhomo.crmmail.api.authentication.CredentialsRefreshFilter;
+import dhomo.crmmail.api.authentication.CustomAuthProvider;
 import dhomo.crmmail.api.credentials.UsersService;
-import dhomo.crmmail.api.credentials.TokenAuthenticationConverter;
+import dhomo.crmmail.api.authentication.TokenAutheConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -61,7 +61,7 @@ public class SecurityConfiguration {
 
     private final UsersService usersService;
     private final CustomAuthProvider customAuthProvider;
-    private final TokenAuthenticationConverter tokenAuthConverter;
+    private final TokenAutheConverter tokenAuthConverter;
     private final AppConfiguration configuration;
 
     @Bean
