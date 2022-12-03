@@ -4,6 +4,7 @@ import dhomo.crmmail.api.credentials.User;
 import dhomo.crmmail.api.lead.dto.LeadInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
@@ -44,24 +45,24 @@ public class LeadController {
         return ResponseEntity.ok(leadService.save(lead));
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}/addEmail")
-    ResponseEntity<?> addMessage(@PathVariable Long id,
+    void addMessage(@PathVariable Long id,
                                  @RequestParam("folderId") String  folderId,
                                  @RequestParam("messageUid") Long messageUid,
                                  @RequestParam(name = "roleIds", required = false) Set<Long> roleIds,
                                  Principal principal){
 
         leadService.addEmailMessageToLead(leadService.findLead(id), folderId, messageUid, roleIds, (User) principal);
-        return ResponseEntity.ok().build();
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/newWithEmail")
-    ResponseEntity<?> newLeadWithMessage(@RequestParam("folderId") String  folderId,
+    void newLeadWithMessage(@RequestParam("folderId") String  folderId,
                                           @RequestParam("messageUid") Long messageUid,
                                           @RequestParam(name = "roleIds", required = false) Set<Long> roleIds,
                                           Principal principal){
         var newLead = leadService.fillDefaults(new Lead(), (User) principal);
         leadService.addEmailMessageToLead(newLead, folderId, messageUid, roleIds, (User) principal);
-        return ResponseEntity.ok().build();
     }
 }
