@@ -1,7 +1,7 @@
-openapi: 3.0.1
+openapi: 3.0.3
 info:
   title: CRM-mail OpenAPI definition
-  version: v1
+  version: "1.0.0"
 servers:
   - url: 'http://localhost:9010'
     description: Generated server url
@@ -80,6 +80,124 @@ paths:
             application/hal+json:
               schema:
                 $ref: '#/components/schemas/ConfigurationDto'
+  /api/v1/leads:
+    post:
+      tags:
+        - leads
+      summary: "POST api/v1/leads"
+      operationId: "postLead"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Lead"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Lead"
+#    get:
+#      tags:
+#        - leads
+#      summary: "GET api/v1/leads"
+#      operationId: "getAll"
+#      responses:
+#        "200":
+#          description: "OK"
+#          content:
+#            '*/*':
+#              schema:
+#                $ref: "#/components/schemas/LeadInfo"
+  /api/v1/leads/{id}:
+    put:
+      tags:
+        - leads
+      summary: "PUT api/v1/leads/{id}"
+      operationId: "putLead"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: false
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Lead"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Lead"
+  /api/v1/leads/{id}/addEmail:
+    put:
+      tags:
+        - leads
+      summary: "PUT api/v1/leads/{id}/addEmail"
+      operationId: "addMessage"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+        - name: "folderId"
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+        - name: "messageUid"
+          in: "query"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+        - name: "roleIds"
+          in: "query"
+          required: false
+          schema:
+            type: "array"
+            items:
+              type: integer
+          explode: false
+      responses:
+        "200":
+          description: "OK"
+  /api/v1/leads/newWithEmail:
+    post:
+      tags:
+        - leads
+      summary: "POST api/v1/leads/newWithEmail"
+      operationId: "newLeadWithMessage"
+      parameters:
+        - name: "folderId"
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+        - name: "messageUid"
+          in: "query"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+        - name: "roleIds"
+          in: "query"
+          required: false
+          schema:
+            type: "array"
+            items:
+              type: integer
+          explode: false
+      responses:
+        "200":
+          description: "OK"
+
   /api/v1/folders:
     get:
       summary: Loading list of folders
@@ -503,11 +621,15 @@ paths:
           description: OK
 components:
   securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Isotope-Credentials
+      description: токен автроризации
     basic:
       type: http
       scheme: basic
       description: 'имя admin, пароль передается в переменной окружения в сервер'
-      in: header
   schemas:
     UsersSetDto:
       type: object
@@ -843,3 +965,92 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Link'
+    Role:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int64"
+        role:
+          type: "string"
+    User:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int64"
+        serverHost:
+          type: "string"
+        serverPort:
+          type: "integer"
+          format: "int32"
+        userName:
+          type: "string"
+        imapSsl:
+          type: "boolean"
+        smtpHost:
+          type: "string"
+        smtpPort:
+          type: "integer"
+          format: "int32"
+        smtpSsl:
+          type: "boolean"
+        enabled:
+          type: "boolean"
+        roles:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Role"
+    LeadStatus:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int64"
+        order:
+          type: "integer"
+          format: "int64"
+        name:
+          type: "string"
+    LeadEvent:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int64"
+        owner:
+          $ref: "#/components/schemas/User"
+        allowed:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Role"
+        createdDate:
+          type: "string"
+          format: "date-time"
+        lead:
+          $ref: "#/components/schemas/Lead"
+    Lead:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int64"
+        name:
+          type: "string"
+        owner:
+          $ref: "#/components/schemas/User"
+        creationDateTime:
+          type: "string"
+          format: "date-time"
+        status:
+          $ref: "#/components/schemas/LeadStatus"
+        summary:
+          type: "string"
+        allowed:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Role"
+        leadEvents:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/LeadEvent"

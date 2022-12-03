@@ -5,7 +5,6 @@ import dhomo.crmmail.api.lead.dto.LeadInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,27 +21,30 @@ public class LeadController {
 
     private final LeadService leadService;
 
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping
-    ResponseEntity<Lead> postLead(@RequestBody(required = false) Lead lead, Principal principal){
+    Lead postLead(@RequestBody(required = false) Lead lead, Principal principal){
         if (lead == null) lead = new Lead();
         // обнуляем владельца и id независимо от того что пришло на вход
         lead.setOwner(null);
         lead.setId(null);
         var newLead = leadService.fillDefaults(lead, (User) principal);
-        return ResponseEntity.ok(leadService.save(newLead));
+        return leadService.save(newLead);
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    ResponseEntity<List<LeadInfo>> getAll(){
-        return ResponseEntity.ok(leadService.getaAllLeads());
+    List<LeadInfo> getAll(){
+        return leadService.getaAllLeads();
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}")
-    ResponseEntity<Lead> putLead(@RequestBody Lead lead, Principal principal){
+    Lead putLead(@RequestBody Lead lead, Principal principal){
         if(new SecurityPredicate((User) principal).test(lead)){
             throw new BadCredentialsException("Недостаточно прав для изменения лида");
         }
-        return ResponseEntity.ok(leadService.save(lead));
+        return leadService.save(lead);
     }
 
     @ResponseStatus(HttpStatus.OK)
