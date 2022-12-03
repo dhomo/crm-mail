@@ -20,7 +20,7 @@ class SecurityPredicate implements Predicate<SecurityData> {
     /**
      * проверка прав юзера
      * @param object the input argument
-     * @return true если владелец совпадает с юзером или если у юзера есть ВСЕ необходимые роли
+     * @return true если владелец совпадает с юзером или если у юзера есть ВСЕ необходимые роли для доступа к объекту
      */
     @Override
     public boolean test(SecurityData object) {

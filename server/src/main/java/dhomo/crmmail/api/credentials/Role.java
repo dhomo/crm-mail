@@ -9,9 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.LinkedHashSet;
 import java.util.Objects;
-import java.util.Set;
 
 @Entity
 @Getter
@@ -27,9 +25,7 @@ public class Role implements GrantedAuthority {
     @Column(unique = true)
     String role;
 
-    @ManyToMany(mappedBy = "roles")
-    private Set<User> users = new LinkedHashSet<>();
-
+    @Transient
     @Override
     public String getAuthority() {
         return this.role;

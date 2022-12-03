@@ -4,18 +4,20 @@ import dhomo.crmmail.api.credentials.Role;
 import dhomo.crmmail.api.credentials.User;
 import dhomo.crmmail.api.lead.leadEvents.LeadEvent;
 import dhomo.crmmail.api.lead.leadStatus.LeadStatus;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.LinkedHashSet;
+import java.util.Objects;
+import java.util.Set;
 
 @Entity
-@Table(name = "Lead", indexes = {@Index(name = "idx_lead_name", columnList = "name")})
+@Table(name = "lead", indexes = {@Index(name = "idx_lead_name", columnList = "name")})
 @Getter
 @Setter
 @Accessors(chain = true)
@@ -26,7 +28,6 @@ public class Lead implements SecurityData {
 
     // закладываемся на то что имя может измениться, поэтому не используем его в качестве NaturalId
     @Column(unique = true)
-    @NotBlank(groups = {Lead.New.class})
     private String name;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, optional = false)
@@ -90,5 +91,4 @@ public class Lead implements SecurityData {
         return getClass().hashCode();
     }
 
-    public interface New {}
 }
