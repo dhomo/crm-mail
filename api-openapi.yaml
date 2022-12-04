@@ -7,7 +7,7 @@ servers:
     description: Generated server url
 paths:
   /api/v1/admin/login:
-    get:
+    post:
       tags:
         - admin
       summary: проверка логина админского
@@ -16,8 +16,6 @@ paths:
       responses:
         '200':
           description: OK
-      description: ''
-    parameters: []
   /api/v1/admin/users:
     get:
       tags:
@@ -32,11 +30,33 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UsersSetDto'
+                type: "array"
+                items:
+                  $ref: '#/components/schemas/User'
+    post:
+      tags:
+        - admin
+      summary: "добавить юзера"
+      operationId: "postUser"
+      security:
+        - basic: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/User"
     put:
       tags:
         - admin
-      summary: загрузить список юзеров
+      summary: изменить существующего юзера
       operationId: putUser
       security:
         - basic: []
@@ -44,12 +64,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserCredentialsDto'
+              $ref: "#/components/schemas/User"
         required: true
       responses:
-        '200':
-          description: OK
-      description: Добавить пользователя
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/User"
   /api/v1/application/login:
     post:
       tags:

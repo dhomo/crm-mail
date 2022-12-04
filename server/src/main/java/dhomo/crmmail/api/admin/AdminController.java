@@ -3,10 +3,13 @@ package dhomo.crmmail.api.admin;
 
 import dhomo.crmmail.api.credentials.User;
 import dhomo.crmmail.api.credentials.UsersService;
+import dhomo.crmmail.api.exception.InvalidFieldException;
+import dhomo.crmmail.api.lead.leadStatus.LeadStatus;
+import dhomo.crmmail.api.lead.leadStatus.LeadStatusRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -22,27 +25,56 @@ public class AdminController {
 
     private final ModelMapper mapper;
     private final UsersService usersService;
+    private final LeadStatusRepository leadStatusRepository;
 
-    @RequestMapping(path ="/login",
-            method = {RequestMethod.GET, RequestMethod.PUT, RequestMethod.POST })
-    public ResponseEntity<?> login(){
-        return ResponseEntity.ok().build();
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/login")
+    void login(){
+        log.info("проверка админского доступа");
     }
 
-    //    Добавляем юзера в список тех кому разрешен доступ, но не проверяем т.к. пароля не знаем и не храним
-    @PutMapping(path = "/users")
-    public ResponseEntity<User> putUser(@Validated() @RequestBody User user) {
-
-        log.info("Create or update user ");
-            return ResponseEntity.ok(usersService.putUser(user));
-    }
-
-    //    Добавляем юзера в список тех кому разрешен доступ, но не проверяем т.к. пароля не знаем и не храним
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping(path = "/users")
-    public ResponseEntity<List<User>> getUsers() {
+    List<User> getUsers() {
         log.info("Get all user email credentials");
-        var users = usersService.findAll();
-        return ResponseEntity.ok(users);
+        return usersService.findAll();
     }
 
+    /**
+     * Добавляем юзера в список тех кому разрешен доступ.
+     * Данные не проверяем т.к. пароля не знаем и не храним
+     */
+    @PostMapping(path = "/users")
+    User postUser(@Validated() @RequestBody User user) {
+        log.info("Add new user");
+        user.setId(null);
+        return usersService.saveUser(user);
+    }
+
+    @PutMapping(path = "/users")
+    User putUser(@Validated() @RequestBody User user) {
+        log.info("Update user id:" + user.getId());
+        if (user.getId() == null){
+            throw new InvalidFieldException("Lead id should not be null ");
+        }
+        return usersService.saveUser(user);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/LeadStatuses")
+    List<LeadStatus> getLeadStatuses(){
+        return leadStatusRepository.findAll();
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping ("/LeadStatuses")
+    LeadStatus postLeadStatus(@RequestBody LeadStatus leadStatus){
+        return leadStatusRepository.save(leadStatus);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping ("/LeadStatuses")
+    LeadStatus putLeadStatus(@RequestBody LeadStatus leadStatus){
+        return leadStatusRepository.save(leadStatus);
+    }
 }

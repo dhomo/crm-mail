@@ -27,7 +27,6 @@ import dhomo.crmmail.api.configuration.AppConfiguration;
 import dhomo.crmmail.api.exception.AuthenticationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.encrypt.Encryptors;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.stereotype.Service;
@@ -45,7 +44,6 @@ import static dhomo.crmmail.api.exception.AuthenticationException.Type.BLACKLIST
 public class UsersService {
 
     private final ObjectMapper objectMapper;
-    private final ModelMapper modelMapper;
     private final AppConfiguration appConfiguration;
     private final UserRepository userRepository;
 
@@ -74,12 +72,8 @@ public class UsersService {
     }
 
     @Transactional
-    public User putUser(User user){
+    public User saveUser(User user){
         return userRepository.save(user);
     }
-    //
-    // public User postUser(User user){
-    //     return userRepository.save(user);
-    // }
 
 }
