@@ -2,10 +2,8 @@ package dhomo.crmmail.api.lead;
 
 import dhomo.crmmail.api.credentials.RoleRepository;
 import dhomo.crmmail.api.credentials.User;
-import dhomo.crmmail.api.exception.NotFoundException;
 import dhomo.crmmail.api.folder.Folder;
 import dhomo.crmmail.api.imap.ImapService;
-import dhomo.crmmail.api.lead.dto.LeadInfo;
 import dhomo.crmmail.api.lead.leadStatus.LeadStatus;
 import dhomo.crmmail.api.lead.leadStatus.LeadStatusRepository;
 import dhomo.crmmail.api.message.Message;
@@ -56,12 +54,6 @@ public class LeadService {
         return leadStatusRepository.findNew();
     }
 
-
-    public Lead findLead(Long id){
-        return leadRepository.findById(id)
-                .orElseThrow(()-> new NotFoundException("Lead " + id + "not found"));
-    }
-
     public void addEmailMessageToLead(Lead lead, String  folderId, Long messageUid, Set<Long> roleIds, User owner){
         Message message = imapServiceFactory.getObject().getMessage(Folder.toId(folderId), messageUid);
         message.setOwner(owner);
@@ -70,17 +62,19 @@ public class LeadService {
         leadRepository.save(lead);
     }
 
-    public List<LeadInfo> getaAllLeads(){
-        //        var ret = leadRepository.findAll().stream()
-        //                .map( lead -> {
-        //                    var dto = mapper.map(lead, LeadDto.class);
-        //                    dto.setStatusId(lead.getStatus().getId());
-        //                    dto.setMessages(messageRepository.findByLeads_Id(lead.getId()));
-        //                    return dto;
-        //                })
-        //                .toList();
-        // return leadRepository.findAllLeadInfoBy().stream().filter();
-        return null;
+    /**
+     *
+     * @param user
+     * @return Все лиды, со всем событиями. Результаты отфильтрованы по правам доступа
+     */
+    public List<Lead> getAllLeads(User user){
+        final var securityFilter = new SecurityPredicate(user);
+        var leads = leadRepository.findAll().stream().filter(securityFilter);
+        return leads.map(lead ->
+                lead.setLeadEvents(lead.getLeadEvents().stream()
+                        .filter(securityFilter)
+                        .collect(Collectors.toSet())))
+                .toList();
     }
 
     /**
@@ -92,10 +86,17 @@ public class LeadService {
         return leadRepository.save(lead);
     }
 
-    public Lead getLead(Long leadId) {
-        Lead lead = leadRepository.findById(leadId).filter(new SecurityPredicate()).orElseThrow();
+    /**
+     *
+     * @param leadId
+     * @param user
+     * @return Возвращает лид если он существует и хватает прав
+     */
+    public Lead getLead(Long leadId, User user) {
+        var securityFilter = new SecurityPredicate(user);
+        Lead lead = leadRepository.findById(leadId).filter(securityFilter).orElseThrow();
         lead.setLeadEvents(lead.getLeadEvents().stream()
-                .filter(new SecurityPredicate())
+                .filter(securityFilter)
                 .collect(Collectors.toSet()));
         return lead;
     }

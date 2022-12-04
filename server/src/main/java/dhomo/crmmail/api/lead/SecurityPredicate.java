@@ -9,6 +9,11 @@ class SecurityPredicate implements Predicate<SecurityData> {
 
     private final User authenticatedUser;
 
+    /**
+     *
+     * @param authenticatedUser пользователь для которого проверяем доступность объектов.
+     *                          Если null, то все объекты доступны
+     */
     SecurityPredicate(User authenticatedUser) {
         this.authenticatedUser = authenticatedUser;
     }
@@ -20,10 +25,14 @@ class SecurityPredicate implements Predicate<SecurityData> {
     /**
      * проверка прав юзера
      * @param object the input argument
-     * @return true если владелец совпадает с юзером или если у юзера есть ВСЕ необходимые роли для доступа к объекту
+     * @return true если владелец совпадает с юзером
+     * или если у юзера есть ВСЕ необходимые роли для доступа к объекту
+     * или если юзер = null
      */
     @Override
     public boolean test(SecurityData object) {
-        return authenticatedUser.equals(object.getOwner()) || authenticatedUser.getRoles().containsAll(object.getAllowed());
+        return authenticatedUser == null ||
+                authenticatedUser.equals(object.getOwner()) ||
+                authenticatedUser.getRoles().containsAll(object.getAllowed());
     }
 }

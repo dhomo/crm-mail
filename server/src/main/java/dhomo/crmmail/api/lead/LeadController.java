@@ -1,11 +1,11 @@
 package dhomo.crmmail.api.lead;
 
 import dhomo.crmmail.api.credentials.User;
-import dhomo.crmmail.api.lead.dto.LeadInfo;
+import dhomo.crmmail.api.exception.InvalidFieldException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -20,6 +20,13 @@ import java.util.Set;
 public class LeadController {
 
     private final LeadService leadService;
+    private final ModelMapper modelMapper;
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping
+    List<Lead> getLeads(Principal principal){
+        return leadService.getAllLeads((User) principal);
+    }
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping
@@ -33,37 +40,43 @@ public class LeadController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping
-    List<LeadInfo> getAll(){
-        return leadService.getaAllLeads();
+    @PutMapping()
+    Lead putLead(@RequestBody Lead lead, Principal principal){
+        if (lead.getId() == null){
+            throw new InvalidFieldException("Lead id should not be null ");
+        }
+        var persistLead = leadService.getLead(lead.getId(), (User) principal);
+        // позволяет частичное обновление (только не null поля)
+        // у фронта остается возможность изменить владельца и ограничивающие роли, помним об этом
+        // возможно стоит это ограничить
+        modelMapper.map(lead, persistLead);
+        return leadService.save(persistLead);
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @PutMapping("/{id}")
-    Lead putLead(@RequestBody Lead lead, Principal principal){
-        if(new SecurityPredicate((User) principal).test(lead)){
-            throw new BadCredentialsException("Недостаточно прав для изменения лида");
-        }
-        return leadService.save(lead);
+    @GetMapping("/{id}")
+    Lead getLead(@PathVariable Long id, Principal principal){
+        return leadService.getLead(id, (User) principal);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}/addEmail")
     void addMessage(@PathVariable Long id,
-                                 @RequestParam("folderId") String  folderId,
-                                 @RequestParam("messageUid") Long messageUid,
-                                 @RequestParam(name = "roleIds", required = false) Set<Long> roleIds,
-                                 Principal principal){
+                    @RequestParam("folderId") String  folderId,
+                    @RequestParam("messageUid") Long messageUid,
+                    @RequestParam(name = "roleIds", required = false) Set<Long> roleIds,
+                    Principal principal){
 
-        leadService.addEmailMessageToLead(leadService.findLead(id), folderId, messageUid, roleIds, (User) principal);
+        Lead lead = leadService.getLead(id, (User) principal);
+        leadService.addEmailMessageToLead(lead, folderId, messageUid, roleIds, (User) principal);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/newWithEmail")
     void newLeadWithMessage(@RequestParam("folderId") String  folderId,
-                                          @RequestParam("messageUid") Long messageUid,
-                                          @RequestParam(name = "roleIds", required = false) Set<Long> roleIds,
-                                          Principal principal){
+                            @RequestParam("messageUid") Long messageUid,
+                            @RequestParam(name = "roleIds", required = false) Set<Long> roleIds,
+                            Principal principal){
         var newLead = leadService.fillDefaults(new Lead(), (User) principal);
         leadService.addEmailMessageToLead(newLead, folderId, messageUid, roleIds, (User) principal);
     }

@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -47,8 +49,9 @@ public class Lead implements SecurityData {
 
     // если пусто, то доступ для всех разрешен
     //  если содержит несколько ролей, то доступ только для тех кто имеет ВСЕ указанные роли
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(name = "lead_roles", joinColumns = @JoinColumn(name = "lead_id"), inverseJoinColumns = @JoinColumn(name = "roles_id"))
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "lead_roles", joinColumns = @JoinColumn(name = "lead_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "roles_id", referencedColumnName = "id"))
+    @Fetch(FetchMode.SUBSELECT)
     private Set<Role> allowed = new LinkedHashSet<>();
 
     public Lead addAccess(Role role) {

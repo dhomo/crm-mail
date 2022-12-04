@@ -81,10 +81,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ConfigurationDto'
   /api/v1/leads:
+    get:
+      tags:
+        - leads
+      summary: "Все лиды, со всеми событиями доступные текущему юзеру"
+      operationId: "getLeads"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Lead"
     post:
       tags:
         - leads
-      summary: "POST api/v1/leads"
+      summary: "создает новый лид"
+      description: "Lead  можно не передавать, в этом случае значения будут дефолтными"
       operationId: "postLead"
       requestBody:
         content:
@@ -98,28 +113,12 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/Lead"
-#    get:
-#      tags:
-#        - leads
-#      summary: "GET api/v1/leads"
-#      operationId: "getAll"
-#      responses:
-#        "200":
-#          description: "OK"
-#          content:
-#            '*/*':
-#              schema:
-#                $ref: "#/components/schemas/LeadInfo"
-  /api/v1/leads/{id}:
     put:
       tags:
         - leads
-      summary: "PUT api/v1/leads/{id}"
+      summary: "изменяет существующий лид"
+      description: "обновит только переданные поля, id передавать обязательно"
       operationId: "putLead"
-      parameters:
-        - name: "id"
-          in: "path"
-          required: false
       requestBody:
         content:
           application/json:
@@ -133,11 +132,31 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/Lead"
+  /api/v1/leads/{id}:
+    get:
+      tags:
+        - leads
+      summary: "возвращает лид, со всеми событиями доступные текущему юзеру"
+      operationId: "getLead"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Lead"
   /api/v1/leads/{id}/addEmail:
     put:
       tags:
         - leads
-      summary: "PUT api/v1/leads/{id}/addEmail"
+      summary: "Добавляет email к существующему лиду"
       operationId: "addMessage"
       parameters:
         - name: "id"
@@ -172,7 +191,7 @@ paths:
     post:
       tags:
         - leads
-      summary: "POST api/v1/leads/newWithEmail"
+      summary: "Добавляет email к новому лиду"
       operationId: "newLeadWithMessage"
       parameters:
         - name: "folderId"

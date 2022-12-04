@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -59,17 +61,16 @@ public class User {
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "roles_id", referencedColumnName = "id"))
+    @Fetch(FetchMode.SUBSELECT)
     private Set<Role> roles = new LinkedHashSet<>();
 
     public User addRole(Role role){
         this.roles.add(role);
-        role.getUsers().add(this);
         return this;
     }
 
     public User removeRole(Role role){
         this.roles.remove(role);
-        role.getUsers().remove(this);
         return this;
     }
 
