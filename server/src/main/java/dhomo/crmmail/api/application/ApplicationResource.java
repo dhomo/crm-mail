@@ -22,6 +22,8 @@ package dhomo.crmmail.api.application;
 
 import dhomo.crmmail.api.configuration.AppConfiguration;
 import dhomo.crmmail.api.authentication.Credentials;
+import dhomo.crmmail.api.credentials.Role;
+import dhomo.crmmail.api.credentials.RoleRepository;
 import dhomo.crmmail.api.credentials.UsersService;
 import dhomo.crmmail.api.dto.LoginResponseDto;
 import dhomo.crmmail.api.dto.LoginRequestDto;
@@ -34,12 +36,14 @@ import dhomo.crmmail.api.smtp.SmtpService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -69,7 +73,13 @@ public class ApplicationResource {
     private final ImapService imapService;
     private final SmtpService smtpService;
     private final UsersService usersService;
+    private final RoleRepository roleRepository;
 
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/roles")
+    List<Role> getRoles(){
+        return roleRepository.findAll();
+    }
 
     @GetMapping(path = "/configuration", produces = MediaTypes.HAL_JSON_VALUE)
     public ResponseEntity<ConfigurationDto> getConfiguration() {

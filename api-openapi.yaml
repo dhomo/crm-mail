@@ -73,6 +73,21 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/User"
+  /api/v1/application/roles:
+    get:
+      tags:
+        - application
+      summary: "GET api/v1/application/roles"
+      operationId: "getRoles"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Role"
   /api/v1/application/login:
     post:
       tags:
@@ -673,37 +688,6 @@ components:
       scheme: basic
       description: 'имя admin, пароль передается в переменной окружения в сервер'
   schemas:
-    UsersSetDto:
-      type: object
-      properties:
-        usersSet:
-          type: array
-          items:
-            $ref: '#/components/schemas/UserCredentialsDto'
-    UserCredentialsDto:
-      type: object
-      properties:
-        user:
-          type: string
-          example: paa@inova-perm.com
-        serverHost:
-          type: string
-          example: imap.yandex.ru
-        serverPort:
-          type: integer
-          format: int32
-          example: 993
-        imapSsl:
-          type: boolean
-        smtpHost:
-          type: string
-          example: smtp.yandex.ru
-        smtpPort:
-          type: integer
-          format: int32
-          example: 465
-        smtpSsl:
-          type: boolean
     Folder:
       type: object
       properties:
@@ -924,52 +908,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Link'
-    Credentials:
-      required:
-        - imapSsl
-        - password
-        - serverHost
-        - serverPort
-        - smtpPort
-        - smtpSsl
-        - user
-      type: object
-      properties:
-        details:
-          type: object
-        authenticated:
-          type: boolean
-        encrypted:
-          type: string
-        salt:
-          type: string
-        serverHost:
-          type: string
-        serverPort:
-          type: integer
-          format: int32
-        user:
-          type: string
-        password:
-          type: string
-        imapSsl:
-          type: boolean
-        smtpHost:
-          type: string
-        smtpPort:
-          type: integer
-          format: int32
-        smtpSsl:
-          type: boolean
-        expiryDate:
-          type: string
-          format: date-time
-        principal:
-          type: object
-        credentials:
-          type: object
-        name:
-          type: string
     LoginResponseDto:
       required:
         - encrypted
@@ -1001,8 +939,6 @@ components:
     ConfigurationDto:
       type: object
       properties:
-        googleAnalyticsTrackingId:
-          type: string
         _links:
           type: array
           items:
