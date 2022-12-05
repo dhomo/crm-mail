@@ -35,6 +35,8 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.springframework.web.util.WebUtils;
 
+import java.nio.charset.StandardCharsets;
+
 import static dhomo.crmmail.api.http.HttpHeaders.ISOTOPE_EXCEPTION;
 
 @SuppressWarnings("unchecked")
@@ -54,7 +56,7 @@ public class CustomControllerAdvice extends ResponseEntityExceptionHandler {
                 message == null ? "" :
                         message.substring(0, Math.min(message.length(), MAX_HEADER_LENGTH))
                                 .replaceAll("[\\n\\r]", "")));
-        headers.setContentType(MediaType.TEXT_PLAIN);
+        headers.setContentType(new MediaType("text", "plain", StandardCharsets.UTF_8));
         return new ResponseEntity<>(message, headers, exception.getHttpStatus());
     }
 
