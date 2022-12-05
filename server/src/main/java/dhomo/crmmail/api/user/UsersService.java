@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dhomo.crmmail.api.authentication.Credentials;
 import dhomo.crmmail.api.configuration.AppConfiguration;
 import dhomo.crmmail.api.exception.AuthenticationException;
+import dhomo.crmmail.api.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.encrypt.Encryptors;
@@ -46,10 +47,11 @@ public class UsersService {
     private final ObjectMapper objectMapper;
     private final AppConfiguration appConfiguration;
     private final UserRepository userRepository;
+    private final EmailServerRepository emailServerRepository;
 
     public void checkHost(Credentials credentials) {
         final Set<String> trustedHosts = appConfiguration.getTrustedHosts();
-        if (!trustedHosts.isEmpty() && !trustedHosts.contains(credentials.getPrincipal().getServerHost())){
+        if (!trustedHosts.isEmpty() && !trustedHosts.contains(credentials.getPrincipal().getEmailServer().getImapHost())){
             throw new AuthenticationException(BLACKLISTED);
         }
     }
@@ -73,6 +75,11 @@ public class UsersService {
 
     @Transactional
     public User saveUser(User user){
+        if (user.getEmailServer().getId()!= null){
+            var server = emailServerRepository.findById(user.getEmailServer().getId())
+                    .orElseThrow(()->new NotFoundException("emailServer with id="+user.getEmailServer().getId()+" not found"));
+            user.setEmailServer(server);
+        }
         return userRepository.save(user);
     }
 

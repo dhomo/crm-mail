@@ -9,6 +9,7 @@ import dhomo.crmmail.api.user.UsersService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -48,7 +49,12 @@ public class AdminController {
     User postUser(@Validated() @RequestBody User user) {
         log.info("Add new user");
         user.setId(null);
-        return usersService.saveUser(user);
+        try {
+            return usersService.saveUser(user);
+        } catch (DataIntegrityViolationException e)
+        {
+            throw new InvalidFieldException( user.getUserName() + " already exists");
+        }
     }
 
     @PutMapping(path = "/users")

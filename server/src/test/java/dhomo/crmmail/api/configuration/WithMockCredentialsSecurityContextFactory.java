@@ -40,13 +40,13 @@ public class WithMockCredentialsSecurityContextFactory implements WithSecurityCo
         final Credentials credentials = Credentials.authenticated(new User(),
                 mockCredentials.password(), Instant.now().plus(Duration.ofMinutes(15L)));
         securityContext.setAuthentication(credentials);
-        credentials.getPrincipal().setServerHost(mockCredentials.serverHost());
-        credentials.getPrincipal().setServerPort(mockCredentials.serverPort());
+        credentials.getPrincipal().getEmailServer().setImapHost(mockCredentials.serverHost());
+        credentials.getPrincipal().getEmailServer().setImapPort(mockCredentials.serverPort());
         credentials.getPrincipal().setUserName(mockCredentials.user());
-        credentials.getPrincipal().setImapSsl(mockCredentials.imapSsl());
-        credentials.getPrincipal().setSmtpHost(mockCredentials.smtpHost());
-        credentials.getPrincipal().setSmtpPort(mockCredentials.smtpPort());
-        credentials.getPrincipal().setSmtpSsl(mockCredentials.smtpSsl());
+        credentials.getPrincipal().getEmailServer().setImapSsl(mockCredentials.imapSsl());
+        credentials.getPrincipal().getEmailServer().setSmtpHost(mockCredentials.smtpHost());
+        credentials.getPrincipal().getEmailServer().setSmtpPort(mockCredentials.smtpPort());
+        credentials.getPrincipal().getEmailServer().setSmtpSsl(mockCredentials.smtpSsl());
         return securityContext;
     }
 }

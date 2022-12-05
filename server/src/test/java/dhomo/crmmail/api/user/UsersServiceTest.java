@@ -70,7 +70,7 @@ public class UsersServiceTest {
         final String trustedHost = "broken.trust.tom";
         doReturn(Stream.of(trustedHost).collect(Collectors.toSet())).when(appConfiguration).getTrustedHosts();
         final Credentials toTest = Credentials.unauthenticated(new User(), null);
-        toTest.getPrincipal().setServerHost(trustedHost);
+        toTest.getPrincipal().getEmailServer().setImapHost(trustedHost);
 
         // When
         usersService.checkHost(toTest);
@@ -85,7 +85,7 @@ public class UsersServiceTest {
         final String trustedHost = "broken.trust.tom";
         doReturn(Collections.emptySet()).when(appConfiguration).getTrustedHosts();
         final Credentials toTest = Credentials.unauthenticated(new User(), null);
-        toTest.getPrincipal().setServerHost("trust.issues.com");
+        toTest.getPrincipal().getEmailServer().setImapHost("trust.issues.com");
 
         // When
         usersService.checkHost(toTest);
@@ -100,7 +100,7 @@ public class UsersServiceTest {
         final String trustedHost = "borken.trust.tom";
         doReturn(Stream.of(trustedHost).collect(Collectors.toSet())).when(appConfiguration).getTrustedHosts();
         final Credentials toTest = Credentials.unauthenticated(new User(), null);
-        toTest.getPrincipal().setServerHost("trust.issues.com");
+        toTest.getPrincipal().getEmailServer().setImapHost("trust.issues.com");
 
         // When
         usersService.checkHost(toTest);

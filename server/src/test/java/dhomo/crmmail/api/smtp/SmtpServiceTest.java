@@ -119,9 +119,9 @@ public class SmtpServiceTest {
         // Given
         final Credentials credentials = Credentials.unauthenticated(new User(), "");
         credentials.getPrincipal().setUserName("valid");
-        credentials.getPrincipal().setServerHost("email.com");
-        credentials.getPrincipal().setSmtpSsl(true);
-        credentials.getPrincipal().setSmtpPort(1);
+        credentials.getPrincipal().getEmailServer().setImapHost("email.com");
+        credentials.getPrincipal().getEmailServer().setSmtpSsl(true);
+        credentials.getPrincipal().getEmailServer().setSmtpPort(1);
 
         // When
         smtpService.checkCredentials(credentials);
@@ -135,11 +135,11 @@ public class SmtpServiceTest {
         // Given
         final Credentials credentials =  Credentials.unauthenticated(new User(), "");
         credentials.getPrincipal().setUserName("invalid");
-        credentials.getPrincipal().setServerHost("email.com");
-        credentials.getPrincipal().setSmtpSsl(true);
-        credentials.getPrincipal().setSmtpPort(1);
+        credentials.getPrincipal().getEmailServer().setImapHost("email.com");
+        credentials.getPrincipal().getEmailServer().setSmtpSsl(true);
+        credentials.getPrincipal().getEmailServer().setSmtpPort(1);
         doThrow(new MessagingException()).when(mockedTransport).connect(
-                Mockito.eq(credentials.getPrincipal().getServerHost()), Mockito.eq(credentials.getPrincipal().getSmtpPort()),
+                Mockito.eq(credentials.getPrincipal().getEmailServer().getImapHost()), Mockito.eq(credentials.getPrincipal().getEmailServer().getSmtpPort()),
                 Mockito.eq(credentials.getPrincipal().getUserName()), Mockito.eq(credentials.getCredentials()));
 
         // When

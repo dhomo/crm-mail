@@ -114,7 +114,7 @@ public class SmtpService {
             if (credentials.getPrincipal() != null && credentials.getName().contains("@")) {
                 mimeMessage.setFrom(credentials.getName());
             } else {
-                mimeMessage.setFrom(String.format("%s@%s", credentials.getName(), credentials.getPrincipal().getServerHost()));
+                mimeMessage.setFrom(String.format("%s@%s", credentials.getName(), credentials.getPrincipal().getEmailServer().getImapHost()));
             }
             for (javax.mail.Message.RecipientType type : new javax.mail.Message.RecipientType[]{
                     MimeMessage.RecipientType.TO, MimeMessage.RecipientType.CC, MimeMessage.RecipientType.BCC
@@ -195,11 +195,11 @@ public class SmtpService {
 
     private Transport getSmtpTransport(Credentials credentials) throws MessagingException {
         if (smtpTransport == null) {
-            smtpTransport = getSession(credentials).getTransport(credentials.getPrincipal().getSmtpSsl() ? SMTPS_PROTOCOL : SMTP_PROTOCOL);
-            final String smtpHost = credentials.getPrincipal().getSmtpHost();
+            smtpTransport = getSession(credentials).getTransport(credentials.getPrincipal().getEmailServer().getSmtpSsl() ? SMTPS_PROTOCOL : SMTP_PROTOCOL);
+            final String smtpHost = credentials.getPrincipal().getEmailServer().getSmtpHost();
             smtpTransport.connect(
-                    smtpHost != null && !smtpHost.isEmpty() ? smtpHost : credentials.getPrincipal().getServerHost(),
-                    credentials.getPrincipal().getSmtpPort(),
+                    smtpHost != null && !smtpHost.isEmpty() ? smtpHost : credentials.getPrincipal().getEmailServer().getImapHost(),
+                    credentials.getPrincipal().getEmailServer().getSmtpPort(),
                     credentials.getName(),
                     credentials.getCredentials());
             log.debug("Opened new SMTP transport");
@@ -213,7 +213,7 @@ public class SmtpService {
 
     private static Properties initMailProperties(Credentials credentials, MailSSLSocketFactory socketFactory) {
         final Properties ret = new Properties();
-        ret.put("mail.smtp.ssl.enable", credentials.getPrincipal().getSmtpSsl());
+        ret.put("mail.smtp.ssl.enable", credentials.getPrincipal().getEmailServer().getSmtpSsl());
         ret.put("mail.smtp.connectiontimeout", DEFAULT_CONNECTION_TIMEOUT);
         ret.put("mail.smtp.ssl.socketFactory", socketFactory);
         ret.put("mail.smtp.starttls.enable", true);

@@ -11,7 +11,6 @@ import org.hibernate.annotations.FetchMode;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -29,30 +28,13 @@ public class User {
 
     @NotBlank
     @NotNull
-    private String serverHost;
-
-    @NotNull
-    @Positive
-    private Integer serverPort;
-
-    @NotBlank
-    @NotNull
-    @Column(name = "user_name", nullable = false, unique = true)
+    @Column(name = "user_name", nullable = false, unique = true, updatable = false)
     private String userName;
 
     @NotNull
-    private Boolean imapSsl;
-
-    @NotNull
-    @NotBlank
-    private String smtpHost;
-
-    @NotNull
-    @Positive
-    private Integer smtpPort;
-
-    @NotNull
-    private Boolean smtpSsl;
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, optional = false)
+    @JoinColumn(name = "email_server_id", nullable = false)
+    private EmailServer emailServer;
 
     private boolean enabled = true;
 
