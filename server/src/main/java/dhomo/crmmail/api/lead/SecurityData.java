@@ -1,7 +1,7 @@
 package dhomo.crmmail.api.lead;
 
-import dhomo.crmmail.api.credentials.Role;
-import dhomo.crmmail.api.credentials.User;
+import dhomo.crmmail.api.user.Role;
+import dhomo.crmmail.api.user.User;
 
 import java.util.Set;
 

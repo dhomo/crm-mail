@@ -21,7 +21,7 @@
 package dhomo.crmmail.api.configuration;
 
 import dhomo.crmmail.api.authentication.Credentials;
-import dhomo.crmmail.api.credentials.User;
+import dhomo.crmmail.api.user.User;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithSecurityContextFactory;

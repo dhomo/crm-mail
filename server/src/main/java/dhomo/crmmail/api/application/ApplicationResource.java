@@ -22,9 +22,9 @@ package dhomo.crmmail.api.application;
 
 import dhomo.crmmail.api.configuration.AppConfiguration;
 import dhomo.crmmail.api.authentication.Credentials;
-import dhomo.crmmail.api.credentials.Role;
-import dhomo.crmmail.api.credentials.RoleRepository;
-import dhomo.crmmail.api.credentials.UsersService;
+import dhomo.crmmail.api.user.Role;
+import dhomo.crmmail.api.user.RoleRepository;
+import dhomo.crmmail.api.user.UsersService;
 import dhomo.crmmail.api.dto.LoginResponseDto;
 import dhomo.crmmail.api.dto.LoginRequestDto;
 import dhomo.crmmail.api.exception.AuthenticationException;

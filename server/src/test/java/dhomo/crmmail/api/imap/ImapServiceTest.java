@@ -22,7 +22,7 @@ package dhomo.crmmail.api.imap;
 
 import dhomo.crmmail.api.configuration.AppConfiguration;
 import dhomo.crmmail.api.configuration.WithMockCredentials;
-import dhomo.crmmail.api.credentials.UsersService;
+import dhomo.crmmail.api.user.UsersService;
 import dhomo.crmmail.api.exception.IsotopeException;
 import dhomo.crmmail.api.exception.NotFoundException;
 import dhomo.crmmail.api.folder.Folder;

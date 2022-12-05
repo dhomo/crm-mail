@@ -18,7 +18,7 @@
  * limitations under the License.
  *
  */
-package dhomo.crmmail.api.credentials;
+package dhomo.crmmail.api.user;
 
 import dhomo.crmmail.api.authentication.Credentials;
 import dhomo.crmmail.api.authentication.CredentialsRefreshFilter;

@@ -1,8 +1,8 @@
 package dhomo.crmmail.api.lead.leadEvents;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import dhomo.crmmail.api.credentials.Role;
-import dhomo.crmmail.api.credentials.User;
+import dhomo.crmmail.api.user.Role;
+import dhomo.crmmail.api.user.User;
 import dhomo.crmmail.api.lead.Lead;
 import dhomo.crmmail.api.lead.SecurityData;
 import lombok.Getter;

@@ -1,7 +1,7 @@
 package dhomo.crmmail.api.lead;
 
-import dhomo.crmmail.api.credentials.RoleRepository;
-import dhomo.crmmail.api.credentials.User;
+import dhomo.crmmail.api.user.RoleRepository;
+import dhomo.crmmail.api.user.User;
 import dhomo.crmmail.api.folder.Folder;
 import dhomo.crmmail.api.imap.ImapService;
 import dhomo.crmmail.api.lead.leadStatus.LeadStatus;

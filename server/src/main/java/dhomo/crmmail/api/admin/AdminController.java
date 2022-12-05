@@ -1,11 +1,11 @@
 package dhomo.crmmail.api.admin;
 
 
-import dhomo.crmmail.api.credentials.User;
-import dhomo.crmmail.api.credentials.UsersService;
 import dhomo.crmmail.api.exception.InvalidFieldException;
 import dhomo.crmmail.api.lead.leadStatus.LeadStatus;
 import dhomo.crmmail.api.lead.leadStatus.LeadStatusRepository;
+import dhomo.crmmail.api.user.User;
+import dhomo.crmmail.api.user.UsersService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;

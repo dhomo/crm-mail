@@ -22,7 +22,7 @@ package dhomo.crmmail.api.configuration;
 
 import dhomo.crmmail.api.authentication.CredentialsRefreshFilter;
 import dhomo.crmmail.api.authentication.CustomAuthProvider;
-import dhomo.crmmail.api.credentials.UsersService;
+import dhomo.crmmail.api.user.UsersService;
 import dhomo.crmmail.api.authentication.TokenAutheConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

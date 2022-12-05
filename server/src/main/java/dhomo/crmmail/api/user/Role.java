@@ -1,4 +1,4 @@
-package dhomo.crmmail.api.credentials;
+package dhomo.crmmail.api.user;
 
 import lombok.Getter;
 import lombok.Setter;

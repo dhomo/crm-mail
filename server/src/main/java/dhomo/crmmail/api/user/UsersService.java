@@ -18,7 +18,7 @@
  * limitations under the License.
  *
  */
-package dhomo.crmmail.api.credentials;
+package dhomo.crmmail.api.user;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

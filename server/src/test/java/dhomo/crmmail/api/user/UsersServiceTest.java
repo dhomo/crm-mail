@@ -18,7 +18,7 @@
  * limitations under the License.
  *
  */
-package dhomo.crmmail.api.credentials;
+package dhomo.crmmail.api.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dhomo.crmmail.api.authentication.Credentials;
@@ -35,11 +35,8 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 
 /**
  * Created by Marc Nuri <marc@marcnuri.com> on 2018-10-07.

@@ -1,6 +1,6 @@
 package dhomo.crmmail.api.lead;
 
-import dhomo.crmmail.api.credentials.User;
+import dhomo.crmmail.api.user.User;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.function.Predicate;
