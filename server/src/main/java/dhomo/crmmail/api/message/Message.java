@@ -20,7 +20,6 @@
  */
 package dhomo.crmmail.api.message;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sun.mail.imap.IMAPMessage;
@@ -88,8 +87,6 @@ public class Message extends LeadEvent {
 
     private String subject;
 
-    // spring.jackson.serialization.write-dates-as-timestamps=false почему то не работает
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
     private ZonedDateTime receivedDate;
 
     private Long size;

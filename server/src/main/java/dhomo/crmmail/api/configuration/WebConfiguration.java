@@ -20,8 +20,13 @@
  */
 package dhomo.crmmail.api.configuration;
 
-import dhomo.crmmail.api.imap.ImapService;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sun.mail.util.MailSSLSocketFactory;
+import dhomo.crmmail.api.imap.ImapService;
 import dhomo.crmmail.api.lead.LeadRepository;
 import dhomo.crmmail.api.message.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +35,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.cors.CorsConfiguration;
@@ -39,7 +46,7 @@ import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.springframework.beans.factory.config.BeanDefinition.SCOPE_PROTOTYPE;
@@ -63,16 +70,28 @@ public class WebConfiguration implements WebMvcConfigurer, AsyncConfigurer {
         configurer.setTaskExecutor(getAsyncExecutor());
     }
 
-     @Override
-     public ThreadPoolTaskExecutor getAsyncExecutor() {
-         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-         executor.setCorePoolSize(7);
-         executor.setMaxPoolSize(42);
-         executor.setQueueCapacity(11);
-         executor.setThreadNamePrefix("MyExecutor-");
-         executor.initialize();
-         return executor;
-     }
+    @Override
+    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+        ObjectMapper mapper = new ObjectMapper()
+                .registerModule(new Hibernate5Module()
+                        .configure(Hibernate5Module.Feature.SERIALIZE_IDENTIFIER_FOR_LAZY_NOT_LOADED_OBJECTS, true))
+                .registerModule(new JavaTimeModule())
+                .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+        converters.add(new MappingJackson2HttpMessageConverter(mapper));
+    }
+
+    @Override
+    public ThreadPoolTaskExecutor getAsyncExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(7);
+        executor.setMaxPoolSize(42);
+        executor.setQueueCapacity(11);
+        executor.setThreadNamePrefix("MyExecutor-");
+        executor.initialize();
+        return executor;
+    }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
