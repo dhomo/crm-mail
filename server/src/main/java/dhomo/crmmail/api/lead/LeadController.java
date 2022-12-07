@@ -1,14 +1,14 @@
 package dhomo.crmmail.api.lead;
 
-import dhomo.crmmail.api.user.User;
+import dhomo.crmmail.api.authentication.AuthenticationFacade;
 import dhomo.crmmail.api.exception.InvalidFieldException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.List;
 import java.util.Set;
 
@@ -21,31 +21,33 @@ public class LeadController {
 
     private final LeadService leadService;
     private final ModelMapper modelMapper;
+    @Autowired
+    private AuthenticationFacade authFacade;
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    List<Lead> getLeads(Principal principal){
-        return leadService.getAllLeads((User) principal);
+    List<Lead> getLeads(){
+        return leadService.getAllLeads(authFacade.getUser());
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping
-    Lead postLead(@RequestBody(required = false) Lead lead, Principal principal){
+    Lead postLead(@RequestBody(required = false) Lead lead){
         if (lead == null) lead = new Lead();
         // обнуляем владельца и id независимо от того что пришло на вход
         lead.setOwner(null);
         lead.setId(null);
-        var newLead = leadService.fillDefaults(lead, (User) principal);
+        var newLead = leadService.fillDefaults(lead, authFacade.getUser());
         return leadService.save(newLead);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping()
-    Lead putLead(@RequestBody Lead lead, Principal principal){
+    Lead putLead(@RequestBody Lead lead){
         if (lead.getId() == null){
             throw new InvalidFieldException("Lead id should not be null ");
         }
-        var persistLead = leadService.getLead(lead.getId(), (User) principal);
+        var persistLead = leadService.getLead(lead.getId(), authFacade.getUser());
         // позволяет частичное обновление (только не null поля)
         // у фронта остается возможность изменить владельца и ограничивающие роли, помним об этом
         // возможно стоит это ограничить
@@ -55,8 +57,8 @@ public class LeadController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}")
-    Lead getLead(@PathVariable Long id, Principal principal){
-        return leadService.getLead(id, (User) principal);
+    Lead getLead(@PathVariable Long id){
+        return leadService.getLead(id, authFacade.getUser());
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -64,20 +66,18 @@ public class LeadController {
     void addMessage(@PathVariable Long id,
                     @RequestParam("folderId") String  folderId,
                     @RequestParam("messageUid") Long messageUid,
-                    @RequestParam(name = "roleIds", required = false) Set<Long> roleIds,
-                    Principal principal){
+                    @RequestParam(name = "roleIds", required = false) Set<Long> roleIds){
 
-        Lead lead = leadService.getLead(id, (User) principal);
-        leadService.addEmailMessageToLead(lead, folderId, messageUid, roleIds, (User) principal);
+        Lead lead = leadService.getLead(id, authFacade.getUser());
+        leadService.addEmailMessageToLead(lead, folderId, messageUid, roleIds, authFacade.getUser());
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/newWithEmail")
     void newLeadWithMessage(@RequestParam("folderId") String  folderId,
                             @RequestParam("messageUid") Long messageUid,
-                            @RequestParam(name = "roleIds", required = false) Set<Long> roleIds,
-                            Principal principal){
-        var newLead = leadService.fillDefaults(new Lead(), (User) principal);
-        leadService.addEmailMessageToLead(newLead, folderId, messageUid, roleIds, (User) principal);
+                            @RequestParam(name = "roleIds", required = false) Set<Long> roleIds){
+        var newLead = leadService.fillDefaults(new Lead(), authFacade.getUser());
+        leadService.addEmailMessageToLead(newLead, folderId, messageUid, roleIds, authFacade.getUser());
     }
 }
