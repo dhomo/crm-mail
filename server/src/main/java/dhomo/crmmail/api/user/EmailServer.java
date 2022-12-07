@@ -38,8 +38,6 @@ public class EmailServer {
     @NotNull
     private Boolean smtpSsl;
 
-    public EmailServer() {}
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

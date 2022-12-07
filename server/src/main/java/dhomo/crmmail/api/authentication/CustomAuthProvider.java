@@ -27,7 +27,7 @@ public class CustomAuthProvider implements AuthenticationProvider {
 
         var token = (AuthenticationToken) auth;
         String username = token.getName();
-        var user = userRepository.findByNameIgnoreCase(username).orElseThrow(
+        var user = userRepository.findByUserNameIgnoreCase(username).orElseThrow(
                 () -> new BadCredentialsException("User not found"));
 
         if (!user.isEnabled())  {

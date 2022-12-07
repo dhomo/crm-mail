@@ -65,7 +65,7 @@ public class UsersService {
     }
 
     public User findUser(String user) {
-        return (userRepository.findByNameIgnoreCase(user)
+        return (userRepository.findByUserNameIgnoreCase(user)
                 .orElseThrow(()->new AuthenticationException(AuthenticationException.Type.NOT_FOUND)));
     }
 

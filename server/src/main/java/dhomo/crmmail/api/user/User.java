@@ -32,7 +32,7 @@ public class User {
     private String userName;
 
     @NotNull
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, optional = false)
     @JoinColumn(name = "email_server_id", nullable = false)
     private EmailServer emailServer;
 
