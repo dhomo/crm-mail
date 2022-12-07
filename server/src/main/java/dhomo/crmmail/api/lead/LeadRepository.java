@@ -16,7 +16,7 @@ public interface LeadRepository extends JpaRepository<Lead, Long> {
     Optional<Lead> findById(Long Long);
 
     @Override
-    @EntityGraph(attributePaths = {"leadEvents.allowed", "allowed"}, type = EntityGraph.EntityGraphType.LOAD)
+    @EntityGraph(attributePaths = {"owner", "status", "leadEvents.owner", "leadEvents.allowed", "allowed"})
     List<Lead> findAll();
 
     @Query("select new dhomo.crmmail.api.lead.dto.LeadDto_id_name(l.id, l.name) from Message m inner join m.lead l where m.messageId = ?1")

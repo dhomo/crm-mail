@@ -8,10 +8,10 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    @EntityGraph(attributePaths = {"roles"}, type = EntityGraph.EntityGraphType.LOAD)
+    @EntityGraph(attributePaths = {"emailServer", "roles"})
     Optional<User> findByUserNameIgnoreCase(String name);
 
-    @EntityGraph(attributePaths = {"emailServer", "roles"}, type = EntityGraph.EntityGraphType.LOAD)
+    @EntityGraph(attributePaths = {"roles"}, type = EntityGraph.EntityGraphType.LOAD)
     @Override
     List<User> findAll();
 }
