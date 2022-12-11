@@ -1,22 +1,25 @@
 package dhomo.crmmail.api.lead;
 
-import dhomo.crmmail.api.user.RoleRepository;
-import dhomo.crmmail.api.user.User;
 import dhomo.crmmail.api.folder.Folder;
 import dhomo.crmmail.api.imap.ImapService;
+import dhomo.crmmail.api.lead.leadEvents.LeadEventRepository;
 import dhomo.crmmail.api.lead.leadStatus.LeadStatus;
 import dhomo.crmmail.api.lead.leadStatus.LeadStatusRepository;
 import dhomo.crmmail.api.message.Message;
-import dhomo.crmmail.api.message.MessageRepository;
+import dhomo.crmmail.api.user.RoleRepository;
+import dhomo.crmmail.api.user.User;
+import dhomo.crmmail.api.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import javax.transaction.Transactional;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,8 +29,9 @@ import java.util.stream.Collectors;
 public class LeadService {
     private final LeadStatusRepository leadStatusRepository;
     private final LeadRepository leadRepository;
-    private final MessageRepository messageRepository;
+    private final LeadEventRepository leadEventRepository;
     private final RoleRepository roleRepository;
+    private final UserRepository userRepository;
     private final ObjectFactory<ImapService> imapServiceFactory;
 
 
@@ -54,10 +58,28 @@ public class LeadService {
         return leadStatusRepository.findNew();
     }
 
-    public void addEmailMessageToLead(Lead lead, String  folderId, Long messageUid, Set<Long> roleIds, User owner){
+    /**
+     *
+     * @param leadId если = null, то создает нового. Иначе используем указанного, без проверки на права доступа
+     * @param folderId
+     * @param messageUid
+     * @param roleIds
+     * @param user
+     * @throws NoSuchElementException if no leadId is present
+     */
+    @Transactional
+    public void addEmailMessageToLead(Long leadId, String  folderId, Long messageUid, Set<Long> roleIds, User user){
+        Lead lead;
+        if (leadId == null) {
+            lead = fillDefaults(new Lead(), user);
+        } else {
+            lead = leadRepository.findById(leadId).orElseThrow();
+        }
+
         Message message = imapServiceFactory.getObject().getMessage(Folder.toId(folderId), messageUid);
-        message.setOwner(owner);
-        message.setAllowed(new HashSet<>(roleRepository.findAllById(roleIds)));
+        message.setOwner(userRepository.getReferenceById(user.getId()));
+        if (roleIds != null) message.setAllowed(new HashSet<>(roleRepository.findAllById(roleIds)));
+
         lead.addLeadEvent(message);
         leadRepository.save(lead);
     }
@@ -91,6 +113,7 @@ public class LeadService {
      * @param leadId
      * @param user
      * @return Возвращает лид если он существует и хватает прав
+     * @throws NoSuchElementException if no value is present
      */
     public Lead getLead(Long leadId, User user) {
         var securityFilter = new SecurityPredicate(user);

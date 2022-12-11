@@ -20,8 +20,6 @@
  */
 package dhomo.crmmail.api.folder;
 
-import dhomo.crmmail.api.folder.Folder;
-import dhomo.crmmail.api.folder.FolderResource;
 import dhomo.crmmail.api.imap.ImapService;
 import dhomo.crmmail.api.message.Message;
 import dhomo.crmmail.api.message.MessageWithFolder;
@@ -340,7 +338,7 @@ public class FolderResourceTest {
         message.setFolder(new Folder());
         message.getFolder().setChildren(new Folder[0]);
         message.getFolder().setFolderId("1337");
-        doReturn(message).when(imapService).getMessage(Mockito.eq(new URLName("1337")), Mockito.eq(1337L));
+        doReturn(message).when(imapService).getMessageWithFolder(Mockito.eq(new URLName("1337")), Mockito.eq(1337L));
 
         // When
         final ResultActions result = mockMvc.perform(

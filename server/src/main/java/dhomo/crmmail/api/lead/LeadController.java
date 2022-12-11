@@ -68,8 +68,7 @@ public class LeadController {
                     @RequestParam("messageUid") Long messageUid,
                     @RequestParam(name = "roleIds", required = false) Set<Long> roleIds){
 
-        Lead lead = leadService.getLead(id, authFacade.getUser());
-        leadService.addEmailMessageToLead(lead, folderId, messageUid, roleIds, authFacade.getUser());
+        leadService.addEmailMessageToLead(id, folderId, messageUid, roleIds, authFacade.getUser());
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -77,7 +76,6 @@ public class LeadController {
     void newLeadWithMessage(@RequestParam("folderId") String  folderId,
                             @RequestParam("messageUid") Long messageUid,
                             @RequestParam(name = "roleIds", required = false) Set<Long> roleIds){
-        var newLead = leadService.fillDefaults(new Lead(), authFacade.getUser());
-        leadService.addEmailMessageToLead(newLead, folderId, messageUid, roleIds, authFacade.getUser());
+        leadService.addEmailMessageToLead(null, folderId, messageUid, roleIds, authFacade.getUser());
     }
 }

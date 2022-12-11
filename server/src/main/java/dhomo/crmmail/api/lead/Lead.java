@@ -49,7 +49,7 @@ public class Lead implements SecurityData {
 
     // если пусто, то доступ для всех разрешен
     //  если содержит несколько ролей, то доступ только для тех кто имеет ВСЕ указанные роли
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "lead_roles", joinColumns = @JoinColumn(name = "lead_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "roles_id", referencedColumnName = "id"))
     @Fetch(FetchMode.SUBSELECT)
     private Set<Role> allowed = new LinkedHashSet<>();

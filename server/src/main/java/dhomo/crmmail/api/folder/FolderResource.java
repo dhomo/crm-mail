@@ -20,12 +20,14 @@
  */
 package dhomo.crmmail.api.folder;
 
+import dhomo.crmmail.api.configuration.WebConfiguration;
 import dhomo.crmmail.api.imap.ImapService;
 import dhomo.crmmail.api.message.Attachment;
 import dhomo.crmmail.api.message.Message;
 import dhomo.crmmail.api.message.MessageRepository;
 import dhomo.crmmail.api.message.MessageWithFolder;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -33,19 +35,9 @@ import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.lang.NonNull;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
-import dhomo.crmmail.api.configuration.WebConfiguration;
-import lombok.extern.slf4j.Slf4j;
 
 import javax.mail.MessagingException;
 import javax.mail.URLName;
@@ -53,6 +45,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -166,7 +159,9 @@ public class FolderResource implements ApplicationContextAware {
             @PathVariable("folderId") String folderId, @PathVariable("messageId") Long messageId) {
 
         log.debug("Loading message {} from folder {}", messageId, folderId);
-        final MessageWithFolder message = imapServiceFactory.getObject().getMessage(Folder.toId(folderId), messageId);
+        final MessageWithFolder message = imapServiceFactory.getObject().getMessageWithFolder(Folder.toId(folderId), messageId);
+
+        imapServiceFactory.getObject().fillLeads(message);
         addLinks(folderId, message);
         return ResponseEntity.ok(message);
     }
@@ -250,7 +245,7 @@ public class FolderResource implements ApplicationContextAware {
         return attachments;
     }
 
-    public static List<Attachment> addLinks(String folderId, Message message, List<Attachment> attachments) {
+    public static Set<Attachment> addLinks(String folderId, Message message, Set<Attachment> attachments) {
         attachments.forEach(a -> addLinks(folderId, message, a));
         return attachments;
     }

@@ -28,18 +28,18 @@ public abstract class LeadEvent implements SecurityData {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private User owner;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(name = "lead_event_roles", joinColumns = @JoinColumn(name = "lead_event_id"), inverseJoinColumns = @JoinColumn(name = "roles_id"))
+    @ManyToMany
+    @JoinTable(name = "lead_event_roles", joinColumns = @JoinColumn(name = "lead_event_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "roles_id", referencedColumnName = "id"))
     private Set<Role> allowed = new LinkedHashSet<>();
 
     private ZonedDateTime createdDate = ZonedDateTime.now();
 
     @JsonBackReference
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne
     @JoinColumn(name = "lead_id")
     private Lead lead;
 

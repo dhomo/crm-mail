@@ -20,8 +20,12 @@
  */
 package dhomo.crmmail.api.imap;
 
-import dhomo.crmmail.api.configuration.AppConfiguration;
+import com.sun.mail.imap.IMAPFolder;
+import com.sun.mail.imap.IMAPMessage;
+import com.sun.mail.imap.IMAPStore;
+import com.sun.mail.util.MailSSLSocketFactory;
 import dhomo.crmmail.api.authentication.Credentials;
+import dhomo.crmmail.api.configuration.AppConfiguration;
 import dhomo.crmmail.api.exception.AuthenticationException;
 import dhomo.crmmail.api.exception.InvalidFieldException;
 import dhomo.crmmail.api.exception.IsotopeException;
@@ -33,10 +37,6 @@ import dhomo.crmmail.api.message.Attachment;
 import dhomo.crmmail.api.message.Message;
 import dhomo.crmmail.api.message.MessageRepository;
 import dhomo.crmmail.api.message.MessageWithFolder;
-import com.sun.mail.imap.IMAPFolder;
-import com.sun.mail.imap.IMAPMessage;
-import com.sun.mail.imap.IMAPStore;
-import com.sun.mail.util.MailSSLSocketFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -50,19 +50,11 @@ import org.springframework.web.context.annotation.RequestScope;
 import reactor.core.publisher.Flux;
 
 import javax.annotation.PreDestroy;
-import javax.mail.BodyPart;
-import javax.mail.Flags;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.Part;
-import javax.mail.Session;
-import javax.mail.UIDFolder;
-import javax.mail.URLName;
+import javax.mail.*;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeUtility;
 import javax.servlet.http.HttpServletResponse;
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.*;
@@ -74,10 +66,7 @@ import static dhomo.crmmail.api.exception.AuthenticationException.Type.IMAP;
 import static dhomo.crmmail.api.folder.FolderResource.addLinks;
 import static dhomo.crmmail.api.folder.FolderUtils.addSystemFolders;
 import static dhomo.crmmail.api.folder.FolderUtils.getFileWithRef;
-import static dhomo.crmmail.api.message.MessageUtils.envelopeFetch;
-import static dhomo.crmmail.api.message.MessageUtils.extractBodypart;
-import static dhomo.crmmail.api.message.MessageUtils.extractContent;
-import static dhomo.crmmail.api.message.MessageUtils.replaceEmbeddedImage;
+import static dhomo.crmmail.api.message.MessageUtils.*;
 import static javax.mail.Folder.READ_ONLY;
 import static javax.mail.Folder.READ_WRITE;
 
@@ -113,10 +102,16 @@ public class ImapService {
         this.leadRepository = leadRepository;
     }
 
-    @Transactional
-    public void fillLeads(Message message){
+    public Message fillLeads(Message message){
         var byMessagesMessageId = leadRepository.findByMessages_MessageId(message.getMessageId());
-        message.setLeadDtoIdNameSet(byMessagesMessageId);
+        return message.setLeadDtoIdNameSet(byMessagesMessageId);
+    }
+
+    public List<Message> fillLeads(List<Message> messages){
+        for (var message :messages){
+            fillLeads(message);
+        }
+        return messages;
     }
 
     /**
@@ -282,7 +277,7 @@ public class ImapService {
                 (Credentials)SecurityContextHolder.getContext().getAuthentication(), folderId, response,this));
     }
 
-    public MessageWithFolder getMessage(URLName folderId, Long uid) {
+    public MessageWithFolder getMessageWithFolder(URLName folderId, Long uid) {
         try {
             final IMAPFolder folder = getFolder(folderId);
             if (!folder.isOpen()) {
@@ -296,8 +291,26 @@ public class ImapService {
             final MessageWithFolder ret = MessageWithFolder.from(folder, imapMessage);
             readContentIntoMessage(folderId, imapMessage, ret);
             folder.close();
-            // дополним данными о лидах связанным с этим email'ом
-            fillLeads(ret);
+            return ret;
+        } catch (MessagingException | IOException ex) {
+            log.error("Error loading messages for folder: " + folderId.toString(), ex);
+            throw  new IsotopeException(ex.getMessage());
+        }
+    }
+    public Message getMessage(URLName folderId, Long uid) {
+        try {
+            final IMAPFolder folder = getFolder(folderId);
+            if (!folder.isOpen()) {
+                folder.open(READ_ONLY);
+            }
+            final IMAPMessage imapMessage = (IMAPMessage)folder.getMessageByUID(uid);
+            if (imapMessage == null) {
+                folder.close();
+                throw new NotFoundException("Message not found");
+            }
+            final Message ret = Message.from(folder, imapMessage);
+            readContentIntoMessage(folderId, imapMessage, ret);
+            folder.close();
             return ret;
         } catch (MessagingException | IOException ex) {
             log.error("Error loading messages for folder: " + folderId.toString(), ex);
@@ -335,7 +348,6 @@ public class ImapService {
             // пока заполнены только uid в messages
             for(IMAPMessage imapMessage : messages) {
                 final Message message = Message.from(folder, imapMessage);
-//                fillLeads(message);
                 ret.add(message);
                 imapMessage.setPeek(true);
                 readContentIntoMessage(folderId, imapMessage, message);
@@ -348,14 +360,14 @@ public class ImapService {
     }
 
     public void readAttachment(
-            HttpServletResponse response, URLName folderId, Long messageId, String id, Boolean isContentId) {
+            HttpServletResponse response, URLName folderId, Long messageUID, String id, Boolean isContentId) {
 
         try {
             final IMAPFolder folder = getFolder(folderId);
             if (!folder.isOpen()) {
                 folder.open(READ_ONLY);
             }
-            final IMAPMessage imapMessage = (IMAPMessage)folder.getMessageByUID(messageId);
+            final IMAPMessage imapMessage = (IMAPMessage)folder.getMessageByUID(messageUID);
             final Object content = imapMessage.getContent();
             if (content instanceof Multipart) {
                 final BodyPart bp = extractBodypart((Multipart)content, id, isContentId);
@@ -512,7 +524,7 @@ public class ImapService {
         return imapStore;
     }
 
-    List<Message> getMessages(
+    List<Message> getMessagesEnvelope(
             @NonNull IMAPFolder folder, @Nullable Integer start, @Nullable Integer end, boolean fetchModseq)
             throws MessagingException {
 
@@ -541,11 +553,7 @@ public class ImapService {
             highestModseq = null;
         }
         return Stream.of(messages)
-                .map(m -> {
-                    var ret = Message.from(folder, (IMAPMessage)m);
-                    fillLeads(ret);
-                    return ret;
-                })
+                .map(m -> Message.from(folder, (IMAPMessage)m))
                 .peek(m -> m.setModseq(highestModseq))
                 .sorted(Comparator.comparingLong(Message::getUid).reversed())
                 .collect(Collectors.toList());
@@ -582,12 +590,12 @@ public class ImapService {
      * @throws MessagingException
      * @throws IOException
      */
-    private List<Attachment> extractAttachments(
-            @NonNull Message finalMessage, @NonNull Multipart mp, @Nullable List<Attachment> attachments)
+    private Set<Attachment> extractAttachments(
+            @NonNull Message finalMessage, @NonNull Multipart mp, @Nullable Set<Attachment> attachments)
             throws MessagingException, IOException {
 
         if (attachments == null){
-            attachments = new ArrayList<>();
+            attachments = new LinkedHashSet<>();
         }
         for (int it = 0; it < mp.getCount(); it++) {
             final BodyPart bp = mp.getBodyPart(it);

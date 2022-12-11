@@ -98,8 +98,9 @@ public class Message extends LeadEvent {
     @Column(columnDefinition = "text")
     private String content;
 
-    @OneToMany
-    private List<Attachment> attachments = new ArrayList<>();
+    @Transient // временно пока не разберусь
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    private Set<Attachment> attachments = new LinkedHashSet<>();
 
     @Column(name = "references_col", columnDefinition = "text[]")
     @Type(type = "list-array")

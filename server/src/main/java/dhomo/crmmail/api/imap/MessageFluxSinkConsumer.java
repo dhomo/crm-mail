@@ -102,7 +102,8 @@ public class MessageFluxSinkConsumer implements Consumer<FluxSink<ServerSentEven
                 log.debug("Getting message batch for folder {} [{}-{}]", folder.getName(), start, end);
                 response.getOutputStream(); // Will force an IOException if client disconnected
                 final ServerSentEvent<List<Message>> event = ServerSentEvent
-                        .builder(imapService.getMessages(folder, start, end, fetchModseq))
+                        .builder(imapService.fillLeads(
+                                    imapService.getMessagesEnvelope(folder, start, end, fetchModseq)))
                         .id(String.valueOf(start))
                         .build();
                 serverSentEventFluxSink.next(event);

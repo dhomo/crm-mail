@@ -22,6 +22,7 @@ package dhomo.crmmail.api.message;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import dhomo.crmmail.api.resource.IsotopeResource;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -36,8 +37,13 @@ import java.util.Objects;
 @Setter
 @NoArgsConstructor
 public class Attachment extends IsotopeResource {
-
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name = "id", nullable = false)
+    private Long id;
+
     private String contentId;
     private String fileName;
     private String contentType;
