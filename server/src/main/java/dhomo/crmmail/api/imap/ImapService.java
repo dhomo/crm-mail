@@ -108,8 +108,13 @@ public class ImapService {
     }
 
     public List<Message> fillLeads(List<Message> messages){
-        for (var message :messages){
-            fillLeads(message);
+        var leads = leadRepository.findByMessages_MessageIds(messages.stream().map(Message::getMessageId).toList());
+        if (!leads.isEmpty()){
+            for (var message :messages){
+                message.setLeadDtoIdNameSet(leads.stream()
+                        .filter(leadDtoIdName -> leadDtoIdName.getMessageId().equals(message.getMessageId()))
+                        .collect(Collectors.toSet()));
+            }
         }
         return messages;
     }
@@ -552,11 +557,11 @@ public class ImapService {
         } else {
             highestModseq = null;
         }
-        return Stream.of(messages)
+        return fillLeads(Stream.of(messages)
                 .map(m -> Message.from(folder, (IMAPMessage)m))
                 .peek(m -> m.setModseq(highestModseq))
                 .sorted(Comparator.comparingLong(Message::getUid).reversed())
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
     }
 
     private IMAPFolder getFolder(URLName folderId) throws MessagingException {

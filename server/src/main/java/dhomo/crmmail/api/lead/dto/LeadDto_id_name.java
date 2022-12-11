@@ -12,4 +12,5 @@ import java.io.Serializable;
 public class LeadDto_id_name implements Serializable {
     private final Long id;
     private final String name;
+    private final String messageId;
 }
