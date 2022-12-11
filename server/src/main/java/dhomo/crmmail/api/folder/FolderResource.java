@@ -120,6 +120,12 @@ public class FolderResource implements ApplicationContextAware {
                 imapServiceFactory.getObject().moveFolder(Folder.toId(folderId), targetFolderUrlName));
     }
 
+    /**
+     * грузит всю папку пока не отменишь
+     * @param folderId
+     * @param response
+     * @return Список сообщений, только конверты. Выдает результаты реактивно пачками через Server Sent Events
+     */
     @GetMapping(path = "/{folderId}/messages", produces = TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<List<Message>>> getMessages(
             @PathVariable("folderId") String folderId, HttpServletResponse response) {
