@@ -19,8 +19,9 @@ public interface LeadRepository extends JpaRepository<Lead, Long> {
     @EntityGraph(attributePaths = {"owner", "status", "leadEvents.owner", "leadEvents.allowed", "allowed"})
     List<Lead> findAll();
 
-    @Query("select new dhomo.crmmail.api.lead.dto.LeadDto_id_name(l.id, l.name) from Message m inner join m.lead l where m.messageId = ?1")
+    @Query("select new dhomo.crmmail.api.lead.dto.LeadDto_id_name(l.id, l.name, m.messageId) from Message m inner join m.lead l where m.messageId = ?1")
     Set<LeadDto_id_name> findByMessages_MessageId(String messageId);
 
-
+    @Query("select new dhomo.crmmail.api.lead.dto.LeadDto_id_name(l.id, l.name, m.messageId) from Message m inner join m.lead l where m.messageId IN (:messageIds)")
+    Set<LeadDto_id_name> findByMessages_MessageIds(List<String> messageIds);
 }
