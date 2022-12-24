@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @Component
 @RequiredArgsConstructor
-public class TokenAutheConverter implements AuthenticationConverter {
+public class TokenAuthConverter implements AuthenticationConverter {
 
     private final AppConfiguration appConf;
     private final ObjectMapper objectMapper;
