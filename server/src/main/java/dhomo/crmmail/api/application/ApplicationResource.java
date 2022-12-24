@@ -91,7 +91,7 @@ public class ApplicationResource {
     public ResponseEntity<LoginResponseDto> login(
             @Validated() @RequestBody LoginRequestDto loginRequestDto) {
 
-        log.info("User logging into application");
+        log.info("User logging into application: " + loginRequestDto.getUser());
         final var credentials = Credentials.unauthenticated(
                 usersService.findUser(loginRequestDto.getUser()),
                 loginRequestDto.getPassword());
