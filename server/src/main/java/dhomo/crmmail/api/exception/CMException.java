@@ -1,5 +1,5 @@
 /*
- * IsotopeException.java
+ * CMException.java
  *
  * Created on 2018-08-08, 17:19
  *
@@ -22,27 +22,27 @@ package dhomo.crmmail.api.exception;
 
 import org.springframework.http.HttpStatus;
 
-public class IsotopeException extends RuntimeException {
+public class CMException extends RuntimeException {
 
     private final HttpStatus httpStatus;
 
-    public IsotopeException() {
+    public CMException() {
         this(null);
     }
 
-    public IsotopeException(String message) {
+    public CMException(String message) {
         this(HttpStatus.BAD_REQUEST, message, null);
     }
 
-    public IsotopeException(HttpStatus httpStatus, String message) {
+    public CMException(HttpStatus httpStatus, String message) {
         this(httpStatus, message, null);
     }
 
-    public IsotopeException(String message, Throwable cause) {
+    public CMException(String message, Throwable cause) {
         this(HttpStatus.BAD_REQUEST, message, cause);
     }
 
-    public IsotopeException(HttpStatus httpStatus, String message,  Throwable cause) {
+    public CMException(HttpStatus httpStatus, String message, Throwable cause) {
         super(message, cause);
         this.httpStatus = httpStatus;
     }

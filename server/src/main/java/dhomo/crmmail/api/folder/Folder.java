@@ -21,7 +21,7 @@
 package dhomo.crmmail.api.folder;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import dhomo.crmmail.api.exception.IsotopeException;
+import dhomo.crmmail.api.exception.CMException;
 import dhomo.crmmail.api.resource.IsotopeResource;
 import com.sun.mail.imap.IMAPFolder;
 import org.springframework.lang.Nullable;
@@ -233,7 +233,7 @@ public class Folder extends IsotopeResource implements Serializable {
                     ret.setChildren(EMPTY_FOLDERS);
                 }
             } catch (MessagingException e) {
-                throw new IsotopeException("Error parsing IMAP Folder", e);
+                throw new CMException("Error parsing IMAP Folder", e);
             }
         } else {
             ret = null;

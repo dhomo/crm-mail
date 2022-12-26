@@ -20,9 +20,7 @@
  */
 package dhomo.crmmail.api.message;
 
-import dhomo.crmmail.api.exception.InvalidFieldException;
-import dhomo.crmmail.api.message.MessageUtils;
-import dhomo.crmmail.api.message.Recipient;
+import dhomo.crmmail.api.exception.CMInvalidFieldException;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -103,7 +101,7 @@ public class MessageUtilsTest {
         assertThat(result, arrayWithSize(expectedSize));
     }
 
-    @Test(expected = InvalidFieldException.class)
+    @Test(expected = CMInvalidFieldException.class)
     public void getRecipientAddresses_invalidMessage_shouldThrowException() {
         // Given
         final dhomo.crmmail.api.message.Message message =

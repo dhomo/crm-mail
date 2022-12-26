@@ -20,11 +20,10 @@
  */
 package dhomo.crmmail.api.configuration;
 
-import dhomo.crmmail.api.exception.InvalidFieldException;
-import dhomo.crmmail.api.exception.IsotopeException;
+import dhomo.crmmail.api.exception.CMException;
+import dhomo.crmmail.api.exception.CMInvalidFieldException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.validation.BindException;
@@ -33,53 +32,40 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import org.springframework.web.util.WebUtils;
 
-import java.nio.charset.StandardCharsets;
-
-import static dhomo.crmmail.api.http.HttpHeaders.ISOTOPE_EXCEPTION;
-
-@SuppressWarnings("unchecked")
 @ControllerAdvice
 public class CustomControllerAdvice extends ResponseEntityExceptionHandler {
-    private static final int MISCELLANEOUS_HTTP_WARN_CODE = 199;
-    private static final int MAX_HEADER_LENGTH = 500;
 
-    // нифига не понятно зачем в хедеры писать, но трогать не стал, надо фронт сначала смотреть
-    @ExceptionHandler(IsotopeException.class)
-    public <T extends IsotopeException> ResponseEntity<String> handleIsotopeException(T exception) {
-        final String message = exception.getMessage();
+    @ExceptionHandler(CMException.class)
+    public <T extends CMException> ResponseEntity<Object> handleCMException(T exception, WebRequest request) {
         final HttpHeaders headers = new HttpHeaders();
-        headers.set(ISOTOPE_EXCEPTION, getClass().getName());
-        headers.set(HttpHeaders.WARNING, String.format("%s %s \"%s\"",
-                MISCELLANEOUS_HTTP_WARN_CODE, "-",
-                message == null ? "" :
-                        message.substring(0, Math.min(message.length(), MAX_HEADER_LENGTH))
-                                .replaceAll("[\\n\\r]", "")));
-        headers.setContentType(new MediaType("text", "plain", StandardCharsets.UTF_8));
-        return new ResponseEntity<>(message, headers, exception.getHttpStatus());
+        final String body = exception.getMessage();
+        return handleExceptionInternal(exception, body, headers, exception.getHttpStatus(), request);
     }
 
     @Override
-    protected ResponseEntity handleBindException(BindException ex,
-                                                 HttpHeaders headers, HttpStatus status, WebRequest request) {
-        return handleIsotopeException(new InvalidFieldException(ex.getBindingResult()));
+    protected ResponseEntity<Object> handleBindException(BindException ex, HttpHeaders headers,
+                                                         HttpStatus status, WebRequest request) {
+        return handleCMException(new CMInvalidFieldException(ex.getBindingResult()), request);
     }
 
     @Override
-    protected ResponseEntity handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-                                                          HttpHeaders headers, HttpStatus status, WebRequest request) {
-        return handleIsotopeException(new InvalidFieldException(ex.getBindingResult()));
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers,
+                                                                  HttpStatus status, WebRequest request) {
+        return handleCMException(new CMInvalidFieldException(ex.getBindingResult()), request);
     }
 
-//    default exception handler
+    /**
+     * A single place to customize the response body of all exception types.
+     * @param ex the exception
+     * @param body the body for the response
+     * @param headers the headers for the response
+     * @param status the response status
+     * @param request the current request
+     */
     @Override
-    protected ResponseEntity<Object> handleExceptionInternal(
-            Exception ex, @Nullable Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
-
-        if (HttpStatus.INTERNAL_SERVER_ERROR.equals(status)) {
-            request.setAttribute(WebUtils.ERROR_EXCEPTION_ATTRIBUTE, ex, WebRequest.SCOPE_REQUEST);
-        }
+    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, @Nullable Object body,
+                                                             HttpHeaders headers, HttpStatus status, WebRequest request) {
         return new ResponseEntity<>(ex.getMessage(), headers, status);
     }
 }

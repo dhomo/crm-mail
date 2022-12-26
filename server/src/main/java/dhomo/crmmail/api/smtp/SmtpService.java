@@ -21,8 +21,8 @@
 package dhomo.crmmail.api.smtp;
 
 import dhomo.crmmail.api.authentication.Credentials;
-import dhomo.crmmail.api.exception.AuthenticationException;
-import dhomo.crmmail.api.exception.IsotopeException;
+import dhomo.crmmail.api.exception.CMAuthException;
+import dhomo.crmmail.api.exception.CMException;
 import dhomo.crmmail.api.http.IsotopeURLDataSource;
 import dhomo.crmmail.api.message.Attachment;
 import dhomo.crmmail.api.message.Message;
@@ -57,7 +57,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static dhomo.crmmail.api.configuration.AppConfiguration.DEFAULT_CONNECTION_TIMEOUT;
-import static dhomo.crmmail.api.exception.AuthenticationException.Type.SMTP;
+import static dhomo.crmmail.api.exception.CMAuthException.Type.SMTP;
 import static dhomo.crmmail.api.folder.FolderResource.REL_DOWNLOAD;
 import static dhomo.crmmail.api.message.Message.HEADER_IN_REPLY_TO;
 import static dhomo.crmmail.api.message.Message.HEADER_REFERENCES;
@@ -95,13 +95,13 @@ public class SmtpService {
      * Checks if specified {@link Credentials} are valid
      *
      * @param credentials to validate
-     * @throws AuthenticationException if credentials are not valid
+     * @throws CMAuthException if credentials are not valid
      */
     public void checkCredentials(Credentials credentials) {
         try {
             getSmtpTransport(credentials);
         } catch (MessagingException e) {
-            throw new AuthenticationException(SMTP);
+            throw new CMAuthException(SMTP);
         }
     }
 
@@ -169,7 +169,7 @@ public class SmtpService {
             mimeMessage.saveChanges();
             getSmtpTransport(credentials).sendMessage(mimeMessage, mimeMessage.getAllRecipients());
         } catch(MessagingException | IOException ex) {
-            throw new IsotopeException("Problem sending message", ex);
+            throw new CMException("Problem sending message", ex);
         }
     }
 

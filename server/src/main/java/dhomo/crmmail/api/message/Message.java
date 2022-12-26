@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sun.mail.imap.IMAPMessage;
 import com.vladmihalcea.hibernate.type.array.ListArrayType;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
-import dhomo.crmmail.api.exception.IsotopeException;
+import dhomo.crmmail.api.exception.CMException;
 import dhomo.crmmail.api.lead.dto.LeadDto_id_name;
 import dhomo.crmmail.api.lead.leadEvents.LeadEvent;
 import lombok.Getter;
@@ -191,7 +191,7 @@ public class Message extends LeadEvent {
                 ret.setRecent(flags.contains(Flags.Flag.RECENT));
                 ret.setDeleted(flags.contains(Flags.Flag.DELETED));
             } catch (ReflectiveOperationException | MessagingException e) {
-                throw new IsotopeException("Error parsing IMAP Message", e);
+                throw new CMException("Error parsing IMAP Message", e);
             }
         } else {
             ret = null;

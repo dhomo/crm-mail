@@ -23,7 +23,7 @@ package dhomo.crmmail.api.smtp;
 import dhomo.crmmail.api.configuration.WithMockCredentials;
 import dhomo.crmmail.api.authentication.Credentials;
 import dhomo.crmmail.api.user.User;
-import dhomo.crmmail.api.exception.AuthenticationException;
+import dhomo.crmmail.api.exception.CMAuthException;
 import dhomo.crmmail.api.http.IsotopeURLDataSource;
 import dhomo.crmmail.api.message.Attachment;
 import dhomo.crmmail.api.message.Message;
@@ -130,7 +130,7 @@ public class SmtpServiceTest {
         // No exception is thrown
     }
 
-    @Test(expected = AuthenticationException.class)
+    @Test(expected = CMAuthException.class)
     public void checkCredentials_invalidCredentials_shouldThrowException() throws Exception {
         // Given
         final Credentials credentials =  Credentials.unauthenticated(new User(), "");

@@ -24,8 +24,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dhomo.crmmail.api.authentication.Credentials;
 import dhomo.crmmail.api.configuration.AppConfiguration;
-import dhomo.crmmail.api.exception.AuthenticationException;
-import dhomo.crmmail.api.exception.NotFoundException;
+import dhomo.crmmail.api.exception.CMAuthException;
+import dhomo.crmmail.api.exception.CMNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.encrypt.Encryptors;
@@ -35,9 +35,10 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
-import static dhomo.crmmail.api.exception.AuthenticationException.Type.BLACKLISTED;
+import static dhomo.crmmail.api.exception.CMAuthException.Type.BLACKLISTED;
 
 @Slf4j
 @Service
@@ -52,7 +53,7 @@ public class UsersService {
     public void checkHost(Credentials credentials) {
         final Set<String> trustedHosts = appConfiguration.getTrustedHosts();
         if (!trustedHosts.isEmpty() && !trustedHosts.contains(credentials.getPrincipal().getEmailServer().getImapHost())){
-            throw new AuthenticationException(BLACKLISTED);
+            throw new CMAuthException(BLACKLISTED);
         }
     }
 
@@ -64,9 +65,8 @@ public class UsersService {
         return encryptor.encrypt(objectMapper.writeValueAsString(credentials));
     }
 
-    public User findUser(String user) {
-        return (userRepository.findByUserNameIgnoreCase(user)
-                .orElseThrow(()->new AuthenticationException(AuthenticationException.Type.NOT_FOUND)));
+    public Optional<User> findUser(String user) {
+        return userRepository.findByUserNameIgnoreCase(user);
     }
 
     public List<User> findAll(){
@@ -77,7 +77,7 @@ public class UsersService {
     public User saveUser(User user){
         if (user.getEmailServer().getId()!= null){
             var server = emailServerRepository.findById(user.getEmailServer().getId())
-                    .orElseThrow(()->new NotFoundException("emailServer with id="+user.getEmailServer().getId()+" not found"));
+                    .orElseThrow(()->new CMNotFoundException("emailServer with id="+user.getEmailServer().getId()+" not found"));
             user.setEmailServer(server);
         }
         return userRepository.save(user);

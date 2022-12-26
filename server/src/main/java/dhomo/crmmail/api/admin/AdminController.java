@@ -1,7 +1,7 @@
 package dhomo.crmmail.api.admin;
 
 
-import dhomo.crmmail.api.exception.InvalidFieldException;
+import dhomo.crmmail.api.exception.CMInvalidFieldException;
 import dhomo.crmmail.api.lead.leadStatus.LeadStatus;
 import dhomo.crmmail.api.lead.leadStatus.LeadStatusRepository;
 import dhomo.crmmail.api.user.User;
@@ -53,7 +53,7 @@ public class AdminController {
             return usersService.saveUser(user);
         } catch (DataIntegrityViolationException e)
         {
-            throw new InvalidFieldException( user.getUserName() + " already exists");
+            throw new CMInvalidFieldException( user.getUserName() + " already exists");
         }
     }
 
@@ -61,7 +61,7 @@ public class AdminController {
     User putUser(@Validated() @RequestBody User user) {
         log.info("Update user id:" + user.getId());
         if (user.getId() == null){
-            throw new InvalidFieldException("Lead id should not be null ");
+            throw new CMInvalidFieldException("Lead id should not be null ");
         }
         return usersService.saveUser(user);
     }

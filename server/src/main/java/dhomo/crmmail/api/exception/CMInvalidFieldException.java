@@ -1,5 +1,5 @@
 /*
- * InvalidFieldException.java
+ * CMInvalidFieldException.java
  *
  * Created on 2018-08-17, 7:01
  *
@@ -32,24 +32,24 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class InvalidFieldException extends IsotopeException {
+public class CMInvalidFieldException extends CMException {
 
     private final Map<String, String> errors;
 
-    public InvalidFieldException() {
+    public CMInvalidFieldException() {
         this(null, null);
     }
     @JsonCreator
-    public InvalidFieldException(String message) {
+    public CMInvalidFieldException(String message) {
         this(message, null);
     }
 
-    public InvalidFieldException(String message, Throwable cause) {
+    public CMInvalidFieldException(String message, Throwable cause) {
         super(HttpStatus.BAD_REQUEST, message, cause);
         errors = new HashMap<>();
     }
 
-    public InvalidFieldException(BindingResult bindingResult){
+    public CMInvalidFieldException(BindingResult bindingResult){
         super(HttpStatus.BAD_REQUEST, null, null);
         errors = new HashMap<>();
         for (ObjectError err : bindingResult.getAllErrors()) {

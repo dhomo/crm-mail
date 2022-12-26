@@ -1,7 +1,7 @@
 /*
- * AuthenticationException.java
+ * CMNotFoundException.java
  *
- * Created on 2018-08-18, 7:47
+ * Created on 2018-09-15, 18:01
  *
  * Copyright 2018 Marc Nuri
  *
@@ -22,21 +22,13 @@ package dhomo.crmmail.api.exception;
 
 import org.springframework.http.HttpStatus;
 
-public class AuthenticationException extends IsotopeException {
+public class CMNotFoundException extends CMException {
 
-    public enum Type {
-        BLACKLISTED, IMAP, SMTP, NOT_FOUND, DISABLED
-    }
-
-    public AuthenticationException(Type type) {
-        this(type.name());
-    }
-
-    public AuthenticationException(String message) {
+    public CMNotFoundException(String message) {
         this(message, null);
     }
 
-    public AuthenticationException(String message, Throwable cause) {
-        super(HttpStatus.UNAUTHORIZED, message, cause);
+    public CMNotFoundException(String message, Throwable cause) {
+        super(HttpStatus.NOT_FOUND, message, cause);
     }
 }

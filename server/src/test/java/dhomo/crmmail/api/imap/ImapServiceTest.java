@@ -23,8 +23,8 @@ package dhomo.crmmail.api.imap;
 import dhomo.crmmail.api.configuration.AppConfiguration;
 import dhomo.crmmail.api.configuration.WithMockCredentials;
 import dhomo.crmmail.api.user.UsersService;
-import dhomo.crmmail.api.exception.IsotopeException;
-import dhomo.crmmail.api.exception.NotFoundException;
+import dhomo.crmmail.api.exception.CMException;
+import dhomo.crmmail.api.exception.CMNotFoundException;
 import dhomo.crmmail.api.folder.Folder;
 import dhomo.crmmail.api.folder.FolderUtils;
 import com.sun.mail.imap.IMAPFolder;
@@ -225,7 +225,7 @@ public class ImapServiceTest {
         FolderUtils.renameFolder(Mockito.eq(folder), Mockito.eq("1337"));
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test(expected = CMNotFoundException.class)
     @WithMockCredentials
     public void moveFolder_folderNotFound_shouldThrowException() throws Exception {
         // Given
@@ -240,7 +240,7 @@ public class ImapServiceTest {
         fail();
     }
 
-    @Test(expected = IsotopeException.class)
+    @Test(expected = CMException.class)
     @WithMockCredentials
     public void moveFolder_validParametersMessagingException_shouldThrowException() throws Exception {
         // Given

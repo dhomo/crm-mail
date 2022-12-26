@@ -26,10 +26,10 @@ import com.sun.mail.imap.IMAPStore;
 import com.sun.mail.util.MailSSLSocketFactory;
 import dhomo.crmmail.api.authentication.Credentials;
 import dhomo.crmmail.api.configuration.AppConfiguration;
-import dhomo.crmmail.api.exception.AuthenticationException;
-import dhomo.crmmail.api.exception.InvalidFieldException;
-import dhomo.crmmail.api.exception.IsotopeException;
-import dhomo.crmmail.api.exception.NotFoundException;
+import dhomo.crmmail.api.exception.CMAuthException;
+import dhomo.crmmail.api.exception.CMException;
+import dhomo.crmmail.api.exception.CMInvalidFieldException;
+import dhomo.crmmail.api.exception.CMNotFoundException;
 import dhomo.crmmail.api.folder.Folder;
 import dhomo.crmmail.api.folder.FolderUtils;
 import dhomo.crmmail.api.lead.LeadRepository;
@@ -62,7 +62,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static dhomo.crmmail.api.configuration.AppConfiguration.DEFAULT_CONNECTION_TIMEOUT;
-import static dhomo.crmmail.api.exception.AuthenticationException.Type.IMAP;
+import static dhomo.crmmail.api.exception.CMAuthException.Type.IMAP;
 import static dhomo.crmmail.api.folder.FolderResource.addLinks;
 import static dhomo.crmmail.api.folder.FolderUtils.addSystemFolders;
 import static dhomo.crmmail.api.folder.FolderUtils.getFileWithRef;
@@ -123,13 +123,13 @@ public class ImapService {
      * Checks if specified {@link Credentials} are valid
      *
      * @param credentials to validate
-     * @throws AuthenticationException if credentials are not valid
+     * @throws CMAuthException if credentials are not valid
      */
     public void checkCredentials(Credentials credentials) {
         try {
             getImapStore(credentials).getDefaultFolder();
         } catch (MessagingException e) {
-            throw new AuthenticationException(IMAP);
+            throw new CMAuthException(IMAP);
         }
     }
 
@@ -155,7 +155,7 @@ public class ImapService {
             return folders;
         } catch (MessagingException ex) {
             log.error("Error loading folders", ex);
-            throw new IsotopeException(ex.getMessage());
+            throw new CMException(ex.getMessage());
         }
     }
 
@@ -175,7 +175,7 @@ public class ImapService {
             return Arrays.asList(Folder.from(rootFolder, true).getChildren());
         } catch (MessagingException ex) {
             log.error("Error creating new root folder {}", newFolderName, ex);
-            throw new IsotopeException(ex.getMessage());
+            throw new CMException(ex.getMessage());
         }
     }
 
@@ -198,7 +198,7 @@ public class ImapService {
             return Folder.from(getFolder(parentFolderId), true);
         } catch (MessagingException ex) {
             log.error("Error creating new folder {} under {}", newFolderName, parentFolderId, ex);
-            throw new IsotopeException(ex.getMessage());
+            throw new CMException(ex.getMessage());
         }
     }
 
@@ -216,7 +216,7 @@ public class ImapService {
             final IMAPFolder folder = getFolder(folderToRenameId);
             newName = newName.replaceAll("[.\\[\\]/\\\\&~*]", ""); /// Sanitize name
             if (newName.isEmpty() || newName.indexOf(folder.getSeparator()) >= 0) {
-                throw new InvalidFieldException("New folder name contains invalid characters");
+                throw new CMInvalidFieldException("New folder name contains invalid characters");
             }
             final String folderToRenameFullName = folder.getFullName();
             final String newFolderFullName = String.format("%s%s",
@@ -226,7 +226,7 @@ public class ImapService {
             return FolderUtils.renameFolder(folder, newFolderFullName);
         } catch (MessagingException ex) {
             log.error("Error renaming folder " + folderToRenameId.toString(), ex);
-            throw new IsotopeException(ex.getMessage());
+            throw new CMException(ex.getMessage());
         }
     }
 
@@ -254,7 +254,7 @@ public class ImapService {
             return FolderUtils.renameFolder(folderToMove, movedFolderFullName);
         } catch (MessagingException ex) {
             log.error("Error moving folder " + folderToMoveId.toString(), ex);
-            throw new IsotopeException(ex.getMessage());
+            throw new CMException(ex.getMessage());
         }
     }
 
@@ -272,7 +272,7 @@ public class ImapService {
             return Folder.from(parent, true);
         } catch (MessagingException ex) {
             log.error("Error deleting folder " + folderToDeleteId.toString(), ex);
-            throw new IsotopeException(ex.getMessage());
+            throw new CMException(ex.getMessage());
         }
     }
 
@@ -291,7 +291,7 @@ public class ImapService {
             final IMAPMessage imapMessage = (IMAPMessage)folder.getMessageByUID(uid);
             if (imapMessage == null) {
                 folder.close();
-                throw new NotFoundException("Message not found");
+                throw new CMNotFoundException("Message not found");
             }
             final MessageWithFolder ret = MessageWithFolder.from(folder, imapMessage);
             readContentIntoMessage(folderId, imapMessage, ret);
@@ -299,7 +299,7 @@ public class ImapService {
             return ret;
         } catch (MessagingException | IOException ex) {
             log.error("Error loading messages for folder: " + folderId.toString(), ex);
-            throw  new IsotopeException(ex.getMessage());
+            throw  new CMException(ex.getMessage());
         }
     }
     public Message getMessage(URLName folderId, Long uid) {
@@ -311,7 +311,7 @@ public class ImapService {
             final IMAPMessage imapMessage = (IMAPMessage)folder.getMessageByUID(uid);
             if (imapMessage == null) {
                 folder.close();
-                throw new NotFoundException("Message not found");
+                throw new CMNotFoundException("Message not found");
             }
             final Message ret = Message.from(folder, imapMessage);
             readContentIntoMessage(folderId, imapMessage, ret);
@@ -319,7 +319,7 @@ public class ImapService {
             return ret;
         } catch (MessagingException | IOException ex) {
             log.error("Error loading messages for folder: " + folderId.toString(), ex);
-            throw  new IsotopeException(ex.getMessage());
+            throw  new CMException(ex.getMessage());
         }
     }
 
@@ -360,7 +360,7 @@ public class ImapService {
             folder.close();
             return ret;
         } catch (MessagingException | IOException ex) {
-            throw  new IsotopeException(ex.getMessage());
+            throw  new CMException(ex.getMessage());
         }
     }
 
@@ -381,12 +381,12 @@ public class ImapService {
                     bp.getDataHandler().writeTo(response.getOutputStream());
                     response.getOutputStream().flush();
                 } else {
-                    throw new NotFoundException("Attachment not found");
+                    throw new CMNotFoundException("Attachment not found");
                 }
             }
         } catch (MessagingException | IOException ex) {
             log.error("Error loading messages for folder: " + folderId.toString(), ex);
-            throw  new IsotopeException(ex.getMessage());
+            throw  new CMException(ex.getMessage());
         }
 
     }
@@ -443,12 +443,12 @@ public class ImapService {
         } catch(InterruptedException ex) {
             Thread.currentThread().interrupt();
             log.error("Error moving messages when waiting for COPY to complete", ex);
-            throw new IsotopeException(ex.getMessage(), ex);
+            throw new CMException(ex.getMessage(), ex);
 
         } catch (MessagingException ex) {
             log.error("Error moving messages", ex);
             log.debug("Error moving messages from folder {} to folder {}", fromFolderId, toFolderId);
-            throw new IsotopeException(ex.getMessage(), ex);
+            throw new CMException(ex.getMessage(), ex);
         }
     }
 
@@ -482,7 +482,7 @@ public class ImapService {
             folder.expunge();
             return Folder.from(folder, true);
         } catch (MessagingException ex) {
-            throw new IsotopeException(ex.getMessage(), ex);
+            throw new CMException(ex.getMessage(), ex);
         }
     }
 
@@ -495,7 +495,7 @@ public class ImapService {
             folder.expunge(messages);
             return Folder.from(folder, true);
         } catch (MessagingException ex) {
-            throw new IsotopeException(ex.getMessage(), ex);
+            throw new CMException(ex.getMessage(), ex);
         }
     }
 
@@ -567,7 +567,7 @@ public class ImapService {
     private IMAPFolder getFolder(URLName folderId) throws MessagingException {
         final IMAPFolder folder = (IMAPFolder)getImapStore().getFolder(getFileWithRef(folderId));
         if (!folder.exists()) {
-            throw new NotFoundException(String.format("Folder %s not found", folderId.toString()));
+            throw new CMNotFoundException(String.format("Folder %s not found", folderId.toString()));
         }
         return folder;
     }
@@ -580,7 +580,7 @@ public class ImapService {
             folder.setFlags(messages, new Flags(flag), flagValue);
             folder.close(false);
         } catch (MessagingException ex) {
-            throw new IsotopeException(ex.getMessage(), ex);
+            throw new CMException(ex.getMessage(), ex);
         }
     }
 

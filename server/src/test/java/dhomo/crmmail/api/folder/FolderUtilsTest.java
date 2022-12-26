@@ -20,10 +20,9 @@
  */
 package dhomo.crmmail.api.folder;
 
-import dhomo.crmmail.api.exception.InvalidFieldException;
+import dhomo.crmmail.api.exception.CMInvalidFieldException;
 import com.sun.mail.imap.IMAPFolder;
 import com.sun.mail.imap.IMAPStore;
-import dhomo.crmmail.api.folder.Folder;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -164,7 +163,7 @@ public class FolderUtilsTest {
         assertThat(result.getChildren()[0].getPreviousFolderId(), is("b2xkRm9sZGVySWQ="));
     }
 
-    @Test(expected = InvalidFieldException.class)
+    @Test(expected = CMInvalidFieldException.class)
     public void renameFolder_validFolderAndInvalidName_shouldThrowException() throws Exception {
         // Given
         final IMAPFolder folderToRename = Mockito.mock(IMAPFolder.class);

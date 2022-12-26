@@ -23,7 +23,7 @@ package dhomo.crmmail.api.user;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dhomo.crmmail.api.authentication.Credentials;
 import dhomo.crmmail.api.configuration.AppConfiguration;
-import dhomo.crmmail.api.exception.AuthenticationException;
+import dhomo.crmmail.api.exception.CMAuthException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -94,7 +94,7 @@ public class UsersServiceTest {
         // No exception is thrown
     }
 
-    @Test(expected = AuthenticationException.class)
+    @Test(expected = CMAuthException.class)
     public void checkHost_notTrustedHost_shouldThrowException() {
         // Given
         final String trustedHost = "borken.trust.tom";
@@ -106,6 +106,6 @@ public class UsersServiceTest {
         usersService.checkHost(toTest);
 
         // Then
-        fail("AuthenticationException was expected");
+        fail("CMAuthException was expected");
     }
 }

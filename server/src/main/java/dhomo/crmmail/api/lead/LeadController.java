@@ -1,7 +1,7 @@
 package dhomo.crmmail.api.lead;
 
 import dhomo.crmmail.api.authentication.AuthenticationFacade;
-import dhomo.crmmail.api.exception.InvalidFieldException;
+import dhomo.crmmail.api.exception.CMInvalidFieldException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -45,7 +45,7 @@ public class LeadController {
     @PutMapping()
     Lead putLead(@RequestBody Lead lead){
         if (lead.getId() == null){
-            throw new InvalidFieldException("Lead id should not be null ");
+            throw new CMInvalidFieldException("Lead id should not be null ");
         }
         var persistLead = leadService.getLead(lead.getId(), authFacade.getUser());
         // позволяет частичное обновление (только не null поля)

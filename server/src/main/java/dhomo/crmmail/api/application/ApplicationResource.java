@@ -22,13 +22,13 @@ package dhomo.crmmail.api.application;
 
 import dhomo.crmmail.api.configuration.AppConfiguration;
 import dhomo.crmmail.api.authentication.Credentials;
+import dhomo.crmmail.api.exception.CMException;
 import dhomo.crmmail.api.user.Role;
 import dhomo.crmmail.api.user.RoleRepository;
 import dhomo.crmmail.api.user.UsersService;
 import dhomo.crmmail.api.dto.LoginResponseDto;
 import dhomo.crmmail.api.dto.LoginRequestDto;
-import dhomo.crmmail.api.exception.AuthenticationException;
-import dhomo.crmmail.api.exception.IsotopeException;
+import dhomo.crmmail.api.exception.CMAuthException;
 import dhomo.crmmail.api.folder.FolderResource;
 import dhomo.crmmail.api.imap.ImapService;
 import dhomo.crmmail.api.smtp.SmtpResource;
@@ -93,10 +93,11 @@ public class ApplicationResource {
 
         log.info("User logging into application: " + loginRequestDto.getUser());
         final var credentials = Credentials.unauthenticated(
-                usersService.findUser(loginRequestDto.getUser()),
+                usersService.findUser(loginRequestDto.getUser())
+                        .orElseThrow(()->new CMAuthException(CMAuthException.Type.NOT_FOUND)),
                 loginRequestDto.getPassword());
         if (!credentials.getPrincipal().isEnabled()){
-            throw new AuthenticationException(AuthenticationException.Type.DISABLED);
+            throw new CMAuthException(CMAuthException.Type.DISABLED);
         }
         imapService.checkCredentials(credentials);
         smtpService.checkCredentials(credentials);
@@ -106,7 +107,7 @@ public class ApplicationResource {
             loginResponseDto.setSalt("none");
             return ResponseEntity.ok(loginResponseDto);
         } catch (IOException ex){
-            throw new IsotopeException("Internal error", ex);
+            throw new CMException("Internal error", ex);
         }
     }
 

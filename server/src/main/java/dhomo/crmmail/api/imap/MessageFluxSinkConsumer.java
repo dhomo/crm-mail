@@ -21,7 +21,7 @@
 package dhomo.crmmail.api.imap;
 
 import dhomo.crmmail.api.authentication.Credentials;
-import dhomo.crmmail.api.exception.IsotopeException;
+import dhomo.crmmail.api.exception.CMException;
 import dhomo.crmmail.api.message.Message;
 import com.sun.mail.imap.IMAPFolder;
 import com.sun.mail.imap.IMAPStore;
@@ -72,7 +72,7 @@ public class MessageFluxSinkConsumer implements Consumer<FluxSink<ServerSentEven
             log.error("Error loading messages for folder: " + folderId.toString(), ex);
             serverSentEventFluxSink.error(ex);
             finalizeFlux(serverSentEventFluxSink);
-            throw  new IsotopeException(ex.getMessage());
+            throw  new CMException(ex.getMessage());
         }
         // This bean will be effectively a Prototype, must manually disconnect
         finalizeFlux(serverSentEventFluxSink);

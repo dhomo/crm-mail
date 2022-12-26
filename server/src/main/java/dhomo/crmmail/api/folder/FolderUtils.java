@@ -20,7 +20,7 @@
  */
 package dhomo.crmmail.api.folder;
 
-import dhomo.crmmail.api.exception.InvalidFieldException;
+import dhomo.crmmail.api.exception.CMInvalidFieldException;
 import com.sun.mail.imap.IMAPFolder;
 import org.springframework.lang.NonNull;
 
@@ -93,7 +93,7 @@ public class FolderUtils {
         final String previousFolderId = Folder.toBase64Id(folderToRename.getURLName());
         final IMAPFolder renamedFolder = (IMAPFolder)folderToRename.getStore().getFolder(newFolderFullName);
         if (!folderToRename.renameTo(renamedFolder)) {
-            throw new InvalidFieldException("New folder name was not accepted by IMAP server");
+            throw new CMInvalidFieldException("New folder name was not accepted by IMAP server");
         }
         final IMAPFolder imapParent;
         if (renamedFolder.getParent().getFullName().equals("")) {

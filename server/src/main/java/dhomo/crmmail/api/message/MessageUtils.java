@@ -20,7 +20,7 @@
  */
 package dhomo.crmmail.api.message;
 
-import dhomo.crmmail.api.exception.InvalidFieldException;
+import dhomo.crmmail.api.exception.CMInvalidFieldException;
 import org.apache.commons.io.IOUtils;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.http.MediaType;
@@ -84,7 +84,7 @@ public class MessageUtils {
                     try {
                         return new InternetAddress(r.getAddress());
                     } catch(AddressException ex) {
-                        throw new InvalidFieldException("Problem parsing address " + r.getAddress(), ex);
+                        throw new CMInvalidFieldException("Problem parsing address " + r.getAddress(), ex);
                     }
                 })
                 .toArray(InternetAddress[]::new);
