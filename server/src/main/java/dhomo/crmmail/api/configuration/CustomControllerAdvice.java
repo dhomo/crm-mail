@@ -38,9 +38,7 @@ public class CustomControllerAdvice extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(CMException.class)
     public <T extends CMException> ResponseEntity<Object> handleCMException(T exception, WebRequest request) {
-        final HttpHeaders headers = new HttpHeaders();
-        final String body = exception.getMessage();
-        return handleExceptionInternal(exception, body, headers, exception.getHttpStatus(), request);
+        return handleExceptionInternal(exception, null, new HttpHeaders(), exception.getHttpStatus(), request);
     }
 
     @Override
@@ -58,7 +56,7 @@ public class CustomControllerAdvice extends ResponseEntityExceptionHandler {
     /**
      * A single place to customize the response body of all exception types.
      * @param ex the exception
-     * @param body the body for the response
+     * @param body the body for the response. If null then ex.getMessage() is used
      * @param headers the headers for the response
      * @param status the response status
      * @param request the current request
@@ -66,6 +64,6 @@ public class CustomControllerAdvice extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleExceptionInternal(Exception ex, @Nullable Object body,
                                                              HttpHeaders headers, HttpStatus status, WebRequest request) {
-        return new ResponseEntity<>(ex.getMessage(), headers, status);
+        return new ResponseEntity<>(body != null ? body : ex.getMessage(), headers, status);
     }
 }
